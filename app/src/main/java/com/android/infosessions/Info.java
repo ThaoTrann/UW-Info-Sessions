@@ -28,7 +28,7 @@ public class Info {
     private ArrayList<String> mAudience;
     private Bitmap mBmp;
 
-    public Info(JSONObject info) throws JSONException {
+    public Info(JSONObject info, Bitmap bmp) throws JSONException {
         mInfo = info;
         mName = info.getString("employer");
         mStartTime = info.getString("start_time");
@@ -43,7 +43,7 @@ public class Info {
         mBuildingName = building.getString("name");
         mRoom = building.getString("room");
         mMapUrl = building.getString("map_url");
-
+        mBmp = bmp;
     }
 
     public String getName() {
@@ -71,5 +71,8 @@ public class Info {
     @Override
     public String toString() {
         return "Info: " + mName;
+    }
+    public Bitmap getBmp() {
+        return mBmp;
     }
 }

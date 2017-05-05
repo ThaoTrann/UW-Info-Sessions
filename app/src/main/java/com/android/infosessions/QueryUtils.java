@@ -1,5 +1,7 @@
 package com.android.infosessions;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -20,7 +22,8 @@ import java.util.HashMap;
 
 public final class QueryUtils {
     public static final String LOG_TAG = MainActivity.class.getName();
-
+    public static final String LOGO_URL = "https://logo.clearbit.com/";
+    public static final String DOMAIN = ".com";
     private QueryUtils() {
     }
 
@@ -38,6 +41,7 @@ public final class QueryUtils {
         }
         // Extract relevant fields from the JSON response and create an {@link Event} object
         ArrayList<Info> infos = extractInfos(jsonResponse);
+
         // Return the {@link Event}
         return infos;
     }
@@ -114,7 +118,16 @@ public final class QueryUtils {
             JSONArray infosArray = root.getJSONArray("data");
             for(int i = 0; i < infosArray.length(); i++) {
                 JSONObject infoJSONObject = infosArray.getJSONObject(i);
-                Info info = new Info(infoJSONObject);
+
+                String name = infoJSONObject.getString("employer");
+                URL logo_url = createUrl(LOGO_URL+ name + DOMAIN);
+                Bitmap bmp = null;
+                try {
+                    bmp = BitmapFactory.decodeStream(logo_url.openConnection().getInputStream());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Info info = new Info(infoJSONObject, bmp);
                 infos.add(info);
             }
         } catch (JSONException e) {

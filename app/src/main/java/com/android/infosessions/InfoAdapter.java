@@ -53,7 +53,8 @@ public class InfoAdapter extends ArrayAdapter<Info> {
         locationTextView.setText(currentInfo.getBuilding());
 
         ImageView logoView = (ImageView) listItemView.findViewById(R.id.employer_logo);
-
+        logoView.setImageBitmap(currentInfo.getBmp());
+        
         return listItemView;
     }
 }
