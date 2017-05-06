@@ -127,8 +127,10 @@ public final class QueryUtils {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Info info = new Info(infoJSONObject, bmp);
-                infos.add(info);
+                if(!name.equals("Closed Information Session")) {
+                    Info info = new Info(infoJSONObject, bmp);
+                    infos.add(info);
+                }
             }
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,

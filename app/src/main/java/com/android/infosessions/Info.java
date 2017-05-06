@@ -38,6 +38,9 @@ public class Info {
         mWebsite = info.getString("website");
         mLink = info.getString("link");
         mDetail = info.getString("description");
+        if(mDetail.isEmpty()) {
+            mDetail = "Employer's Description is not provided.";
+        }
         JSONObject building = info.getJSONObject("building");
         mCode = building.getString("code");
         mBuildingName = building.getString("name");
@@ -66,7 +69,7 @@ public class Info {
         return mWebsite;
     }
     public String getBuilding() {
-        return mCode + " - " + mRoom;
+        return mCode;
     }
     @Override
     public String toString() {

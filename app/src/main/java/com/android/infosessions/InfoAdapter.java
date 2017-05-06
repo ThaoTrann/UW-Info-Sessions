@@ -2,6 +2,7 @@ package com.android.infosessions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -40,9 +41,6 @@ public class InfoAdapter extends ArrayAdapter<Info> {
         TextView timeTextView = (TextView) listItemView.findViewById(R.id.time);
         timeTextView.setText(currentInfo.getTime());
 
-        TextView dayTextView = (TextView) listItemView.findViewById(R.id.day);
-        dayTextView.setText(currentInfo.getDay());
-
         TextView dateTextView = (TextView) listItemView.findViewById(R.id.date);
         dateTextView.setText(currentInfo.getDate());
 
@@ -52,8 +50,9 @@ public class InfoAdapter extends ArrayAdapter<Info> {
         TextView locationTextView = (TextView) listItemView.findViewById(R.id.location);
         locationTextView.setText(currentInfo.getBuilding());
 
+        Bitmap bmp = currentInfo.getBmp();
         ImageView logoView = (ImageView) listItemView.findViewById(R.id.employer_logo);
-        logoView.setImageBitmap(currentInfo.getBmp());
+        logoView.setImageBitmap(bmp);
         
         return listItemView;
     }
