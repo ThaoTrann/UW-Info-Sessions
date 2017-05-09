@@ -15,60 +15,64 @@ package com.android.infosessions;
  * limitations under the License.
  */
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.net.URL;
+import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Info>> {
 
     public static final String LOG_TAG = MainActivity.class.getName();
-    private static final String USGS_REQUEST_URL =
+    private static final String UWAPI_REQUEST_URL =
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        EarthquakeAsyncTask earthquakeAsyncTask = new EarthquakeAsyncTask();
-        earthquakeAsyncTask.execute(USGS_REQUEST_URL);
+        LoaderManager loaderManager = getLoaderManager();
+        loaderManager.initLoader(1, null, this).forceLoad();
     }
 
-    private class EarthquakeAsyncTask extends AsyncTask<String, Void, ArrayList<Info>> {
+    @Override
+    public Loader<List<Info>> onCreateLoader(int id, Bundle args) {
+        return new InfoLoader(this, UWAPI_REQUEST_URL);
+    }
 
+    @Override
+    public void onLoadFinished(Loader<List<Info>> loader, List<Info> data) {
+        updateUi((ArrayList<Info>) data);
+    }
 
-        protected ArrayList<Info> doInBackground(String... urls) {
-            if(urls.length < 1 || urls[0] == null) {
-                return null;
-            }
-            ArrayList<Info> result = QueryUtils.fetchInfos(urls[0]);
-            return result;
-        }
+    @Override
+    public void onLoaderReset(Loader<List<Info>> loader) {
 
-        protected void onPostExecute(ArrayList<Info> result) {
-            if(result == null) return;
-            updateUi(result);
-        }
     }
 
     private void updateUi(final ArrayList<Info> infos) {
         // Find a reference to the {@link ListView} in the layout
-        final ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        final ListView infosListView = (ListView) findViewById(R.id.list);
 
         // Create a new {@link ArrayAdapter} of earthquakes
         InfoAdapter adapter = new InfoAdapter(this, infos);
 
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
-        earthquakeListView.setAdapter(adapter);
+        infosListView.setAdapter(adapter);
 
         /*earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -78,5 +82,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(webIntent);
             }
         });*/
+
+        infosListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // The code in this method will be executed when the numbers category is clicked on.
+                Info currentInfo = infos.get(position);
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class)
+                        .putExtra("EXTRA_TEXT", currentInfo.toJSONString());
+                // Start the new activity
+                startActivity(intent);
+            }
+        });
     }
 }

@@ -3,13 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:divider="@drawable/layer_bg">
+    android:paddingBottom="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,7 +36,7 @@
 
     </LinearLayout>
     <LinearLayout
-        android:paddingTop="10dp"
+        android:paddingTop="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -58,6 +55,7 @@
                 <ImageView
                     android:layout_height="16dp"
                     android:layout_width="16dp"
+                    android:paddingRight ="5dp"
                     android:src="@drawable/ic_insert_invitation_black_24dp"/>
                 <TextView
                     android:id="@+id/date"
@@ -77,11 +75,13 @@
                 <ImageView
                     android:layout_height="16dp"
                     android:layout_width="16dp"
+                    android:paddingRight="5dp"
                     android:src="@drawable/ic_access_time_black_24dp"/>
 
                 <TextView
                     android:id="@+id/time"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textColor="@color/textColorEmployer"
                     android:textSize="12sp"
@@ -96,6 +96,7 @@
                 <ImageView
                     android:layout_height="16dp"
                     android:layout_width="16dp"
+                    android:paddingRight="5dp"
                     android:src="@drawable/ic_room_black_24dp"/>
 
                 <TextView
@@ -115,7 +116,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:layout_weight="5"
-            android:maxLines="4"
+            android:maxLines="3"
             android:textColor="@color/textColorEmployerDetails"
             android:textSize="13sp"
             tools:text="Wattpad is a global platform, proudly based in Toronto, that gives people everywhere the freedom to discover and create content they can't find anywhere else. We want to tell you about the perks we offer, including competitive salary, meaningful work (there's a good change you'll push code into production on Day 1!), and a great staff culture. Learn more about us at wattpad.com" />

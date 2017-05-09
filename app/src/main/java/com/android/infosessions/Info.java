@@ -4,14 +4,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Thao on 5/4/17.
  */
 
-public class Info {
+public class Info implements Serializable{
     private JSONObject mInfo;
     private String mName;
     private String mStartTime;
@@ -77,5 +80,8 @@ public class Info {
     }
     public Bitmap getBmp() {
         return mBmp;
+    }
+    public String toJSONString() {
+        return mInfo.toString();
     }
 }
