@@ -16,13 +16,18 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Calendar;
 
 
 public final class QueryUtils {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
+
     private QueryUtils() {
     }
 
@@ -109,6 +114,10 @@ public final class QueryUtils {
         // Create an empty ArrayList that we can start adding earthquakes to
         ArrayList<Info> infos = new ArrayList<>();
 
+        Calendar c = Calendar.getInstance();
+        int cMonth = c.get(Calendar.MONTH) + 1;
+        int cDay = c.get(Calendar.DAY_OF_MONTH);
+        int cYear = c.get(Calendar.YEAR);
         // Try to parse the SAMPLE_JSON_RESPONSE. If there's a problem with the way the JSON
         // is formatted, a JSONException exception object will be thrown.
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
@@ -119,9 +128,16 @@ public final class QueryUtils {
                 JSONObject infoJSONObject = infosArray.getJSONObject(i);
 
                 String name = infoJSONObject.getString("employer");
+                Log.d("LOG_TAG","current" + String.valueOf(cMonth) + String.valueOf(cDay) );
                 if(name.compareToIgnoreCase("Closed Information Session") != 0) {
                     Info info = new Info(infoJSONObject, getEmployerLogo(name));
-                    infos.add(info);
+                    String[] date = info.getDate().split("-");
+                    int day = Integer.parseInt(date[2]);
+                    int month = Integer.parseInt(date[1]);
+                    int year = Integer.parseInt(date[0]);
+                    if(year > cYear || (year == cYear && month > cMonth) || (year == cYear && month == cMonth && day >= cDay)) {
+                        infos.add(info);
+                    }
                 }
             }
         } catch (JSONException e) {
@@ -133,7 +149,15 @@ public final class QueryUtils {
         // Return the list of earthquakes
         return infos;
     }
-
+    public static Date formatDate(String str) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return dateFormat.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public static String getEmployerLogo(String str) {
 
         logos.add("a500px");
