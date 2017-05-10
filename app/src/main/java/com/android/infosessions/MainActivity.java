@@ -14,88 +14,29 @@ package com.android.infosessions;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import android.app.LoaderManager;
-import android.content.Intent;
-import android.content.Loader;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.net.URL;
-import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Info>> {
+public class MainActivity extends AppCompatActivity{
 
-    public static final String LOG_TAG = MainActivity.class.getName();
-    private static final String UWAPI_REQUEST_URL =
-            "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
-        LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(1, null, this).forceLoad();
-    }
+        // Find the view pager that will allow the user to swipe between fragments
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-    @Override
-    public Loader<List<Info>> onCreateLoader(int id, Bundle args) {
-        return new InfoLoader(this, UWAPI_REQUEST_URL);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<Info>> loader, List<Info> data) {
-        updateUi((ArrayList<Info>) data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<Info>> loader) {
-
-    }
-
-    private void updateUi(final ArrayList<Info> infos) {
-        // Find a reference to the {@link ListView} in the layout
-        final ListView infosListView = (ListView) findViewById(R.id.list);
-
-        // Create a new {@link ArrayAdapter} of earthquakes
-        InfoAdapter adapter = new InfoAdapter(this, infos);
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        infosListView.setAdapter(adapter);
-
-        /*earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Uri webpage = Uri.parse(infos.get(position).getUrl());
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
-                startActivity(webIntent);
-            }
-        });*/
-
-        infosListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // The code in this method will be executed when the numbers category is clicked on.
-                Info currentInfo = infos.get(position);
-                ArrayList<String> toSent = new ArrayList<String>();
-                toSent.add(currentInfo.toJSONString());
-                toSent.add(currentInfo.getLogoString());
-                Intent intent = new Intent(MainActivity.this, DetailActivity.class)
-                        .putStringArrayListExtra("EXTRA_TEXT", toSent);
-                // Start the new activity
-                startActivity(intent);
-            }
-        });
+        // Create an adapter that knows which fragment should be shown on each page
+        SimpleFragmentPagerAdapter adapter = new SimpleFragmentPagerAdapter(getFragmentManager());
+        // Set the adapter onto the view pager
+        viewPager.setAdapter(adapter);
+/*
+        // Give the TabLayout the ViewPager
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);*/
     }
 }

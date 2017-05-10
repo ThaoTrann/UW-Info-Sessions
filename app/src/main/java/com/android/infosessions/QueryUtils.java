@@ -28,6 +28,11 @@ public final class QueryUtils {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
 
+    public static Calendar c;
+    public static int cMonth;
+    public static int cDay;
+    public static int cYear;
+
     private QueryUtils() {
     }
 
@@ -114,10 +119,7 @@ public final class QueryUtils {
         // Create an empty ArrayList that we can start adding earthquakes to
         ArrayList<Info> infos = new ArrayList<>();
 
-        Calendar c = Calendar.getInstance();
-        int cMonth = c.get(Calendar.MONTH) + 1;
-        int cDay = c.get(Calendar.DAY_OF_MONTH);
-        int cYear = c.get(Calendar.YEAR);
+
         // Try to parse the SAMPLE_JSON_RESPONSE. If there's a problem with the way the JSON
         // is formatted, a JSONException exception object will be thrown.
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
@@ -129,15 +131,9 @@ public final class QueryUtils {
 
                 String name = infoJSONObject.getString("employer");
                 Log.d("LOG_TAG","current" + String.valueOf(cMonth) + String.valueOf(cDay) );
-                if(name.compareToIgnoreCase("Closed Information Session") != 0) {
+                if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
                     Info info = new Info(infoJSONObject, getEmployerLogo(name));
-                    String[] date = info.getDate().split("-");
-                    int day = Integer.parseInt(date[2]);
-                    int month = Integer.parseInt(date[1]);
-                    int year = Integer.parseInt(date[0]);
-                    if(year > cYear || (year == cYear && month > cMonth) || (year == cYear && month == cMonth && day >= cDay)) {
-                        infos.add(info);
-                    }
+                    infos.add(info);
                 }
             }
         } catch (JSONException e) {
