@@ -22,8 +22,7 @@ import java.util.HashMap;
 
 public final class QueryUtils {
     public static final String LOG_TAG = MainActivity.class.getName();
-    public static final String LOGO_URL = "https://logo.clearbit.com/";
-    public static final String DOMAIN = ".com";
+    private static ArrayList<String> logos = new ArrayList<>();
     private QueryUtils() {
     }
 
@@ -120,15 +119,8 @@ public final class QueryUtils {
                 JSONObject infoJSONObject = infosArray.getJSONObject(i);
 
                 String name = infoJSONObject.getString("employer");
-                URL logo_url = createUrl(LOGO_URL+ name + DOMAIN);
-                Bitmap bmp = null;
-                try {
-                    bmp = BitmapFactory.decodeStream(logo_url.openConnection().getInputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(!name.equals("Closed Information Session")) {
-                    Info info = new Info(infoJSONObject, bmp);
+                if(name.compareToIgnoreCase("Closed Information Session") != 0) {
+                    Info info = new Info(infoJSONObject, getEmployerLogo(name));
                     infos.add(info);
                 }
             }
@@ -140,6 +132,59 @@ public final class QueryUtils {
         }
         // Return the list of earthquakes
         return infos;
+    }
+
+    public static String getEmployerLogo(String str) {
+
+        logos.add("a500px");
+        logos.add("a9");
+        logos.add("adroll");
+        logos.add("amazon");
+        logos.add("arista");
+        logos.add("autodesk");
+        logos.add("bazaarvoice");
+        logos.add("bloomberg");
+        logos.add("cibc");
+        logos.add("dac_group");
+        logos.add("digiflare");
+        logos.add("electronic_arts");
+        logos.add("facebook");
+        logos.add("genesys");
+        logos.add("google");
+        logos.add("groupby");
+        logos.add("hootsuite");
+        logos.add("league_inc");
+        logos.add("loblaw_digital");
+        logos.add("meraki");
+        logos.add("microsoft");
+        logos.add("pointclickcare");
+        logos.add("rbc_technology");
+        logos.add("redfin");
+        logos.add("td_technology");
+        logos.add("tribalscale");
+        logos.add("twitter");
+        logos.add("uber");
+        logos.add("uken_games");
+        logos.add("watpad");
+        logos.add("wave_accounting");
+        logos.add("whatsapp");
+        logos.add("yelp");
+        logos.add("yext");
+        String name = str;
+        name = name.replace(" ", "_");
+        name = name.toLowerCase();
+        boolean replaced = false;
+        for(int i = 0; i < logos.size(); i++) {
+            if(name.compareToIgnoreCase(logos.get(i)) == 0 || name.contains(logos.get(i)) || logos.get(i).contains(name)) {
+                name = logos.get(i);
+                replaced = true;
+                break;
+            }
+        }
+        if(!replaced) {
+            name = "nologo";
+        }
+        return name;
     }
 }
 

@@ -28,10 +28,10 @@ public class Info implements Serializable{
     private String mBuildingName;
     private String mRoom;
     private String mMapUrl;
+    private String mLogoString;
     private ArrayList<String> mAudience;
-    private Bitmap mBmp;
 
-    public Info(JSONObject info, Bitmap bmp) throws JSONException {
+    public Info(JSONObject info, String logoString) throws JSONException {
         mInfo = info;
         mName = info.getString("employer");
         mStartTime = info.getString("start_time");
@@ -41,6 +41,7 @@ public class Info implements Serializable{
         mWebsite = info.getString("website");
         mLink = info.getString("link");
         mDetail = info.getString("description");
+        mLogoString = logoString;
         if(mDetail.isEmpty()) {
             mDetail = "Employer's Description is not provided.";
         }
@@ -49,7 +50,6 @@ public class Info implements Serializable{
         mBuildingName = building.getString("name");
         mRoom = building.getString("room");
         mMapUrl = building.getString("map_url");
-        mBmp = bmp;
     }
 
     public String getName() {
@@ -78,10 +78,10 @@ public class Info implements Serializable{
     public String toString() {
         return "Info: " + mName;
     }
-    public Bitmap getBmp() {
-        return mBmp;
-    }
     public String toJSONString() {
         return mInfo.toString();
+    }
+    public String getLogoString() {
+        return mLogoString;
     }
 }

@@ -3,8 +3,10 @@ package com.android.infosessions;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,10 +53,16 @@ public class InfoAdapter extends ArrayAdapter<Info> {
         TextView locationTextView = (TextView) listItemView.findViewById(R.id.location);
         locationTextView.setText(currentInfo.getBuilding());
 
-        Bitmap bmp = currentInfo.getBmp();
         ImageView logoView = (ImageView) listItemView.findViewById(R.id.employer_logo);
-        logoView.setImageBitmap(bmp);
-        
+        Drawable drawable = getImage(logoView.getContext(), currentInfo.getLogoString());
+
+        logoView.setImageDrawable(drawable);
+
         return listItemView;
+    }
+    public static Drawable getImage(Context context, String name) {
+        Drawable drawable = context.getResources().getDrawable(context.getResources()
+                .getIdentifier(name, "drawable", context.getPackageName()));
+        return drawable;
     }
 }

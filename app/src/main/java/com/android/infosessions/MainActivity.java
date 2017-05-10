@@ -88,8 +88,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // The code in this method will be executed when the numbers category is clicked on.
                 Info currentInfo = infos.get(position);
+                ArrayList<String> toSent = new ArrayList<String>();
+                toSent.add(currentInfo.toJSONString());
+                toSent.add(currentInfo.getLogoString());
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class)
-                        .putExtra("EXTRA_TEXT", currentInfo.toJSONString());
+                        .putStringArrayListExtra("EXTRA_TEXT", toSent);
                 // Start the new activity
                 startActivity(intent);
             }

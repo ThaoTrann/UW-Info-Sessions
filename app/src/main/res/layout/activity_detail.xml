@@ -6,8 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp"
@@ -21,8 +19,9 @@
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal">
             <ImageView
-                android:layout_height="wrap_content"
+                android:layout_height="80dp"
                 android:layout_width="0dp"
+                android:maxWidth="80dp"
                 android:layout_weight="2"
                 android:id="@+id/employer_logo"
                 android:src="@drawable/ic_domain_black_24dp"/>
