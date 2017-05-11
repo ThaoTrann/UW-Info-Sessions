@@ -1,7 +1,5 @@
 package com.android.infosessions;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -20,7 +18,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Calendar;
 
 
@@ -37,7 +34,7 @@ public final class QueryUtils {
     }
 
 
-    public static ArrayList<Info> fetchInfos(String requestUrl) {
+    public static ArrayList<Session> fetchInfos(String requestUrl) {
         // Create URL object
         URL url = createUrl(requestUrl);
 
@@ -49,10 +46,10 @@ public final class QueryUtils {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
         // Extract relevant fields from the JSON response and create an {@link Event} object
-        ArrayList<Info> infos = extractInfos(jsonResponse);
+        ArrayList<Session> sessions = extractInfos(jsonResponse);
 
         // Return the {@link Event}
-        return infos;
+        return sessions;
     }
 
     private static URL createUrl(String stringUrl) {
@@ -111,13 +108,13 @@ public final class QueryUtils {
     }
 
     /**
-     * Return a list of {@link Info} objects that has been built up from
+     * Return a list of {@link Session} objects that has been built up from
      * parsing a JSON response.
      */
-    public static ArrayList<Info> extractInfos(String infosJSON) {
+    public static ArrayList<Session> extractInfos(String infosJSON) {
 
         // Create an empty ArrayList that we can start adding earthquakes to
-        ArrayList<Info> infos = new ArrayList<>();
+        ArrayList<Session> sessions = new ArrayList<>();
 
 
         // Try to parse the SAMPLE_JSON_RESPONSE. If there's a problem with the way the JSON
@@ -130,9 +127,9 @@ public final class QueryUtils {
                 JSONObject infoJSONObject = infosArray.getJSONObject(i);
 
                 String name = infoJSONObject.getString("employer");
-                if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
-                    Info info = new Info(infoJSONObject, getEmployerLogo(name));
-                    infos.add(info);
+                if(!name.equals("Closed Session Session") && !name.equals("Closed Information Session") ) {
+                    Session session = new Session(infoJSONObject, getEmployerLogo(name));
+                    sessions.add(session);
                 }
             }
         } catch (JSONException e) {
@@ -142,7 +139,7 @@ public final class QueryUtils {
             Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
         }
         // Return the list of earthquakes
-        return infos;
+        return sessions;
     }
     public static Date formatDate(String str) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

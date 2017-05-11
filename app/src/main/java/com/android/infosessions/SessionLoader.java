@@ -9,17 +9,17 @@ import java.util.List;
  * Created by Thao on 5/8/17.
  */
 
-public class InfoLoader extends AsyncTaskLoader<List<Info>> {
+public class SessionLoader extends AsyncTaskLoader<List<Session>> {
     private static String mUrl;
-    public InfoLoader(Context context, String url) {
+    public SessionLoader(Context context, String url) {
         super(context);
         mUrl = url;
     }
 
     @Override
-    public List<Info> loadInBackground() {
+    public List<Session> loadInBackground() {
         if(mUrl == null) return null;
-        List<Info> result = QueryUtils.fetchInfos(mUrl);
+        List<Session> result = QueryUtils.fetchInfos(mUrl);
         return result;
     }
 

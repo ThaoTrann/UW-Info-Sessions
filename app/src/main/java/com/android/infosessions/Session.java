@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * Created by Thao on 5/4/17.
  */
 
-public class Info implements Serializable{
+public class Session implements Serializable{
     private JSONObject mInfo;
     private String mName;
     private String mStartTime;
@@ -31,7 +31,7 @@ public class Info implements Serializable{
     private String mLogoString;
     private ArrayList<String> mAudience;
 
-    public Info(JSONObject info, String logoString) throws JSONException {
+    public Session(JSONObject info, String logoString) throws JSONException {
         mInfo = info;
         mName = info.getString("employer");
         mStartTime = info.getString("start_time");
@@ -76,7 +76,7 @@ public class Info implements Serializable{
     }
     @Override
     public String toString() {
-        return "Info: " + mName;
+        return "Session: " + mName;
     }
     public String toJSONString() {
         return mInfo.toString();

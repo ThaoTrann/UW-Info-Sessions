@@ -1,22 +1,16 @@
 package com.android.infosessions;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-import static com.android.infosessions.InfoAdapter.getImage;
+import static com.android.infosessions.SessionAdapter.getImage;
 
 public class DetailActivity extends AppCompatActivity {
     JSONObject currentInfo;

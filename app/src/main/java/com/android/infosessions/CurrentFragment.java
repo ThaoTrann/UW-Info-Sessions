@@ -4,22 +4,14 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.net.URL;
 import java.util.Calendar;
 import java.util.List;
 
@@ -28,7 +20,7 @@ import java.util.List;
  * Created by Thao on 5/10/17.
  */
 
-public class CurrentFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Info>> {
+public class CurrentFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Session>> {
     public static final String LOG_TAG = MainActivity.class.getName();
     private ListView infosListView;
     private static final String UWAPI_REQUEST_URL =
@@ -50,13 +42,13 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public Loader<List<Info>> onCreateLoader(int id, Bundle args) {
-        return new InfoLoader(getContext(), UWAPI_REQUEST_URL);
+    public Loader<List<Session>> onCreateLoader(int id, Bundle args) {
+        return new SessionLoader(getContext(), UWAPI_REQUEST_URL);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Info>> loader, List<Info> data) {
-        ArrayList<Info> filtered = new ArrayList<>();
+    public void onLoadFinished(Loader<List<Session>> loader, List<Session> data) {
+        ArrayList<Session> filtered = new ArrayList<>();
         Calendar c = Calendar.getInstance();
         int cMonth = c.get(Calendar.MONTH) + 1;
         int cDay = c.get(Calendar.DAY_OF_MONTH);
@@ -76,14 +68,14 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onLoaderReset(Loader<List<Info>> loader) {
+    public void onLoaderReset(Loader<List<Session>> loader) {
 
     }
 
-    private void updateUi(final ArrayList<Info> infos) {
+    private void updateUi(final ArrayList<Session> sessions) {
         // Find a reference to the {@link ListView} in the layout
         // Create a new {@link ArrayAdapter} of earthquakes
-        InfoAdapter adapter = new InfoAdapter(getContext(), infos);
+        SessionAdapter adapter = new SessionAdapter(getContext(), sessions);
 
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
@@ -93,10 +85,10 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // The code in this method will be executed when the numbers category is clicked on.
-                Info currentInfo = infos.get(position);
+                Session currentSession = sessions.get(position);
                 ArrayList<String> toSent = new ArrayList<String>();
-                toSent.add(currentInfo.toJSONString());
-                toSent.add(currentInfo.getLogoString());
+                toSent.add(currentSession.toJSONString());
+                toSent.add(currentSession.getLogoString());
                 Intent intent = new Intent(getContext(), DetailActivity.class)
                         .putStringArrayListExtra("EXTRA_TEXT", toSent);
                 // Start the new activity
