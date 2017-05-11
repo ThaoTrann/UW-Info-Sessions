@@ -130,7 +130,6 @@ public final class QueryUtils {
                 JSONObject infoJSONObject = infosArray.getJSONObject(i);
 
                 String name = infoJSONObject.getString("employer");
-                Log.d("LOG_TAG","current" + String.valueOf(cMonth) + String.valueOf(cDay) );
                 if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
                     Info info = new Info(infoJSONObject, getEmployerLogo(name));
                     infos.add(info);

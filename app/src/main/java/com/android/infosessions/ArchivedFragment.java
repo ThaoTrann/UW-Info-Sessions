@@ -81,15 +81,6 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
         // so the list can be populated in the user interface
         infosListView.setAdapter(adapter);
 
-        /*earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Uri webpage = Uri.parse(infos.get(position).getUrl());
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
-                startActivity(webIntent);
-            }
-        });*/
-
         infosListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

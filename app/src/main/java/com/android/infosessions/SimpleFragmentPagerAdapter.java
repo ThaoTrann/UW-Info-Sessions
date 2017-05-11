@@ -10,7 +10,7 @@ import android.support.v13.app.FragmentPagerAdapter;
  */
 public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private String tabTitles[] = new String[] { "Current", "Archived"};
+    private String tabTitles[] = new String[] { "Current", "Archived", "Contact"};
 
     public SimpleFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -33,6 +33,6 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
     }
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 }
