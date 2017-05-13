@@ -33,40 +33,13 @@ public class ContactFragment extends Fragment {
     private EditText mPosition;
     private EditText mEmail;
     private EditText mPhone;
-
+    View rootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_contact, container, false);
-        // Setup FAB to open EditorActivity
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( getContext().LAYOUT_INFLATER_SERVICE );
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-                View mView = inflater.inflate(R.layout.add_contact, null);
-                mName = (EditText) mView.findViewById(R.id.etName);
-                mCompany = (EditText) mView.findViewById(R.id.etCompany);
-                mPosition = (EditText) mView.findViewById(R.id.etPosition);
-                mEmail = (EditText) mView.findViewById(R.id.etEmail);
-                mPhone = (EditText) mView.findViewById(R.id.etPhone_number);
-                Button mAdd = (Button) mView.findViewById(R.id.add_btn);
-
-                mAdd.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        insertContact();
-                    }
-                });
-                mBuilder.setView(mView);
-                AlertDialog dialog = mBuilder.create();
-                dialog.show();
-            }
-        });
+        rootView = inflater.inflate(R.layout.fragment_contact, container, false);
         displayDatabaseContact(rootView);
         return rootView;
     }
@@ -74,6 +47,7 @@ public class ContactFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        displayDatabaseContact(rootView);
     }
     private void insertContact() {
         String name = mName.getText().toString().trim();
@@ -130,31 +104,5 @@ public class ContactFragment extends Fragment {
         }
 
         return tableString;
-    }
-    /**
-     * Temporary helper method to display information in the onscreen TextView about the state of
-     * the pets database.
-     */
-    private void displayDatabaseInfo(View root) {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        ContactDbHelper mDbHelper = new ContactDbHelper(getContext());
-
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
-        // Perform this raw SQL query "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.rawQuery("SELECT * FROM " + ContactEntry.TABLE_NAME, null);
-        try {
-            // Display the number of rows in the Cursor (which reflects the number of rows in the
-            // pets table in the database).
-            TextView displayView = (TextView) root.findViewById(R.id.contacts_text_view);
-            displayView.setText("Number of rows in pets database table: " + cursor.getCount());
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
-        }
     }
 }
