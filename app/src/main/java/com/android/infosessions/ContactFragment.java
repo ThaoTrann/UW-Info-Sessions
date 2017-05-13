@@ -67,6 +67,7 @@ public class ContactFragment extends Fragment {
                 dialog.show();
             }
         });
+        displayDatabaseContact(rootView);
         return rootView;
     }
 
@@ -106,6 +107,30 @@ public class ContactFragment extends Fragment {
             Toast.makeText(getContext(), "Pet saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
         }
     }
+    private void displayDatabaseContact(View view) {
+        ContactDbHelper mDbHelper = new ContactDbHelper(getContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        String table = getTableAsString(db, ContactEntry.TABLE_NAME);
+        TextView tv = (TextView) view.findViewById(R.id.contacts_text_view);
+        tv.setText(table);
+    }
+    public String getTableAsString(SQLiteDatabase db, String tableName) {
+        String tableString = String.format("Table %s:\n", tableName);
+        Cursor allRows  = db.rawQuery("SELECT * FROM " + tableName, null);
+        if (allRows.moveToFirst() ){
+            String[] columnNames = allRows.getColumnNames();
+            do {
+                for (String name: columnNames) {
+                    tableString += String.format("%s: %s\n", name,
+                            allRows.getString(allRows.getColumnIndex(name)));
+                }
+                tableString += "\n";
+
+            } while (allRows.moveToNext());
+        }
+
+        return tableString;
+    }
     /**
      * Temporary helper method to display information in the onscreen TextView about the state of
      * the pets database.
@@ -124,7 +149,7 @@ public class ContactFragment extends Fragment {
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
             // pets table in the database).
-            TextView displayView = (TextView) root.findViewById(R.id.text_view_contact);
+            TextView displayView = (TextView) root.findViewById(R.id.contacts_text_view);
             displayView.setText("Number of rows in pets database table: " + cursor.getCount());
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
