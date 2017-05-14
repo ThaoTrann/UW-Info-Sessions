@@ -34,7 +34,7 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.infos_list, container, false);
+        View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         infosListView = (ListView) rootView.findViewById(R.id.list);
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(1, null, this).forceLoad();

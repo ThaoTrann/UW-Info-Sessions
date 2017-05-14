@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +35,15 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.infos_list, container, false);
+        View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         infosListView = (ListView) rootView.findViewById(R.id.list);
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(1, null, this).forceLoad();
         return rootView;

@@ -1,6 +1,16 @@
 package com.android.infosessions;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.android.infosessions.data.ContactContract;
+import com.android.infosessions.data.ContactDbHelper;
+import com.android.infosessions.data.SessionContract.SessionEntry;
+import com.android.infosessions.data.SessionDbHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -122,14 +132,15 @@ public final class QueryUtils {
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
         try {
             JSONObject root = new JSONObject(infosJSON);
-            JSONArray infosArray = root.getJSONArray("data");
-            for(int i = 0; i < infosArray.length(); i++) {
-                JSONObject infoJSONObject = infosArray.getJSONObject(i);
+            JSONArray sessionsJSONArray = root.getJSONArray("data");
+            for(int i = 0; i < sessionsJSONArray.length(); i++) {
+                JSONObject sessionJSONObject = sessionsJSONArray.getJSONObject(i);
 
-                String name = infoJSONObject.getString("employer");
-                if(!name.equals("Closed Session Session") && !name.equals("Closed Information Session") ) {
-                    Session session = new Session(infoJSONObject, getEmployerLogo(name));
+                String name = sessionJSONObject.getString("employer");
+                if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
+                    Session session = new Session(sessionJSONObject, getEmployerLogo(name));
                     sessions.add(session);
+                    //insertSession(sessionJSONObject, context);
                 }
             }
         } catch (JSONException e) {
@@ -141,15 +152,60 @@ public final class QueryUtils {
         // Return the list of earthquakes
         return sessions;
     }
-    public static Date formatDate(String str) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            return dateFormat.parse(str);
-        } catch (ParseException e) {
-            e.printStackTrace();
+
+    private static void insertSession(JSONObject session, Context context) throws JSONException{
+        String mEmployer = session.getString("employer");
+        String mStartTime = session.getString("start_time");
+        String mEndTime = session.getString("end_time");
+        String mDate = session.getString("date");
+        String mDay = session.getString("day");
+        String mWebsite = session.getString("website");
+        String mLink = session.getString("link");
+        String mDescription = session.getString("description");
+        String mLogo = getEmployerLogo(mEmployer);
+        if(mDescription.isEmpty()) {
+            mDescription = "Employer's Description is not provided.";
         }
-        return null;
+        JSONObject building = session.getJSONObject("building");
+        String mCode = building.getString("code");
+        String mBuildingName = building.getString("name");
+        String mRoom = building.getString("room");
+        String mMapUrl = building.getString("map_url");
+
+        ContactDbHelper mDbHelper = new ContactDbHelper(context);
+
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
+        values.put(SessionEntry.COLUMN_SESSION_START_TIME, mStartTime);
+        values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
+        values.put(SessionEntry.COLUMN_SESSION_DATE, mDate);
+        values.put(SessionEntry.COLUMN_SESSION_DAY, mDay);
+        values.put(SessionEntry.COLUMN_SESSION_WEBSITE, mWebsite);
+        values.put(SessionEntry.COLUMN_SESSION_LINK, mLink);
+        values.put(SessionEntry.COLUMN_SESSION_DESCRIPTION, mDescription);
+        values.put(SessionEntry.COLUMN_SESSION_BUILDING_CODE, mCode);
+        values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
+        values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mRoom);
+        values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
+
+
+        // Insert a new row for pet in the database, returning the ID of that new row.
+        long newRowId = db.insert(SessionEntry.TABLE_NAME, null, values);
+
+        // Show a toast message depending on whether or not the insertion was successful
+        if (newRowId == -1) {
+            // If the row ID is -1, then there was an error with insertion.
+            Toast.makeText(context, "Error with saving session", Toast.LENGTH_SHORT).show();
+        } else {
+            // Otherwise, the insertion was successful and we can display a toast with the row ID.
+            Toast.makeText(context, "session saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
+        }
     }
+
     public static String getEmployerLogo(String str) {
 
         logos.add("a500px");

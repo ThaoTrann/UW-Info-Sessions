@@ -11,9 +11,11 @@ import java.util.List;
 
 public class SessionLoader extends AsyncTaskLoader<List<Session>> {
     private static String mUrl;
+    private static Context mContext;
     public SessionLoader(Context context, String url) {
         super(context);
         mUrl = url;
+        mContext = context;
     }
 
     @Override
