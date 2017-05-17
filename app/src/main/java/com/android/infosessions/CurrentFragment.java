@@ -38,6 +38,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         infosListView = (ListView) rootView.findViewById(R.id.list);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

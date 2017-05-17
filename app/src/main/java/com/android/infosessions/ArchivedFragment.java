@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,6 @@ import java.util.List;
  */
 
 public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Session>> {
-
     public static final String LOG_TAG = MainActivity.class.getName();
     private ListView infosListView;
     private static final String UWAPI_REQUEST_URL =
@@ -36,6 +36,14 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         infosListView = (ListView) rootView.findViewById(R.id.list);
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(1, null, this).forceLoad();
         return rootView;
