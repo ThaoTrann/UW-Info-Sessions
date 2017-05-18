@@ -1,16 +1,14 @@
 package com.android.infosessions;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.app.Fragment;
 import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.android.infosessions.data.ContactDbHelper;
 import com.android.infosessions.data.ContactContract.ContactEntry;
+
+import java.util.List;
 
 import static com.android.infosessions.R.color.colorPrimaryDark;
 
@@ -30,12 +26,14 @@ import static com.android.infosessions.R.color.colorPrimaryDark;
  * Created by Thao on 5/10/17.
  */
 
-public class ContactFragment extends Fragment {
+public class ContactFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
     private EditText mName;
     private EditText mCompany;
     private EditText mPosition;
     private EditText mEmail;
     private EditText mPhone;
+
+    private ContactCursorAdapter mCursorAdapter;
 
     public ContactFragment() {
     }
@@ -44,7 +42,6 @@ public class ContactFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contact, container, false);
-        displayDatabaseContact();
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,38 +76,18 @@ public class ContactFragment extends Fragment {
                 mBuilder.show();
             }
         });
+
+        ListView listView = (ListView) rootView.findViewById(R.id.list);
+        mCursorAdapter = new ContactCursorAdapter(getContext(), null);
+        listView.setAdapter(mCursorAdapter);
+
+        getLoaderManager().initLoader(0, null, this);
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        displayDatabaseContact();
-    }
-
-    private void displayDatabaseContact() {
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                ContactEntry._ID,
-                ContactEntry.COLUMN_CONTACT_NAME,
-                ContactEntry.COLUMN_CONTACT_EMAIL,
-                ContactEntry.COLUMN_CONTACT_PHONE_NUMBER,
-                ContactEntry.COLUMN_CONTACT_COMPANY,
-                ContactEntry.COLUMN_CONTACT_POSITION};
-
-        // Perform a query on the provider using the ContentResolver.
-        // Use the {@link PetEntry#CONTENT_URI} to access the pet data.
-        Cursor cursor = getActivity().getContentResolver().query(
-                ContactEntry.CONTENT_URI,   // The content URI of the words table
-                projection,             // The columns to return for each row
-                null,                   // Selection criteria
-                null,                   // Selection criteria
-                null);                  // The sort order for the returned rows
-
-        ListView listView = (ListView) rootView.findViewById(R.id.list);
-        ContactCursorAdapter contactCursorAdapter = new ContactCursorAdapter(getContext(), cursor);
-        listView.setAdapter(contactCursorAdapter);
     }
 
     private void insertContact() {
@@ -119,11 +96,6 @@ public class ContactFragment extends Fragment {
         String position = mPosition.getText().toString().trim();
         String email = mEmail.getText().toString().trim();
         String phone = mPhone.getText().toString().trim();
-
-        ContactDbHelper mDbHelper = new ContactDbHelper(getContext());
-
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -134,15 +106,35 @@ public class ContactFragment extends Fragment {
         values.put(ContactEntry.COLUMN_CONTACT_PHONE_NUMBER, phone);
 
         // Insert a new row for pet in the database, returning the ID of that new row.
-        long newRowId = db.insert(ContactEntry.TABLE_NAME, null, values);
+        Uri newUri = getActivity().getContentResolver().insert(ContactEntry.CONTENT_URI, values);
+    }
 
-        // Show a toast message depending on whether or not the insertion was successful
-        if (newRowId == -1) {
-            // If the row ID is -1, then there was an error with insertion.
-            Toast.makeText(getContext(), "Error with saving pet", Toast.LENGTH_SHORT).show();
-        } else {
-            // Otherwise, the insertion was successful and we can display a toast with the row ID.
-            Toast.makeText(getContext(), "Pet saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
-        }
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Define a projection that specifies the columns from the table we care about.
+        String[] projection = {
+                ContactEntry._ID,
+                ContactEntry.COLUMN_CONTACT_NAME,
+                ContactEntry.COLUMN_CONTACT_EMAIL };
+
+        // This loader will execute the ContentProvider's query method on a background thread
+        return new CursorLoader(getContext(),   // Parent activity context
+                ContactEntry.CONTENT_URI,   // Provider content URI to query
+                projection,             // Columns to include in the resulting Cursor
+                null,                   // No selection clause
+                null,                   // No selection arguments
+                null);                  // Default sort order
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
+        mCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Callback called when the data needs to be deleted
+        mCursorAdapter.swapCursor(null);
     }
 }
