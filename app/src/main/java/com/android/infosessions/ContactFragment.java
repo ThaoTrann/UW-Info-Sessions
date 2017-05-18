@@ -49,26 +49,34 @@ public class ContactFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final AlertDialog mBuilder = new AlertDialog.Builder(getContext()).create();
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( getContext().LAYOUT_INFLATER_SERVICE );
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(getContext());
-                View mView = inflater.inflate(R.layout.add_contact, null);
+                final View mView = inflater.inflate(R.layout.add_contact, null);
                 mName = (EditText) mView.findViewById(R.id.etName);
                 mCompany = (EditText) mView.findViewById(R.id.etCompany);
                 mPosition = (EditText) mView.findViewById(R.id.etPosition);
                 mEmail = (EditText) mView.findViewById(R.id.etEmail);
                 mPhone = (EditText) mView.findViewById(R.id.etPhone_number);
                 Button mAdd = (Button) mView.findViewById(R.id.add_btn);
+                Button mCnl = (Button) mView.findViewById(R.id.cancel_btn);
 
+                mBuilder.setView(mView);
+                mBuilder.setCancelable(true);
                 mAdd.setOnClickListener(new View.OnClickListener() {
-
                     @Override
                     public void onClick(View v) {
                         insertContact();
+                        mBuilder.dismiss();
                     }
                 });
-                mBuilder.setView(mView);
-                AlertDialog dialog = mBuilder.create();
-                dialog.show();
+
+                mCnl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBuilder.dismiss();
+                    }
+                });
+                mBuilder.show();
             }
         });
         return rootView;
