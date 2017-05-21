@@ -11,25 +11,28 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.android.infosessions.data.ContactContract.ContactEntry;
+import com.android.infosessions.data.SessionContract.SessionEntry;
 /**
  * Created by Thao on 5/16/17.
  */
 
-public class ContactProvider extends ContentProvider {
-    private ContactDbHelper mDbHelper;
+public class DbProvider extends ContentProvider {
+    private DbHelper mDbHelper;
     /**
      * Tag for the log messages
      */
-    public static final String LOG_TAG = ContactDbHelper.class.getSimpleName();
+    public static final String LOG_TAG = DbHelper.class.getSimpleName();
     /**
-     * URI matcher code for the content URI for the pets table
+     * URI matcher code for the content URI for the table
      */
     private static final int CONTACTS = 100;
+    private static final int SESSIONS = 200;
 
     /**
-     * URI matcher code for the content URI for a single pet in the pets table
+     * URI matcher code for the content URI for a single entry in table
      */
     private static final int CONTACT_ID = 101;
+    private static final int SESSION_ID = 201;
 
     /**
      * UriMatcher object to match a content URI to a corresponding code.
@@ -46,6 +49,8 @@ public class ContactProvider extends ContentProvider {
 
         sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, ContactContract.PATH_CONTACTS, CONTACTS);
         sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, ContactContract.PATH_CONTACTS + "/#", CONTACT_ID);
+        sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS, SESSIONS);
+        sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS + "/#", SESSION_ID);
     }
 
     /**
@@ -55,7 +60,7 @@ public class ContactProvider extends ContentProvider {
     public boolean onCreate() {
         // Make sure the variable is a global variable, so it can be referenced from other
         // ContentProvider methods.
-        mDbHelper = new ContactDbHelper(getContext());
+        mDbHelper = new DbHelper(getContext());
         return true;
     }
 
@@ -75,26 +80,27 @@ public class ContactProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
         switch (match) {
             case CONTACTS:
-                // For the PETS code, query the pets table directly with the given
-                // projection, selection, selection arguments, and sort order. The cursor
-                // could contain multiple rows of the pets table.
                 cursor = database.query(ContactEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
+            case SESSIONS:
+                cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
             case CONTACT_ID:
-                // For the PET_ID code, extract out the ID from the URI.
-                // For an example URI such as "content://com.example.android.pets/pets/3",
-                // the selection will be "_id=?" and the selection argument will be a
-                // String array containing the actual ID of 3 in this case.
-                //
-                // For every "?" in the selection, we need to have an element in the selection
-                // arguments that will fill in the "?". Since we have 1 question mark in the
-                // selection, we have 1 String in the selection arguments' String array.
                 selection = ContactEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 // This will perform a query on the pets table where the _id equals 3 to return a
                 // Cursor containing that row of the table.
                 cursor = database.query(ContactEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            case SESSION_ID:
+                selection = SessionEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+                // This will perform a query on the pets table where the _id equals 3 to return a
+                // Cursor containing that row of the table.
+                cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
             default:
@@ -112,7 +118,9 @@ public class ContactProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case CONTACTS:
-                return insertPet(uri, contentValues);
+                return insertContact(uri, contentValues);
+            case SESSIONS:
+                return insertSession(uri, contentValues);
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
@@ -122,15 +130,7 @@ public class ContactProvider extends ContentProvider {
      * Insert a pet into the database with the given content values. Return the new content URI
      * for that specific row in the database.
      */
-    private Uri insertPet(Uri uri, ContentValues values) {
-        String name = values.getAsString(ContactEntry.COLUMN_CONTACT_NAME);
-        if (name == null) {
-            throw new IllegalArgumentException("Pet requires a name");
-        }
-        String breed = values.getAsString(ContactEntry.COLUMN_CONTACT_EMAIL);
-        if (breed == null) {
-            throw new IllegalArgumentException("Pet requires a breed");
-        }
+    private Uri insertContact(Uri uri, ContentValues values) {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
@@ -146,6 +146,20 @@ public class ContactProvider extends ContentProvider {
         return ContentUris.withAppendedId(uri, id);
     }
 
+    private Uri insertSession(Uri uri, ContentValues values) {
+        // Get writeable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Insert the new pet with the given values
+        long id = database.insert(SessionEntry.TABLE_NAME, null, values);
+        // If the ID is -1, then the insertion failed. Log an error and return null.
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
+        // Return the new URI with the ID (of the newly inserted row) appended at the end
+        return ContentUris.withAppendedId(uri, id);
+    }
     /**
      * Updates the data at the given selection and selection arguments, with the new ContentValues.
      */

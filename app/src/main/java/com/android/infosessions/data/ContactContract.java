@@ -21,8 +21,9 @@ public final class ContactContract {
 
 
     /* Inner class that defines the table contents */
-    public static class ContactEntry implements BaseColumns {/** The content URI to access the pet data in the provider */
-    public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_CONTACTS);
+    public static class ContactEntry implements BaseColumns {
+        /** The content URI to access the pet data in the provider */
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_CONTACTS);
 
         /**
          * The MIME type of the {@link #CONTENT_URI} for a list of pets.
