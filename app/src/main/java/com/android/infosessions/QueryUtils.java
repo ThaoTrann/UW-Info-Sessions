@@ -3,14 +3,11 @@ package com.android.infosessions;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import com.android.infosessions.data.ContactContract;
-import com.android.infosessions.data.ContactDbHelper;
+import com.android.infosessions.data.DbHelper;
 import com.android.infosessions.data.SessionContract.SessionEntry;
-import com.android.infosessions.data.SessionDbHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,27 +21,30 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 
 
-public final class QueryUtils {
+public final class QueryUtils extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
 
     public static Calendar c;
-    public static int cMonth;
-    public static int cDay;
-    public static int cYear;
 
     private QueryUtils() {
     }
 
 
-    public static ArrayList<Session> fetchInfos(String requestUrl) {
+    public static ArrayList<Session> fetchInfos(String requestUrl, Context context) {
+
+        DbHelper mDbHelper = new DbHelper(context);
+
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        db.delete(SessionEntry.TABLE_NAME, null, null);
+
         // Create URL object
         URL url = createUrl(requestUrl);
 
@@ -56,7 +56,7 @@ public final class QueryUtils {
             Log.e(LOG_TAG, "Error closing input stream", e);
         }
         // Extract relevant fields from the JSON response and create an {@link Event} object
-        ArrayList<Session> sessions = extractInfos(jsonResponse);
+        ArrayList<Session> sessions = extractInfos(jsonResponse, context);
 
         // Return the {@link Event}
         return sessions;
@@ -121,7 +121,7 @@ public final class QueryUtils {
      * Return a list of {@link Session} objects that has been built up from
      * parsing a JSON response.
      */
-    public static ArrayList<Session> extractInfos(String infosJSON) {
+    public static ArrayList<Session> extractInfos(String infosJSON, Context context) {
 
         // Create an empty ArrayList that we can start adding earthquakes to
         ArrayList<Session> sessions = new ArrayList<>();
@@ -140,7 +140,7 @@ public final class QueryUtils {
                 if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
                     Session session = new Session(sessionJSONObject, getEmployerLogo(name));
                     sessions.add(session);
-                    //insertSession(sessionJSONObject, context);
+                    insertSession(sessionJSONObject, context);
                 }
             }
         } catch (JSONException e) {
@@ -159,6 +159,7 @@ public final class QueryUtils {
         String mEndTime = session.getString("end_time");
         String mDate = session.getString("date");
         String mDay = session.getString("day");
+        long mMinutes = dayToMilliSeconds(mDate);
         String mWebsite = session.getString("website");
         String mLink = session.getString("link");
         String mDescription = session.getString("description");
@@ -172,7 +173,7 @@ public final class QueryUtils {
         String mRoom = building.getString("room");
         String mMapUrl = building.getString("map_url");
 
-        ContactDbHelper mDbHelper = new ContactDbHelper(context);
+        DbHelper mDbHelper = new DbHelper(context);
 
         // Gets the data repository in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -184,6 +185,7 @@ public final class QueryUtils {
         values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
         values.put(SessionEntry.COLUMN_SESSION_DATE, mDate);
         values.put(SessionEntry.COLUMN_SESSION_DAY, mDay);
+        values.put(SessionEntry.COLUMN_SESSION_MILLISECONDS, mMinutes);
         values.put(SessionEntry.COLUMN_SESSION_WEBSITE, mWebsite);
         values.put(SessionEntry.COLUMN_SESSION_LINK, mLink);
         values.put(SessionEntry.COLUMN_SESSION_DESCRIPTION, mDescription);
@@ -191,11 +193,12 @@ public final class QueryUtils {
         values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
         values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mRoom);
         values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
+        values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
 
 
         // Insert a new row for pet in the database, returning the ID of that new row.
-        long newRowId = db.insert(SessionEntry.TABLE_NAME, null, values);
-
+        db.insert(SessionEntry.TABLE_NAME, null, values);
+/*
         // Show a toast message depending on whether or not the insertion was successful
         if (newRowId == -1) {
             // If the row ID is -1, then there was an error with insertion.
@@ -203,11 +206,18 @@ public final class QueryUtils {
         } else {
             // Otherwise, the insertion was successful and we can display a toast with the row ID.
             Toast.makeText(context, "session saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
-
+    public static long dayToMilliSeconds(String data) {
+        String[] mDay = data.split("-");
+        int day = Integer.parseInt(mDay[2]);
+        int month = Integer.parseInt(mDay[1]);
+        int year = Integer.parseInt(mDay[0]);
+        Date date = new Date(year, month, day);
+        Log.d("LOG_TAG data Minutes", String.valueOf(date.getTime()));
+        return date.getTime();
+    }
     public static String getEmployerLogo(String str) {
-
         logos.add("a500px");
         logos.add("a9");
         logos.add("adroll");

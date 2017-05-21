@@ -23,8 +23,11 @@
 
         <provider
             android:authorities="com.android.infosessions"
-            android:name=".data.ContactProvider"
+            android:name=".data.DbProvider"
+            android:enabled="true"
             android:exported="false"/>
+
+
     </application>
 
 </manifest>

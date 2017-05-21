@@ -28,11 +28,11 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         View listItemView = convertView;
         if(listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.list_item, parent, false);
+                    R.layout.item_session, parent, false);
         }
         final Session currentSession = getItem(position);
 
-        TextView nameTextView = (TextView) listItemView.findViewById(R.id.name);
+        TextView nameTextView = (TextView) listItemView.findViewById(R.id.employer);
         nameTextView.setText(currentSession.getName());
 
         TextView timeTextView = (TextView) listItemView.findViewById(R.id.time);

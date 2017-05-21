@@ -21,7 +21,7 @@ public class ContactCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        // Inflate a list item view using the layout specified in list_item.xml
+        // Inflate a list item view using the layout specified in item_sessionion.xml
         return LayoutInflater.from(context).inflate(R.layout.item_contact, parent, false);
     }
 

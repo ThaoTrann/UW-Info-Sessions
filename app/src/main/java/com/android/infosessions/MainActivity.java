@@ -14,22 +14,10 @@ package com.android.infosessions;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import android.app.AlertDialog;
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import com.android.infosessions.data.ContactContract.ContactEntry;
-import com.android.infosessions.data.ContactDbHelper;
 
 
 public class MainActivity extends AppCompatActivity{

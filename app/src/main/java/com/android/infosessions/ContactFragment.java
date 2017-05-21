@@ -18,10 +18,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import com.android.infosessions.data.ContactContract.ContactEntry;
 
-import java.util.List;
-
-import static com.android.infosessions.R.color.colorPrimaryDark;
-
 /**
  * Created by Thao on 5/10/17.
  */
@@ -35,6 +31,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
     private ContactCursorAdapter mCursorAdapter;
 
+    private static final int LOADER_ID = 0;
     public ContactFragment() {
     }
     View rootView;
@@ -81,7 +78,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         mCursorAdapter = new ContactCursorAdapter(getContext(), null);
         listView.setAdapter(mCursorAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(LOADER_ID, null, this);
         return rootView;
     }
 
