@@ -84,7 +84,8 @@ public final class QueryUtils extends AppCompatActivity {
             urlConnection.setReadTimeout(10000);
             urlConnection.setConnectTimeout(15000);
             urlConnection.setRequestMethod("GET");
-            urlConnection.connect();if (urlConnection.getResponseCode() == 200) {
+            urlConnection.connect();
+            if (urlConnection.getResponseCode() == 200) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {

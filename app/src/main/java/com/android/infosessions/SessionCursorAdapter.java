@@ -21,12 +21,9 @@ import static com.android.infosessions.SessionAdapter.getImage;
  */
 
 public class SessionCursorAdapter extends CursorAdapter {
-    private final int MAIN_ACTIVITY = 0;
-    private final int DETAIL_ACTIVITY = 1;
-    private int mActivity;
-    public SessionCursorAdapter(Context context, Cursor c, int activity) {
+
+    public SessionCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
-        mActivity = activity;
     }
 
     @Override
@@ -72,11 +69,5 @@ public class SessionCursorAdapter extends CursorAdapter {
 
         logoView.setImageDrawable(drawable);
 
-        switch (mActivity) {
-            case MAIN_ACTIVITY:
-                break;
-            case DETAIL_ACTIVITY:
-                break;
-        }
     }
 }

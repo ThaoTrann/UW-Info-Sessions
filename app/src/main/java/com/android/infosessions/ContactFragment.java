@@ -2,6 +2,7 @@ package com.android.infosessions;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.app.Fragment;
@@ -13,9 +14,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
 import com.android.infosessions.data.ContactContract.ContactEntry;
 
 /**
@@ -45,7 +48,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
             public void onClick(View view) {
                 final AlertDialog mBuilder = new AlertDialog.Builder(getContext()).create();
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( getContext().LAYOUT_INFLATER_SERVICE );
-                final View mView = inflater.inflate(R.layout.add_contact, null);
+                final View mView = inflater.inflate(R.layout.edit_contact, null);
                 mName = (EditText) mView.findViewById(R.id.etName);
                 mCompany = (EditText) mView.findViewById(R.id.etCompany);
                 mPosition = (EditText) mView.findViewById(R.id.etPosition);
@@ -75,16 +78,54 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         });
 
         ListView listView = (ListView) rootView.findViewById(R.id.list);
+
+        View emptyView = rootView.findViewById(R.id.empty_view);
+
+        listView.setEmptyView(emptyView);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Uri currentUri = ContentUris.withAppendedId(ContactEntry.CONTENT_URI, id);
+                final AlertDialog mBuilder = new AlertDialog.Builder(getContext()).create();
+                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( getContext().LAYOUT_INFLATER_SERVICE );
+                final View mView = inflater.inflate(R.layout.edit_contact, null);
+
+                mName = (EditText) mView.findViewById(R.id.etName);
+                mCompany = (EditText) mView.findViewById(R.id.etCompany);
+                mPosition = (EditText) mView.findViewById(R.id.etPosition);
+                mEmail = (EditText) mView.findViewById(R.id.etEmail);
+                mPhone = (EditText) mView.findViewById(R.id.etPhone_number);
+
+                Button mAdd = (Button) mView.findViewById(R.id.add_btn);
+                Button mCnl = (Button) mView.findViewById(R.id.cancel_btn);
+
+                mBuilder.setView(mView);
+                mBuilder.setCancelable(true);
+                mAdd.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        insertContact();
+                        mBuilder.dismiss();
+                    }
+                });
+
+                mCnl.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBuilder.dismiss();
+                    }
+                });
+                mBuilder.show();
+            }
+        });
+
         mCursorAdapter = new ContactCursorAdapter(getContext(), null);
         listView.setAdapter(mCursorAdapter);
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
         return rootView;
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     private void insertContact() {

@@ -19,15 +19,13 @@
         </activity>
         <activity
             android:name=".DetailActivity"
-            android:parentActivityName=".MainActivity"></activity>
+            android:parentActivityName=".MainActivity" />
 
         <provider
-            android:authorities="com.android.infosessions"
             android:name=".data.DbProvider"
+            android:authorities="com.android.infosessions"
             android:enabled="true"
-            android:exported="false"/>
-
-
+            android:exported="false" />
     </application>
 
 </manifest>

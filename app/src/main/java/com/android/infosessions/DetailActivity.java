@@ -5,12 +5,14 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.infosessions.data.SessionContract;
+import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 import static com.android.infosessions.SessionAdapter.getImage;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    String mId;
+    Uri mUri;
     private static final int LOADER_ID = 0;
     private SessionCursorAdapter mCursorAdapter;
 
@@ -29,48 +31,85 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mId = getIntent().getStringExtra("id");
+        Intent intent = getIntent();
+        mUri = intent.getData();
 
-        mCursorAdapter = new SessionCursorAdapter(this, null, 1);
+        mCursorAdapter = new SessionCursorAdapter(this, null);
         getLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String selection = SessionContract.SessionEntry._ID + "=?";
-        String[] selectionArgs = {mId};
-
         String[] projection = {
-                SessionContract.SessionEntry._ID,
-                SessionContract.SessionEntry.COLUMN_SESSION_EMPLOYER,
-                SessionContract.SessionEntry.COLUMN_SESSION_START_TIME,
-                SessionContract.SessionEntry.COLUMN_SESSION_END_TIME,
-                SessionContract.SessionEntry.COLUMN_SESSION_DATE,
-                SessionContract.SessionEntry.COLUMN_SESSION_DAY,
-                SessionContract.SessionEntry.COLUMN_SESSION_MILLISECONDS,
-                SessionContract.SessionEntry.COLUMN_SESSION_WEBSITE,
-                SessionContract.SessionEntry.COLUMN_SESSION_LINK,
-                SessionContract.SessionEntry.COLUMN_SESSION_DESCRIPTION,
-                SessionContract.SessionEntry.COLUMN_SESSION_BUILDING_CODE,
-                SessionContract.SessionEntry.COLUMN_SESSION_BUILDING_NAME,
-                SessionContract.SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
-                SessionContract.SessionEntry.COLUMN_SESSION_MAP_URL,
-                SessionContract.SessionEntry.COLUMN_SESSION_LOGO,
-                SessionContract.SessionEntry.COLUMN_SESSION_AUDIENCE};
+                SessionEntry._ID,
+                SessionEntry.COLUMN_SESSION_EMPLOYER,
+                SessionEntry.COLUMN_SESSION_START_TIME,
+                SessionEntry.COLUMN_SESSION_END_TIME,
+                SessionEntry.COLUMN_SESSION_DATE,
+                SessionEntry.COLUMN_SESSION_DAY,
+                SessionEntry.COLUMN_SESSION_MILLISECONDS,
+                SessionEntry.COLUMN_SESSION_WEBSITE,
+                SessionEntry.COLUMN_SESSION_LINK,
+                SessionEntry.COLUMN_SESSION_DESCRIPTION,
+                SessionEntry.COLUMN_SESSION_BUILDING_CODE,
+                SessionEntry.COLUMN_SESSION_BUILDING_NAME,
+                SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
+                SessionEntry.COLUMN_SESSION_MAP_URL,
+                SessionEntry.COLUMN_SESSION_LOGO,
+                SessionEntry.COLUMN_SESSION_AUDIENCE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                SessionContract.SessionEntry.CONTENT_URI,   // Provider content URI to query
+                mUri,   // Provider content URI to query
                 projection,             // Columns to include in the resulting Cursor
-                selection,                   // No selection clause
-                selectionArgs,                   // No selection arguments
+                null,                   // No selection clause
+                null,                   // No selection arguments
                 null);                  // Default sort order
 
     }
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor == null || cursor.getCount() < 1) {
+            return;
+        }
+
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
-        mCursorAdapter.swapCursor(data);
+        if (cursor.moveToFirst()) {
+            String employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
+            String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
+            String end_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
+            String description = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DESCRIPTION));
+            String date = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DATE));
+            String day = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DAY));
+            String map_url = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MAP_URL));
+            String audience = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_AUDIENCE));
+            String building_room = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_ROOM));
+            String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
+            String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
+            String link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
+            String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+
+            TextView nameTextView = (TextView) findViewById(R.id.employer);
+            nameTextView.setText(employer);
+
+            TextView timeTextView = (TextView) findViewById(R.id.time);
+            timeTextView.setText(start_time + " " + end_time);
+
+            TextView dateTextView = (TextView) findViewById(R.id.date);
+            dateTextView.setText(date);
+
+            TextView detailTextView = (TextView) findViewById(R.id.description);
+            detailTextView.setText(description);
+
+            TextView locationTextView = (TextView) findViewById(R.id.location);
+            locationTextView.setText(building_code);
+
+            ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
+            Drawable drawable = getImage(logoView.getContext(), logo);
+
+            logoView.setImageDrawable(drawable);
+
+        }
     }
 
     @Override

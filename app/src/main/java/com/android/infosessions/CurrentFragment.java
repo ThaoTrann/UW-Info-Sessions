@@ -2,10 +2,13 @@ package com.android.infosessions;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,7 +26,7 @@ import com.android.infosessions.data.SessionContract.SessionEntry;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+
 
 
 /**
@@ -44,43 +47,25 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
     // Required empty public constructor
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Toast toast = Toast.makeText(getContext(), "Created", Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
-        mCursorAdapter = new SessionCursorAdapter(getContext(), null, 0);
+        mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
 
         sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // The code in this method will be executed when the numbers category is clicked on.
-                /*Session currentSession = sessions.get(position);
-                Cursor cursor = mCursorAdapter.getCursor();
-                ArrayList<String> toSent = new ArrayList<String>();
-                toSent.add(currentSession.toJSONString());
-                toSent.add(currentSession.getLogoString());
-                Intent intent = new Intent(getContext(), DetailActivity.class)
-                        .putStringArrayListExtra("EXTRA_TEXT", toSent);
-                // Start the new activity
-                startActivity(intent);*/
-                Cursor cur = (Cursor) mCursorAdapter.getItem(position);
-                cur.moveToPosition(position);
-                String item_id = cur.getString(cur.getColumnIndexOrThrow(SessionEntry._ID));
-
                 Intent intent = new Intent(getContext(), DetailActivity.class);
-                intent.putExtra("id", item_id);
 
+                Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
+
+                // Set the URI on the data field of the intent
+                intent.setData(currentPetUri);
+
+                // Launch the {@link EditorActivity} to display the data for the current pet.
                 startActivity(intent);
             }
         });
@@ -96,6 +81,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         });
 
         getLoaderManager().initLoader(LOADER_ID, null, this);
+
         return rootView;
     }
 
@@ -106,38 +92,20 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             Log.d("LOG_TAG", String.valueOf(sessions.size()));
             return sessions;
         }
+
+        @Override
+        protected void onPostExecute(ArrayList<Session> sessions) {
+            super.onPostExecute(sessions);
+            Toast toast = Toast.makeText(getContext(), "Updated seconds ago", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
-    private void updateUi(final ArrayList<Session> sessions) {
-        // Find a reference to the {@link ListView} in the layout
-        // Create a new {@link ArrayAdapter} of earthquakes
-        SessionAdapter adapter = new SessionAdapter(getContext(), sessions);
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        sessionsListView.setAdapter(adapter);
-/*
-        infosListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // The code in this method will be executed when the numbers category is clicked on.
-                Session currentSession = sessions.get(position);
-                Cursor cursor = mCursorAdapter.getCursor()
-                ArrayList<String> toSent = new ArrayList<String>();
-                toSent.add(currentSession.toJSONString());
-                toSent.add(currentSession.getLogoString());
-                Intent intent = new Intent(getContext(), DetailActivity.class)
-                        .putStringArrayListExtra("EXTRA_TEXT", toSent);
-                // Start the new activity
-                startActivity(intent);
-            }
-        });*/
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Define a projection that specifies the columns from the table we care about.
-        ArrayList<Session> filtered = new ArrayList<>();
+
         Calendar rightNow = Calendar.getInstance();
         int day = rightNow.get(rightNow.DAY_OF_MONTH);
         int month = rightNow.get(rightNow.MONTH) + 1;
@@ -167,6 +135,22 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 SessionEntry.COLUMN_SESSION_LOGO,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
+        DbHelper mDbHelper = new DbHelper(getContext());
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        // Perform a query on the pets table
+        Cursor cursor = db.query(
+                SessionEntry.TABLE_NAME,   // The table to query
+                projection,            // The columns to return
+                null,                  // The columns for the WHERE clause
+                null,                  // The values for the WHERE clause
+                null,                  // Don't group the rows
+                null,                  // Don't filter by row groups
+                null);
+
+        if(cursor.getCount() == 0) {
+            SessionTask sessionTask = new SessionTask();
+            sessionTask.execute(UWAPI_REQUEST_URL);
+        }
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(getContext(),   // Parent activity context
                 SessionEntry.CONTENT_URI,   // Provider content URI to query

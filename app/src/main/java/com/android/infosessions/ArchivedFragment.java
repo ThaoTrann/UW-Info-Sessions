@@ -2,11 +2,12 @@ package com.android.infosessions;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
@@ -15,14 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -31,7 +30,7 @@ import java.util.List;
 
 public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = MainActivity.class.getName();
-    private ListView infosListView;
+    private ListView sessionsListView;
     private static final String UWAPI_REQUEST_URL =
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
 
@@ -42,48 +41,29 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
 
     // Required empty public constructor
 
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Toast toast = Toast.makeText(getContext(), "Created", Toast.LENGTH_SHORT);
-        toast.show();
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
-        infosListView = (ListView) rootView.findViewById(R.id.list);
+        sessionsListView = (ListView) rootView.findViewById(R.id.list);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
-        mCursorAdapter = new SessionCursorAdapter(getContext(), null, 1);
-        infosListView.setAdapter(mCursorAdapter);
-        /*
-        infosListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mCursorAdapter = new SessionCursorAdapter(getContext(), null);
+        sessionsListView.setAdapter(mCursorAdapter);
+        sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // The code in this method will be executed when the numbers category is clicked on.
-                *//*Session currentSession = sessions.get(position);
-                Cursor cursor = mCursorAdapter.getCursor();
-                ArrayList<String> toSent = new ArrayList<String>();
-                toSent.add(currentSession.toJSONString());
-                toSent.add(currentSession.getLogoString());
-                Intent intent = new Intent(getContext(), DetailActivity.class)
-                        .putStringArrayListExtra("EXTRA_TEXT", toSent);
-                // Start the new activity
-                startActivity(intent);*//*
-                Cursor cur = (Cursor) mCursorAdapter.getItem(position);
-                cur.moveToPosition(position);
-                String item_id = cur.getString(cur.getColumnIndexOrThrow(SessionEntry._ID));
-
                 Intent intent = new Intent(getContext(), DetailActivity.class);
-                intent.putExtra("id", item_id);
 
+                Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
+
+                // Set the URI on the data field of the intent
+                intent.setData(currentPetUri);
+
+                // Launch the {@link EditorActivity} to display the data for the current pet.
                 startActivity(intent);
             }
-        });*/
+        });
 
         fab.setVisibility(View.GONE);
         getLoaderManager().initLoader(0, null, ArchivedFragment.this);
