@@ -3,6 +3,7 @@ package com.android.infosessions;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -56,39 +58,38 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
         infosListView = (ListView) rootView.findViewById(R.id.list);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
-        mCursorAdapter = new SessionCursorAdapter(getContext(), null);
+        mCursorAdapter = new SessionCursorAdapter(getContext(), null, 1);
         infosListView.setAdapter(mCursorAdapter);
-
-        fab.setVisibility(View.GONE);
-        getLoaderManager().initLoader(0, null, ArchivedFragment.this);
-        return rootView;
-    }
-
-    private void updateUi(final ArrayList<Session> sessions) {
-        // Find a reference to the {@link ListView} in the layout
-        // Create a new {@link ArrayAdapter} of earthquakes
-        SessionAdapter adapter = new SessionAdapter(getContext(), sessions);
-
-        // Set the adapter on the {@link ListView}
-        // so the list can be populated in the user interface
-        infosListView.setAdapter(adapter);
-/*
+        /*
         infosListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // The code in this method will be executed when the numbers category is clicked on.
-                Session currentSession = sessions.get(position);
-                Cursor cursor = mCursorAdapter.getCursor()
+                *//*Session currentSession = sessions.get(position);
+                Cursor cursor = mCursorAdapter.getCursor();
                 ArrayList<String> toSent = new ArrayList<String>();
                 toSent.add(currentSession.toJSONString());
                 toSent.add(currentSession.getLogoString());
                 Intent intent = new Intent(getContext(), DetailActivity.class)
                         .putStringArrayListExtra("EXTRA_TEXT", toSent);
                 // Start the new activity
+                startActivity(intent);*//*
+                Cursor cur = (Cursor) mCursorAdapter.getItem(position);
+                cur.moveToPosition(position);
+                String item_id = cur.getString(cur.getColumnIndexOrThrow(SessionEntry._ID));
+
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+                intent.putExtra("id", item_id);
+
                 startActivity(intent);
             }
         });*/
+
+        fab.setVisibility(View.GONE);
+        getLoaderManager().initLoader(0, null, ArchivedFragment.this);
+        return rootView;
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -102,7 +103,7 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
         long milliSeconds = date.getTime();
         Log.d("LOG_TAG current", String.valueOf(month));
 
-        String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + "<=?";
+        String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + " <=?";
         String[] selectionArgs = { String.valueOf(milliSeconds) };
 
         String[] projection = {
@@ -123,7 +124,7 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
                 SessionEntry.COLUMN_SESSION_LOGO,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
-        String sortOrder = SessionEntry.COLUMN_SESSION_MILLISECONDS + " ASC";
+        String sortOrder = SessionEntry.COLUMN_SESSION_MILLISECONDS + " DESC";
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(getContext(),   // Parent activity context
                 SessionEntry.CONTENT_URI,   // Provider content URI to query

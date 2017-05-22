@@ -41,7 +41,7 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         TextView dateTextView = (TextView) listItemView.findViewById(R.id.date);
         dateTextView.setText(currentSession.getDate());
 
-        TextView detailTextView = (TextView) listItemView.findViewById(R.id.details);
+        TextView detailTextView = (TextView) listItemView.findViewById(R.id.description);
         detailTextView.setText(currentSession.getDetail());
 
         TextView locationTextView = (TextView) listItemView.findViewById(R.id.location);

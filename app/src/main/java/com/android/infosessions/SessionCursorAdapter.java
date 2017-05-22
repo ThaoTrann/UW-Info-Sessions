@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
+import org.json.JSONException;
+
 import static com.android.infosessions.SessionAdapter.getImage;
 
 /**
@@ -19,8 +21,12 @@ import static com.android.infosessions.SessionAdapter.getImage;
  */
 
 public class SessionCursorAdapter extends CursorAdapter {
-    public SessionCursorAdapter(Context context, Cursor c) {
+    private final int MAIN_ACTIVITY = 0;
+    private final int DETAIL_ACTIVITY = 1;
+    private int mActivity;
+    public SessionCursorAdapter(Context context, Cursor c, int activity) {
         super(context, c, 0);
+        mActivity = activity;
     }
 
     @Override
@@ -55,7 +61,7 @@ public class SessionCursorAdapter extends CursorAdapter {
         TextView dateTextView = (TextView) view.findViewById(R.id.date);
         dateTextView.setText(date);
 
-        TextView detailTextView = (TextView) view.findViewById(R.id.details);
+        TextView detailTextView = (TextView) view.findViewById(R.id.description);
         detailTextView.setText(description);
 
         TextView locationTextView = (TextView) view.findViewById(R.id.location);
@@ -66,5 +72,11 @@ public class SessionCursorAdapter extends CursorAdapter {
 
         logoView.setImageDrawable(drawable);
 
+        switch (mActivity) {
+            case MAIN_ACTIVITY:
+                break;
+            case DETAIL_ACTIVITY:
+                break;
+        }
     }
 }

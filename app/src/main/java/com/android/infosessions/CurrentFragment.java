@@ -3,6 +3,7 @@ package com.android.infosessions;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -56,8 +58,32 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
-        mCursorAdapter = new SessionCursorAdapter(getContext(), null);
+        mCursorAdapter = new SessionCursorAdapter(getContext(), null, 0);
         sessionsListView.setAdapter(mCursorAdapter);
+
+        sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // The code in this method will be executed when the numbers category is clicked on.
+                /*Session currentSession = sessions.get(position);
+                Cursor cursor = mCursorAdapter.getCursor();
+                ArrayList<String> toSent = new ArrayList<String>();
+                toSent.add(currentSession.toJSONString());
+                toSent.add(currentSession.getLogoString());
+                Intent intent = new Intent(getContext(), DetailActivity.class)
+                        .putStringArrayListExtra("EXTRA_TEXT", toSent);
+                // Start the new activity
+                startActivity(intent);*/
+                Cursor cur = (Cursor) mCursorAdapter.getItem(position);
+                cur.moveToPosition(position);
+                String item_id = cur.getString(cur.getColumnIndexOrThrow(SessionEntry._ID));
+
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+                intent.putExtra("id", item_id);
+
+                startActivity(intent);
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
@@ -81,31 +107,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             return sessions;
         }
     }
-
-
-    public void fetchData(Loader<List<Session>> loader, List<Session> data) {
-        ArrayList<Session> filtered = new ArrayList<>();
-        Calendar c = Calendar.getInstance();
-        int cMonth = c.get(Calendar.MONTH) + 1;
-        int cDay = c.get(Calendar.DAY_OF_MONTH);
-        int cYear = c.get(Calendar.YEAR);
-
-        for(int i = 0; i < data.size(); i++) {
-            String[] date = data.get(i).getDate().split("-");
-            int day = Integer.parseInt(date[2]);
-            int month = Integer.parseInt(date[1]);
-            int year = Integer.parseInt(date[0]);
-            if (year > cYear || (year == cYear && month > cMonth)
-                    || (year == cYear && month == cMonth && day >= cDay)) {
-                filtered.add(data.get(i));
-            }
-        }
-        Toast toast = Toast.makeText(getContext(), "Finished updating", Toast.LENGTH_SHORT);
-        toast.show();
-        getActivity().findViewById(R.id.loading_spinner).setVisibility(View.GONE);
-        updateUi(filtered);
-    }
-
 
     private void updateUi(final ArrayList<Session> sessions) {
         // Find a reference to the {@link ListView} in the layout
