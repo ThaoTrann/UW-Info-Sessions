@@ -9,6 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +28,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     Uri mUri;
     private static final int LOADER_ID = 0;
     private SessionCursorAdapter mCursorAdapter;
+    private String map_url;
+    private String link;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,26 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         mCursorAdapter = new SessionCursorAdapter(this, null);
         getLoaderManager().initLoader(LOADER_ID, null, this);
+
+        Button rvsp = (Button) findViewById(R.id.rvsp_button);
+        Button website = (Button) findViewById(R.id.website_button);
+        Button nav = (Button) findViewById(R.id.nav_button);
+
+        rvsp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                startActivity(webIntent);
+            }
+        });
+
+        nav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(map_url));
+                startActivity(webIntent);
+            }
+        });
     }
 
     @Override
@@ -82,12 +107,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             String description = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DESCRIPTION));
             String date = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DATE));
             String day = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DAY));
-            String map_url = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MAP_URL));
+            map_url = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MAP_URL));
             String audience = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_AUDIENCE));
             String building_room = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_ROOM));
             String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
             String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
-            String link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
+            link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
             String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
 
             TextView nameTextView = (TextView) findViewById(R.id.employer);
