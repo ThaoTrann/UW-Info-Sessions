@@ -21,6 +21,10 @@
             android:name=".DetailActivity"
             android:parentActivityName=".MainActivity" />
 
+        <activity
+            android:name=".EditorActivity"
+            android:parentActivityName=".MainActivity" />
+
         <provider
             android:name=".data.DbProvider"
             android:authorities="com.android.infosessions"

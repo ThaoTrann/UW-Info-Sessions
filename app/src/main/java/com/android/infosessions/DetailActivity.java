@@ -31,6 +31,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        setTitle("Details");
         Intent intent = getIntent();
         mUri = intent.getData();
 
@@ -93,16 +94,19 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             nameTextView.setText(employer);
 
             TextView timeTextView = (TextView) findViewById(R.id.time);
-            timeTextView.setText(start_time + " " + end_time);
+            timeTextView.setText(start_time + " - " + end_time);
 
             TextView dateTextView = (TextView) findViewById(R.id.date);
-            dateTextView.setText(date);
+            dateTextView.setText(day + " - " + date);
 
             TextView detailTextView = (TextView) findViewById(R.id.description);
             detailTextView.setText(description);
 
             TextView locationTextView = (TextView) findViewById(R.id.location);
-            locationTextView.setText(building_code);
+            locationTextView.setText(building_code + " - " + building_name + " " + building_room);
+
+            TextView audienceTextView = (TextView) findViewById(R.id.audience);
+            audienceTextView.setText("Audience:/n" + audience);
 
             ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
             Drawable drawable = getImage(logoView.getContext(), logo);

@@ -33,7 +33,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_CONTACT_ENTRIES);
 
         String SQL_CREATE_SESSION_ENTRIES =
-                "CREATE TABLE " + SessionContract.SessionEntry.TABLE_NAME + " (" +
+                "CREATE TABLE " + SessionEntry.TABLE_NAME + " (" +
                         SessionEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         SessionEntry.COLUMN_SESSION_EMPLOYER + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_START_TIME + " TEXT, " +

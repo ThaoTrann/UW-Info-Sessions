@@ -3,7 +3,9 @@ package com.android.infosessions;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.app.Fragment;
 import android.content.ContentValues;
@@ -11,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,15 +29,9 @@ import com.android.infosessions.data.ContactContract.ContactEntry;
  */
 
 public class ContactFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
-    private EditText mName;
-    private EditText mCompany;
-    private EditText mPosition;
-    private EditText mEmail;
-    private EditText mPhone;
-
     private ContactCursorAdapter mCursorAdapter;
-
     private static final int LOADER_ID = 0;
+
     public ContactFragment() {
     }
     View rootView;
@@ -43,37 +40,12 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contact, container, false);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final AlertDialog mBuilder = new AlertDialog.Builder(getContext()).create();
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( getContext().LAYOUT_INFLATER_SERVICE );
-                final View mView = inflater.inflate(R.layout.edit_contact, null);
-                mName = (EditText) mView.findViewById(R.id.etName);
-                mCompany = (EditText) mView.findViewById(R.id.etCompany);
-                mPosition = (EditText) mView.findViewById(R.id.etPosition);
-                mEmail = (EditText) mView.findViewById(R.id.etEmail);
-                mPhone = (EditText) mView.findViewById(R.id.etPhone_number);
-                Button mAdd = (Button) mView.findViewById(R.id.add_btn);
-                Button mCnl = (Button) mView.findViewById(R.id.cancel_btn);
-
-                mBuilder.setView(mView);
-                mBuilder.setCancelable(true);
-                mAdd.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        insertContact();
-                        mBuilder.dismiss();
-                    }
-                });
-
-                mCnl.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mBuilder.dismiss();
-                    }
-                });
-                mBuilder.show();
+                Intent intent = new Intent(getContext(), EditorActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -81,70 +53,27 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
         View emptyView = rootView.findViewById(R.id.empty_view);
 
+        mCursorAdapter = new ContactCursorAdapter(getContext(), null);
+        listView.setAdapter(mCursorAdapter);
+
         listView.setEmptyView(emptyView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Create new intent to go to {@link EditorActivity}
+                Intent intent = new Intent(getContext(), EditorActivity.class);
 
-                Uri currentUri = ContentUris.withAppendedId(ContactEntry.CONTENT_URI, id);
-                final AlertDialog mBuilder = new AlertDialog.Builder(getContext()).create();
-                LayoutInflater inflater = (LayoutInflater) getContext().getSystemService( getContext().LAYOUT_INFLATER_SERVICE );
-                final View mView = inflater.inflate(R.layout.edit_contact, null);
+                Uri currentPetUri = ContentUris.withAppendedId(ContactEntry.CONTENT_URI, id);
 
-                mName = (EditText) mView.findViewById(R.id.etName);
-                mCompany = (EditText) mView.findViewById(R.id.etCompany);
-                mPosition = (EditText) mView.findViewById(R.id.etPosition);
-                mEmail = (EditText) mView.findViewById(R.id.etEmail);
-                mPhone = (EditText) mView.findViewById(R.id.etPhone_number);
+                // Set the URI on the data field of the intent
+                intent.setData(currentPetUri);
 
-                Button mAdd = (Button) mView.findViewById(R.id.add_btn);
-                Button mCnl = (Button) mView.findViewById(R.id.cancel_btn);
-
-                mBuilder.setView(mView);
-                mBuilder.setCancelable(true);
-                mAdd.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        insertContact();
-                        mBuilder.dismiss();
-                    }
-                });
-
-                mCnl.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mBuilder.dismiss();
-                    }
-                });
-                mBuilder.show();
+                // Launch the {@link EditorActivity} to display the data for the current pet.
+                startActivity(intent);
             }
         });
-
-        mCursorAdapter = new ContactCursorAdapter(getContext(), null);
-        listView.setAdapter(mCursorAdapter);
-
         getLoaderManager().initLoader(LOADER_ID, null, this);
         return rootView;
-
-    }
-
-    private void insertContact() {
-        String name = mName.getText().toString().trim();
-        String company = mCompany.getText().toString().trim();
-        String position = mPosition.getText().toString().trim();
-        String email = mEmail.getText().toString().trim();
-        String phone = mPhone.getText().toString().trim();
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(ContactEntry.COLUMN_CONTACT_NAME, name);
-        values.put(ContactEntry.COLUMN_CONTACT_COMPANY, company);
-        values.put(ContactEntry.COLUMN_CONTACT_POSITION, position);
-        values.put(ContactEntry.COLUMN_CONTACT_EMAIL, email);
-        values.put(ContactEntry.COLUMN_CONTACT_PHONE_NUMBER, phone);
-
-        // Insert a new row for pet in the database, returning the ID of that new row.
-        Uri newUri = getActivity().getContentResolver().insert(ContactEntry.CONTENT_URI, values);
     }
 
     @Override
@@ -153,9 +82,11 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         String[] projection = {
                 ContactEntry._ID,
                 ContactEntry.COLUMN_CONTACT_NAME,
-                ContactEntry.COLUMN_CONTACT_EMAIL };
+                ContactEntry.COLUMN_CONTACT_COMPANY,
+                ContactEntry.COLUMN_CONTACT_POSITION,
+                ContactEntry.COLUMN_CONTACT_EMAIL,
+                ContactEntry.COLUMN_CONTACT_PHONE_NUMBER };
 
-        // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(getContext(),   // Parent activity context
                 ContactEntry.CONTENT_URI,   // Provider content URI to query
                 projection,             // Columns to include in the resulting Cursor
@@ -163,6 +94,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
                 null,                   // No selection arguments
                 null);                  // Default sort order
     }
+
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
