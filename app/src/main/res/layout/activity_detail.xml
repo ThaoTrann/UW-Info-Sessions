@@ -1,21 +1,19 @@
 <ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="fill_parent"
+    android:background="@android:color/background_light">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="16dp"
+        android:paddingTop="16dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingRight="5dp"
-            android:paddingBottom="16dp"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal">
             <ImageView
@@ -36,17 +34,61 @@
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
                 android:textAllCaps="true"
-                android:textColor="@color/textColorEmployer"
+                android:textColor="@android:color/tertiary_text_dark"
                 android:textSize="24sp"
                 tools:text="Wattpad" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:text="RVSP"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAllCaps="true"
+                android:textColor="@android:color/holo_blue_dark"
+                android:background="@null"
+                android:id="@+id/rvsp_button" />
+
+            <Button
+                android:text="Website"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAllCaps="true"
+                android:textColor="@android:color/holo_blue_dark"
+                android:background="@null"
+                android:id="@+id/website_button" />
+
+            <Button
+                android:text="Navigation"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAllCaps="true"
+                android:textColor="@android:color/holo_blue_dark"
+                android:background="@null"
+                android:id="@+id/nav_button" />
+
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="16dp"
-            android:padding="20dp">
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/background_light">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -54,16 +96,16 @@
                 android:orientation="horizontal"
                 android:layout_gravity="left">
                 <ImageView
-                    android:layout_height="32dp"
-                    android:layout_width="32dp"
+                    android:layout_height="24dp"
+                    android:layout_width="24dp"
                     android:paddingRight ="5dp"
                     android:src="@drawable/ic_insert_invitation_black_24dp"/>
                 <TextView
                     android:id="@+id/date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/textColorEmployer"
-                    android:textSize="16sp"
+                    android:textColor="@android:color/tertiary_text_dark"
+                    android:textSize="14sp"
                     android:layout_gravity="center_vertical"
                     tools:text="Mar 6, 2010" />
 
@@ -75,8 +117,8 @@
                 android:orientation="horizontal"
                 android:layout_gravity="left">
                 <ImageView
-                    android:layout_height="32dp"
-                    android:layout_width="32dp"
+                    android:layout_height="24dp"
+                    android:layout_width="24dp"
                     android:paddingRight ="5dp"
                     android:src="@drawable/ic_access_time_black_24dp"/>
 
@@ -84,9 +126,9 @@
                     android:id="@+id/time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/textColorEmployer"
+                    android:textColor="@android:color/tertiary_text_dark"
                     android:layout_gravity="center_vertical"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
                     tools:text="3:00 - 4:00 PM" />
             </LinearLayout>
 
@@ -96,9 +138,10 @@
                 android:orientation="horizontal"
                 android:layout_gravity="left">
                 <ImageView
-                    android:layout_height="32dp"
-                    android:layout_width="32dp"
+                    android:layout_height="24dp"
+                    android:layout_width="24dp"
                     android:paddingRight="5dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/ic_room_black_24dp"/>
 
                 <TextView
@@ -106,8 +149,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:textColor="@color/textColorEmployer"
-                    android:textSize="16sp"
+                    android:textColor="@android:color/tertiary_text_dark"
+                    android:textSize="14sp"
                     tools:text="SLC" />
             </LinearLayout>
 
@@ -119,21 +162,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:textColor="@color/textColorEmployer"
-            android:padding="20dp"
-            android:textSize="16sp"
+            android:textColor="@android:color/tertiary_text_dark"
+            android:textSize="14sp"
+            android:padding="16dp"
+            android:lineSpacingExtra="3dp"
             android:elegantTextHeight="true"
+            android:paddingBottom="16dp"
             tools:text="Wattpad is a global platform, proudly based in Toronto, that gives people everywhere the freedom to discover and create content they can't find anywhere else. We want to tell you about the perks we offer, including competitive salary, meaningful work (there's a good change you'll push code into production on Day 1!), and a great staff culture. Learn more about us at wattpad.com" />
 
-        <Button
-            android:text="RVSP"
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:background="@android:color/holo_blue_dark"
-            android:id="@+id/rvsp_button" />
+            android:ellipsize="end"
+            android:textColor="@android:color/tertiary_text_dark"
+            android:textSize="14sp"
+            android:lineSpacingExtra="3dp"
+            android:elegantTextHeight="true"
+            tools:text="Audience:"/>
+
+        <TextView
+            android:id="@+id/audience"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textColor="@android:color/tertiary_text_dark"
+            android:textSize="14sp"
+            android:paddingLeft="16dp"
+            android:lineSpacingExtra="3dp"
+            android:elegantTextHeight="true"
+            tools:text="Bot"/>
 
     </LinearLayout>
 </ScrollView>

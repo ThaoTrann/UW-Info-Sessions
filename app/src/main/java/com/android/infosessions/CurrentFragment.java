@@ -55,6 +55,17 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
 
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab.setVisibility(View.VISIBLE);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SessionTask sessionTask = new SessionTask();
+                sessionTask.execute(UWAPI_REQUEST_URL);
+            }
+        });
+
         sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -67,16 +78,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
                 // Launch the {@link EditorActivity} to display the data for the current pet.
                 startActivity(intent);
-            }
-        });
-
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-        fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SessionTask sessionTask = new SessionTask();
-                sessionTask.execute(UWAPI_REQUEST_URL);
             }
         });
 
