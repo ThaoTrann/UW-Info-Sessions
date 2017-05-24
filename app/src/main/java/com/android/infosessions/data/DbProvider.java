@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.android.infosessions.Session;
 import com.android.infosessions.data.ContactContract.ContactEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 /**
@@ -166,8 +167,20 @@ public class DbProvider extends ContentProvider {
      */
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection,
-                      String[] selectionArgs) {
-        return 0;
+                      String[] selectionArgs) {final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case CONTACTS:
+                return updateContract(uri, contentValues, selection, selectionArgs);
+            case CONTACT_ID:
+                // For the PET_ID code, extract out the ID from the URI,
+                // so we know which row to update. Selection will be "_id=?" and selection
+                // arguments will be a String array containing the actual ID.
+                selection = ContactEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return updateContract(uri, contentValues, selection, selectionArgs);
+            default:
+                throw new IllegalArgumentException("Update is not supported for " + uri);
+        }
     }
 
     /**
@@ -175,8 +188,16 @@ public class DbProvider extends ContentProvider {
      * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
      * Return the number of rows that were successfully updated.
      */
-    private int updatePet(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+    private int updateContract(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        int rowUpdated = database.update(SessionEntry.TABLE_NAME, values, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        if(rowUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowUpdated;
     }
 
     /**
