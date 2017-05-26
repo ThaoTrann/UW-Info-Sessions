@@ -29,7 +29,7 @@ public class Session implements Serializable{
     private String mRoom;
     private String mMapUrl;
     private String mLogoString;
-    private ArrayList<String> mAudience;
+    private String mAudience;
 
     public Session(JSONObject info, String logoString) throws JSONException {
         mInfo = info;
@@ -50,13 +50,24 @@ public class Session implements Serializable{
         mBuildingName = building.getString("name");
         mRoom = building.getString("room");
         mMapUrl = building.getString("map_url");
+
+
+        JSONArray mAudienceArray = info.getJSONArray("audience");
+        mAudience = "Audience: \n";
+        for (int i = 0; i < mAudienceArray.length(); i++) {
+            mAudience += "\t\n" + mAudienceArray.getString(i);
+        }
+
     }
 
-    public String getName() {
+    public String getEmployer() {
         return mName;
     }
-    public String getTime() {
-        return mStartTime + " - " + mEndTime;
+    public String getStartTime() {
+        return mStartTime ;
+    }
+    public String getEndTime() {
+        return mStartTime ;
     }
     public String getDay() {
         return mDay;
@@ -64,14 +75,22 @@ public class Session implements Serializable{
     public String getDate() {
         return mDate;
     }
-    public String getDetail() {
+    public String getDescription() {
         return mDetail;
     }
 
-    public String getUrl() {
+    public String getWebsite() {
         return mWebsite;
     }
-    public String getBuilding() {
+    public String getLink() {return mLink;}
+
+    public String getBuildingRoom() {
+        return mRoom;
+    }
+    public String getBuildingName() {
+        return mBuildingName;
+    }
+    public String getBuildingCode() {
         return mCode;
     }
     @Override
@@ -84,4 +103,8 @@ public class Session implements Serializable{
     public String getLogoString() {
         return mLogoString;
     }
+    public String getMapUrl() {
+        return mMapUrl;
+    }
+    public String getAudience() {return mAudience;}
 }

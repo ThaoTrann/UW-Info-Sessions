@@ -2,7 +2,11 @@ package com.android.infosessions;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -26,7 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public final class QueryUtils extends AppCompatActivity {
+public final class QueryUtils extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
 
@@ -141,7 +145,6 @@ public final class QueryUtils extends AppCompatActivity {
                 if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
                     Session session = new Session(sessionJSONObject, getEmployerLogo(name));
                     sessions.add(session);
-                    insertSession(sessionJSONObject, context);
                 }
             }
         } catch (JSONException e) {
@@ -154,6 +157,7 @@ public final class QueryUtils extends AppCompatActivity {
         return sessions;
     }
 
+    /*
     private static void insertSession(JSONObject session, Context context) throws JSONException{
         String mEmployer = session.getString("employer");
         String mStartTime = session.getString("start_time");
@@ -204,8 +208,8 @@ public final class QueryUtils extends AppCompatActivity {
 
 
         // Insert a new row for pet in the database, returning the ID of that new row.
-        db.insert(SessionEntry.TABLE_NAME, null, values);
-/*
+        getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+*//*
         // Show a toast message depending on whether or not the insertion was successful
         if (newRowId == -1) {
             // If the row ID is -1, then there was an error with insertion.
@@ -213,7 +217,7 @@ public final class QueryUtils extends AppCompatActivity {
         } else {
             // Otherwise, the insertion was successful and we can display a toast with the row ID.
             Toast.makeText(context, "session saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
-        }*/
+        }*//*
     }
     public static long dayToMilliSeconds(String data) {
         String[] mDay = data.split("-");
@@ -223,7 +227,9 @@ public final class QueryUtils extends AppCompatActivity {
         Date date = new Date(year, month, day);
         Log.d("LOG_TAG data Minutes", String.valueOf(date.getTime()));
         return date.getTime();
-    }
+    }*/
+
+
     public static String getEmployerLogo(String str) {
         logos.add("a500px");
         logos.add("a9");
@@ -274,6 +280,21 @@ public final class QueryUtils extends AppCompatActivity {
             name = "nologo";
         }
         return name;
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 }
 

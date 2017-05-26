@@ -3,6 +3,8 @@ package com.android.infosessions;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -22,6 +24,10 @@ import android.widget.Toast;
 
 import com.android.infosessions.data.DbHelper;
 import com.android.infosessions.data.SessionContract.SessionEntry;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -97,11 +103,67 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
+            insertSession(sessions);
             Toast toast = Toast.makeText(getContext(), "Updated seconds ago", Toast.LENGTH_SHORT);
             toast.show();
         }
     }
 
+    private void insertSession(ArrayList<Session> sessions) {
+        for(int i = 0; i < sessions.size(); i++) {
+            Session session = sessions.get(i);
+            String mEmployer = session.getEmployer();
+            String mStartTime = session.getStartTime();
+            String mEndTime = session.getEndTime();
+            String mDate = session.getDate();
+            String mDay = session.getDay();
+            long mMinutes = dayToMilliSeconds(mDate);
+            String mWebsite = session.getWebsite();
+            String mLink = session.getLink();
+            String mDescription = session.getDescription();
+            String mLogo = session.getLogoString();
+            if (mDescription.isEmpty()) {
+                mDescription = "Employer's Description is not provided.";
+            }
+            String mBuildingName = session.getBuildingName();
+            String mRoom = session.getBuildingRoom();
+            String mCode = session.getBuildingCode();
+            String mMapUrl = session.getMapUrl();
+            String mAudience = session.getAudience();
+
+            // Create a new map of values, where column names are the keys
+            ContentValues values = new ContentValues();
+            values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
+            values.put(SessionEntry.COLUMN_SESSION_START_TIME, mStartTime);
+            values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
+            values.put(SessionEntry.COLUMN_SESSION_DATE, mDate);
+            values.put(SessionEntry.COLUMN_SESSION_DAY, mDay);
+            values.put(SessionEntry.COLUMN_SESSION_MILLISECONDS, mMinutes);
+            values.put(SessionEntry.COLUMN_SESSION_WEBSITE, mWebsite);
+            values.put(SessionEntry.COLUMN_SESSION_LINK, mLink);
+            values.put(SessionEntry.COLUMN_SESSION_AUDIENCE, mAudience);
+            values.put(SessionEntry.COLUMN_SESSION_DESCRIPTION, mDescription);
+            values.put(SessionEntry.COLUMN_SESSION_BUILDING_CODE, mCode);
+            values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
+            values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mRoom);
+            values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
+            values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
+
+
+            // Insert a new row for pet in the database, returning the ID of that new row.
+            Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+        }
+    }
+
+    public long dayToMilliSeconds(String data) {
+        String[] mDay = data.split("-");
+        int day = Integer.parseInt(mDay[2]);
+        int month = Integer.parseInt(mDay[1]);
+        int year = Integer.parseInt(mDay[0]);
+        Date date = new Date(year, month, day);
+        Log.d("LOG_TAG data Minutes", String.valueOf(date.getTime()));
+        return date.getTime();
+    }
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Define a projection that specifies the columns from the table we care about.
