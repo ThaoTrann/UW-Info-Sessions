@@ -173,6 +173,11 @@ public final class QueryUtils extends AppCompatActivity {
         String mBuildingName = building.getString("name");
         String mRoom = building.getString("room");
         String mMapUrl = building.getString("map_url");
+        JSONArray mAudienceArray = session.getJSONArray("audience");
+        String mAudience = "Audience: \n";
+        for(int i = 0; i < mAudienceArray.length(); i++) {
+            mAudience += "\t\n" + mAudienceArray.getString(i);
+        }
 
         DbHelper mDbHelper = new DbHelper(context);
 
@@ -189,7 +194,7 @@ public final class QueryUtils extends AppCompatActivity {
         values.put(SessionEntry.COLUMN_SESSION_MILLISECONDS, mMinutes);
         values.put(SessionEntry.COLUMN_SESSION_WEBSITE, mWebsite);
         values.put(SessionEntry.COLUMN_SESSION_LINK, mLink);
-        values.put(SessionEntry.COLUMN_SESSION_AUDIENCE, mLink);
+        values.put(SessionEntry.COLUMN_SESSION_AUDIENCE, mAudience);
         values.put(SessionEntry.COLUMN_SESSION_DESCRIPTION, mDescription);
         values.put(SessionEntry.COLUMN_SESSION_BUILDING_CODE, mCode);
         values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);

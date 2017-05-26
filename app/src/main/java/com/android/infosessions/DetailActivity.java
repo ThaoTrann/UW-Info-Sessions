@@ -131,7 +131,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             locationTextView.setText(building_code + " - " + building_name + " " + building_room);
 
             TextView audienceTextView = (TextView) findViewById(R.id.audience);
-            audienceTextView.setText("Audience:/n" + audience);
+            audienceTextView.setText(audience);
 
             ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
             Drawable drawable = getImage(logoView.getContext(), logo);

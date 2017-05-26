@@ -102,7 +102,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Define a projection that specifies the columns from the table we care about.
