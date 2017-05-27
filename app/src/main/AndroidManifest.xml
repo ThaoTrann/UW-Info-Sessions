@@ -16,11 +16,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- enable the search dialog to send searches to SearchResultActivity -->
+            <meta-data android:name="android.app.default_searchable"
+                android:value=".SearchableActivity" />
+
         </activity>
         <activity
             android:name=".DetailActivity"
             android:parentActivityName=".MainActivity" />
-
         <activity
             android:name=".EditorActivity"
             android:parentActivityName=".MainActivity" />
@@ -30,6 +34,15 @@
             android:authorities="com.android.infosessions"
             android:enabled="true"
             android:exported="false" />
+
+        <activity android:name=".SearchResultActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+        </activity>
+
     </application>
 
 </manifest>
