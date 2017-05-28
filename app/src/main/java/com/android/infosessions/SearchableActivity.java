@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.android.infosessions.data.DbProvider;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
-public class SearchResultActivity extends AppCompatActivity {
+public class SearchableActivity extends AppCompatActivity {
 
     private TextView mTextView;
     private ListView mListView;

@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity{
         } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             // handles a search query
             String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.d("show result query", query);
             showResults(query);
         }
     }
@@ -86,8 +88,12 @@ public class MainActivity extends AppCompatActivity{
      * @param query The search query
      */
     private void showResults(String query) {
-
-        Cursor cursor = managedQuery(SessionContract.SessionEntry.CONTENT_URI, null, null,
+        CurrentFragment fragment = new CurrentFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("query", query);
+        //Log.d("show result query", query);
+        fragment.setArguments(bundle);
+        /*Cursor cursor = managedQuery(SessionContract.SessionEntry.CONTENT_URI, null, null,
                 new String[] {query}, null);
 
         if (cursor == null) {
@@ -103,19 +109,19 @@ public class MainActivity extends AppCompatActivity{
             // Specify the columns we want to display in the result
             String[] from = {
                     SessionContract.SessionEntry._ID,
-                    SessionContract.SessionEntry.COLUMN_SESSION_EMPLOYER,/*
+                    SessionContract.SessionEntry.COLUMN_SESSION_EMPLOYER,*//*
                     SessionEntry.COLUMN_SESSION_START_TIME,
                     SessionEntry.COLUMN_SESSION_END_TIME,
                     SessionEntry.COLUMN_SESSION_DATE,
                     SessionEntry.COLUMN_SESSION_DAY,
                     SessionEntry.COLUMN_SESSION_MILLISECONDS,
                     SessionEntry.COLUMN_SESSION_WEBSITE,
-                    SessionEntry.COLUMN_SESSION_LINK,*/
-                    SessionContract.SessionEntry.COLUMN_SESSION_DESCRIPTION,/*
+                    SessionEntry.COLUMN_SESSION_LINK,*//*
+                    SessionContract.SessionEntry.COLUMN_SESSION_DESCRIPTION,*//*
                     SessionEntry.COLUMN_SESSION_BUILDING_CODE,
                     SessionEntry.COLUMN_SESSION_BUILDING_NAME,
                     SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
-                    SessionEntry.COLUMN_SESSION_MAP_URL,*/
+                    SessionEntry.COLUMN_SESSION_MAP_URL,*//*
                     SessionContract.SessionEntry.COLUMN_SESSION_LOGO};
 
             //String[] from = new String[] { PetDictionaryDatabase.KEY_WORD,
@@ -141,32 +147,23 @@ public class MainActivity extends AppCompatActivity{
                     startActivity(detailIntent);
                 }
             });
-        }
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        // Inflate menu to add items to action bar if it is present.
-        inflater.inflate(R.menu.menu_search, menu);
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setQueryHint("Find employer");
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false);
-        return true;
+        }*/
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.search:
-                onSearchRequested();
-                return true;
-            default:
-                return false;
-        }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the options menu from XML
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_search, menu);
+
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setQueryHint("Find employer");
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        return true;
     }
 }

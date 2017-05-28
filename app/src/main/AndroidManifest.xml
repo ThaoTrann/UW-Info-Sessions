@@ -10,16 +10,18 @@
         android:label="Info Sessions"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- enable the search dialog to send searches to SearchResultActivity -->
-            <meta-data android:name="android.app.default_searchable"
-                android:value=".SearchableActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
 
         </activity>
         <activity
@@ -34,14 +36,6 @@
             android:authorities="com.android.infosessions"
             android:enabled="true"
             android:exported="false" />
-
-        <activity android:name=".SearchResultActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
-        </activity>
 
     </application>
 
