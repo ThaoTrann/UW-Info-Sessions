@@ -243,7 +243,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                     selectionArgs,
                     null);
         } else {
-            String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">? AND r" + SessionEntry.COLUMN_SESSION_EMPLOYER + "=?";
+            String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">? AND " + SessionEntry.COLUMN_SESSION_EMPLOYER + "=?";
             String[] selectionArgs = { String.valueOf(milliSeconds), mQuery };
             Log.d("LOG_TAG mQ", mQuery);
             return new CursorLoader(getContext(),
