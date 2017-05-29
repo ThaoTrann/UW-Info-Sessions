@@ -10,13 +10,21 @@
         android:label="Info Sessions"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity"
-            android:launchMode="singleTop" >
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+        <activity
+            android:name=".DetailActivity"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".SearchableActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -24,9 +32,7 @@
                 android:resource="@xml/searchable"/>
 
         </activity>
-        <activity
-            android:name=".DetailActivity"
-            android:parentActivityName=".MainActivity" />
+
         <activity
             android:name=".EditorActivity"
             android:parentActivityName=".MainActivity" />
@@ -37,6 +43,9 @@
             android:enabled="true"
             android:exported="false" />
 
+        <!-- Points to searchable activity so the whole app can invoke search. -->
+        <meta-data android:name="android.app.default_searchable"
+            android:value=".SearchableDictionary" />
     </application>
 
 </manifest>
