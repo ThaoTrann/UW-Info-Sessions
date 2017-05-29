@@ -107,7 +107,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected ArrayList<Session> doInBackground(String... params) {
             ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], getContext());
-            Log.d("LOG_TAG", String.valueOf(sessions.size()));
             return sessions;
         }
 
@@ -172,7 +171,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         int month = Integer.parseInt(mDay[1]);
         int year = Integer.parseInt(mDay[0]);
         Date date = new Date(year, month, day);
-        Log.d("LOG_TAG data Minutes", String.valueOf(date.getTime()));
         return date.getTime();
     }
     @Override
@@ -185,7 +183,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         int year = rightNow.get(rightNow.YEAR);
         Date date = new Date(year, month, day);
         long milliSeconds = date.getTime();
-        Log.d("LOG_TAG current", String.valueOf(month));
 
         String[] projection = {
                 SessionEntry._ID,
