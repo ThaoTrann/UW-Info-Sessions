@@ -1,5 +1,6 @@
 package com.android.infosessions.data;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -29,6 +30,9 @@ public class DbProvider extends ContentProvider {
     private static final int CONTACTS = 100;
     private static final int SESSIONS = 200;
 
+    private static final int SEARCH_SUGGEST_NONE = 0;
+    private static final int SEARCH_SUGGEST = 1;
+
     /**
      * URI matcher code for the content URI for a single entry in table
      */
@@ -50,8 +54,10 @@ public class DbProvider extends ContentProvider {
 
         sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, ContactContract.PATH_CONTACTS, CONTACTS);
         sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, ContactContract.PATH_CONTACTS + "/#", CONTACT_ID);
-        sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS, SESSIONS);
-        sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS + "/#", SESSION_ID);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS, SESSIONS);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS + "/#", SESSION_ID);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH_SUGGEST_NONE);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY + "/*", SEARCH_SUGGEST);
     }
 
     /**
@@ -103,6 +109,15 @@ public class DbProvider extends ContentProvider {
                 // Cursor containing that row of the table.
                 cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
+                break;
+            case SEARCH_SUGGEST:
+                String query = uri.getLastPathSegment().toLowerCase();
+                selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ?";
+                selectionArgs = new String[]{"%" + query + "%"};
+                cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+
+                Log.d("cursor count", String.valueOf(cursor.getCount()));
                 break;
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
