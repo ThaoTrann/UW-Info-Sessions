@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -30,6 +31,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private SessionCursorAdapter mCursorAdapter;
     private String map_url;
     private String link;
+    private String website;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +46,21 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         getLoaderManager().initLoader(LOADER_ID, null, this);
 
         Button rvsp = (Button) findViewById(R.id.rvsp_button);
-        Button website = (Button) findViewById(R.id.website_button);
+        Button web = (Button) findViewById(R.id.website_button);
         Button nav = (Button) findViewById(R.id.nav_button);
 
         rvsp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                startActivity(webIntent);
+            }
+        });
+
+        web.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(website));
                 startActivity(webIntent);
             }
         });
@@ -114,6 +124,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
             link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
             String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+            website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
 
             TextView nameTextView = (TextView) findViewById(R.id.employer);
             nameTextView.setText(employer);
@@ -128,7 +139,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             detailTextView.setText(description);
 
             TextView locationTextView = (TextView) findViewById(R.id.location);
-            locationTextView.setText(building_code + " - " + building_name + " " + building_room);
+            locationTextView.setText(building_code + " (" + building_name + ") - " + building_room);
 
             TextView audienceTextView = (TextView) findViewById(R.id.audience);
             audienceTextView.setText(audience);
@@ -141,6 +152,17 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted

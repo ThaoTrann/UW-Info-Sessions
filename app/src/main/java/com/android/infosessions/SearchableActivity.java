@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -64,7 +65,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         inflater.inflate(R.menu.menu_search, menu);
 
         android.widget.SearchView searchView = (android.widget.SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setQueryHint("Find employer");
+        searchView.setQueryHint("Search employer...");
         // Assumes current activity is the searchable activity
         searchView.setOnQueryTextListener(this);
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
@@ -99,8 +100,8 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                     null,
                     null);
         }
-        String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? ";
-        String[] selectionArgs = { "%" + mQuery + "%" };
+        String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? AND " + SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ?";
+        String[] selectionArgs = { "%" + mQuery + "%" , "%MATH%"};
         return new CursorLoader(this,
                 SessionEntry.CONTENT_URI,
                 projection,

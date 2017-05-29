@@ -124,6 +124,10 @@
             android:textSize="13sp"
             tools:text="Wattpad is a global platform, proudly based in Toronto, that gives people everywhere the freedom to discover and create content they can't find anywhere else. We want to tell you about the perks we offer, including competitive salary, meaningful work (there's a good change you'll push code into production on Day 1!), and a great staff culture. Learn more about us at wattpad.com" />
 
+        <TextView
+            android:id="@+id/audience"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 
