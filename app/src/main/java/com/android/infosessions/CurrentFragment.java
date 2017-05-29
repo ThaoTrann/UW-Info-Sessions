@@ -53,7 +53,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
     private static final int LOADER_ID = 0;
     private SessionCursorAdapter mCursorAdapter;
-    private int state = 0;
     private String mQuery;
     public CurrentFragment() {
     }
@@ -63,14 +62,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            mQuery = bundle.getString("query", null);
-            Log.d("mQuery", mQuery);
-            state = 1;
-        } else {
-            state = 0;
-        }
     }
 
     @Override
@@ -230,29 +221,17 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             SessionTask sessionTask = new SessionTask();
             sessionTask.execute(UWAPI_REQUEST_URL);
         }
-        if(state == 0) {
+        String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
+        String[] selectionArgs = { String.valueOf(milliSeconds) };
 
-            String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
-            String[] selectionArgs = { String.valueOf(milliSeconds) };
+        // This loader will execute the ContentProvider's query method on a background thread
+        return new CursorLoader(getContext(),
+                SessionEntry.CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                null);
 
-            // This loader will execute the ContentProvider's query method on a background thread
-            return new CursorLoader(getContext(),
-                    SessionEntry.CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null);
-        } else {
-            String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">? AND " + SessionEntry.COLUMN_SESSION_EMPLOYER + "=?";
-            String[] selectionArgs = { String.valueOf(milliSeconds), mQuery };
-            Log.d("LOG_TAG mQ", mQuery);
-            return new CursorLoader(getContext(),
-                    SessionEntry.CONTENT_URI,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null);
-        }
     }
 
     @Override

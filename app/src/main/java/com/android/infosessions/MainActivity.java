@@ -39,9 +39,6 @@ import com.android.infosessions.data.SessionContract;
 
 
 public class MainActivity extends AppCompatActivity{
-    private TextView mTextView;
-    private ListView mListView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,14 +62,14 @@ public class MainActivity extends AppCompatActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the options menu from XML
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_editor, menu);
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_save:
+            case R.id.action_search:
                 Intent intent = new Intent(this, SearchableActivity.class);
                 startActivity(intent);
                 return true;
