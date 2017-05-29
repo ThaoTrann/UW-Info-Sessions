@@ -33,19 +33,19 @@ public class SessionAdapter extends ArrayAdapter<Session> {
         final Session currentSession = getItem(position);
 
         TextView nameTextView = (TextView) listItemView.findViewById(R.id.employer);
-        nameTextView.setText(currentSession.getName());
+        nameTextView.setText(currentSession.getEmployer());
 
         TextView timeTextView = (TextView) listItemView.findViewById(R.id.time);
-        timeTextView.setText(currentSession.getTime());
+        timeTextView.setText(currentSession.getStartTime());
 
         TextView dateTextView = (TextView) listItemView.findViewById(R.id.date);
         dateTextView.setText(currentSession.getDate());
 
         TextView detailTextView = (TextView) listItemView.findViewById(R.id.description);
-        detailTextView.setText(currentSession.getDetail());
+        detailTextView.setText(currentSession.getDescription());
 
         TextView locationTextView = (TextView) listItemView.findViewById(R.id.location);
-        locationTextView.setText(currentSession.getBuilding());
+        locationTextView.setText(currentSession.getBuildingCode());
 
         ImageView logoView = (ImageView) listItemView.findViewById(R.id.employer_logo);
         Drawable drawable = getImage(logoView.getContext(), currentSession.getLogoString());
