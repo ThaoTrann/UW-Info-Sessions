@@ -1,5 +1,6 @@
 package com.android.infosessions;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.ContentUris;
@@ -13,12 +14,17 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import java.util.Calendar;
@@ -30,12 +36,17 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     private SessionCursorAdapter mCursorAdapter;
     private String mQuery = "";
     private ListView sessionsListView;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sessions_list);
+        setTitle("Search");
         sessionsListView = (ListView) findViewById(R.id.list);
+        textView = (TextView) findViewById(R.id.text);
+        textView.setVisibility(View.VISIBLE);
+
         mCursorAdapter = new SessionCursorAdapter(this, null);
         sessionsListView.setAdapter(mCursorAdapter);
 
@@ -64,8 +75,26 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
 
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(80, 80);
+
+        Button btnFilter = new Button(this);
+        btnFilter.setBackgroundResource(R.drawable.ic_filter_list_white_24dp);
+
         android.widget.SearchView searchView = (android.widget.SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setQueryHint("Search employer...");
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        ((LinearLayout) searchView.getChildAt(0)).addView(btnFilter, layoutParams);
+        ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.CENTER);
+        (searchView.getChildAt(0)).setPadding(0, 0, 50, 0);
+        btnFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent2 = new Intent(SearchableActivity.this, FilterActivity.class);
+                startActivity(intent2);
+            }
+        });
+
         // Assumes current activity is the searchable activity
         searchView.setOnQueryTextListener(this);
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
@@ -114,6 +143,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
+        textView.setText("Return " + String.valueOf(data.getCount()) + "results:");
     }
 
     @Override

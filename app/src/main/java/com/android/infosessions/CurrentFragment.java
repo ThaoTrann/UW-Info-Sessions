@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.infosessions.data.DbHelper;
+import com.android.infosessions.data.FilterContract.FilterEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import org.json.JSONArray;
@@ -53,7 +54,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
     private static final int LOADER_ID = 0;
     private SessionCursorAdapter mCursorAdapter;
-    private String mQuery;
+
+    private String audienceListSofar = "";
     public CurrentFragment() {
     }
 
@@ -114,12 +116,13 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
             insertSession(sessions);
-            Toast toast = Toast.makeText(getContext(), "Updated seconds ago", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             toast.show();
         }
     }
 
     private void insertSession(ArrayList<Session> sessions) {
+
         for(int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
             String mEmployer = session.getEmployer();
@@ -140,7 +143,16 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mCode = session.getBuildingCode();
             String mMapUrl = session.getMapUrl();
             String mAudience = session.getAudience();
-
+            ArrayList<String> mAudienceSA = session.getAudienceStringArray();
+            for(int j = 0; j < mAudienceSA.size(); j++) {
+                if (!audienceListSofar.contains(mAudienceSA.get(j))) {
+                    ContentValues valuesAudience = new ContentValues();
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, mAudienceSA.get(j));
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
+                    getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
+                    audienceListSofar += mAudienceSA.get(j) + ",";
+                }
+            }
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
             values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
@@ -159,10 +171,10 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
             values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
 
-
             // Insert a new row for pet in the database, returning the ID of that new row.
             Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
         }
+        Log.d("LOG_TAG", audienceListSofar);
     }
 
     public long dayToMilliSeconds(String data) {
@@ -228,7 +240,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 selection,
                 selectionArgs,
                 null);
-
     }
 
     @Override

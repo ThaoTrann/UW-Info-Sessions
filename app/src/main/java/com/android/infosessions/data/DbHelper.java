@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.android.infosessions.data.ContactContract.ContactEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
+import com.android.infosessions.data.FilterContract.FilterEntry;
 
 /**
  * Created by Thao on 5/11/17.
@@ -31,6 +32,14 @@ public class DbHelper extends SQLiteOpenHelper {
                         ContactEntry.COLUMN_CONTACT_PHONE_NUMBER + " TEXT);";
 
         db.execSQL(SQL_CREATE_CONTACT_ENTRIES);
+
+        String SQL_CREATE_FILTER_ENTRIES =
+                "CREATE TABLE " + FilterEntry.TABLE_NAME + " (" +
+                        FilterEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        FilterEntry.COLUMN_FILTER_KEY + " TEXT, " +
+                        FilterEntry.COLUMN_FILTER_VALUE + " INTEGER);";
+
+        db.execSQL(SQL_CREATE_FILTER_ENTRIES);
 
         String SQL_CREATE_SESSION_ENTRIES =
                 "CREATE TABLE " + SessionEntry.TABLE_NAME + " (" +
