@@ -101,7 +101,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         ((LinearLayout) searchView.getChildAt(0)).addView(btnFilter, layoutParams);
         ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.CENTER);
         (searchView.getChildAt(0)).setPadding(0, 0, 50, 0);
-        (searchView.getChildAt(0)).setMinimumWidth(48);
+        (searchView.getChildAt(0)).setMinimumWidth(50);
         btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,22 +146,31 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                 FilterEntry.COLUMN_FILTER_IS_CODE,
                 FilterEntry.COLUMN_FILTER_VALUE};
 
-        String[] a = { String.valueOf(FilterEntry.VALUE_CHECKED) };
+        String[] a = { String.valueOf(FilterEntry.VALUE_CHECKED), String.valueOf(FilterEntry.VALUE_NOT_CODE) };
 
         Cursor filterCursor = getContentResolver().query(FilterEntry.CONTENT_URI, p,
-                FilterEntry.COLUMN_FILTER_VALUE + "=?",
+                FilterEntry.COLUMN_FILTER_VALUE + "=? AND " + FilterEntry.COLUMN_FILTER_IS_CODE + "=?",
                 a, null);
         ArrayList<String> filters = new ArrayList<>();
 
         String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? ";
         filterCursor.moveToFirst();
-        Log.d("LOG_TAG: filter.count ", String.valueOf(filterCursor.getCount()));
-        while (!filterCursor.isAfterLast()) {
+        int count = filterCursor.getCount();
+        if(count > 0) {
+            selection += " AND (";
+        }
+        for(int i = 0; i < count; i++) {
             String audience = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
             filters.add(audience);
             Log.d("LOG_TAG: filter ", "" + audience);
-            selection += " AND " + SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ? ";
+            if(i != 0) {
+                selection += " OR ";
+            }
+            selection += SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ? ";
             filterCursor.moveToNext();
+        }
+        if(count > 0) {
+            selection += ")";
         }
         filterCursor.close();
 
@@ -170,7 +179,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         for(int i = 1; i < selectionArgs.length; i++) {
             selectionArgs[i] = ("%" + filters.get(i-1) + "%");
         }
-        Log.d("LOG_TAG: filter.count ", "" + selectionArgs.length);
+        Log.d("LOG_TAG: selection", "" + selection);
         return new CursorLoader(this,
                 SessionEntry.CONTENT_URI,
                 projection,
