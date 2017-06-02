@@ -10,4 +10,8 @@
         android:layout_margin="12dp"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:layout_gravity="center_vertical"/>
+    <TextView
+        android:id="@+id/general_division"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>
