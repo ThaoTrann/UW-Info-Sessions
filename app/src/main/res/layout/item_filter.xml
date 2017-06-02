@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:divider="@null">
+    android:layout_height="match_parent">
+    <TextView
+        android:paddingTop="24dp"
+        android:paddingLeft="12dp"
+        android:id="@+id/general_division"
+        android:textColor="@color/textColorEmployerDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/textlines"/>
     <CheckedTextView
         android:id="@+id/specific_division"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:paddingTop="6dp"
+        android:paddingLeft="18dp"
+        android:textColor="@color/textColorEmployer"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:layout_gravity="center_vertical"/>
-    <TextView
-        android:id="@+id/general_division"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
 </LinearLayout>

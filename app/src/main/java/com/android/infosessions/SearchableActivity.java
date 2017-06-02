@@ -89,6 +89,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         ((LinearLayout) searchView.getChildAt(0)).addView(btnFilter, layoutParams);
         ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.CENTER);
         (searchView.getChildAt(0)).setPadding(0, 0, 50, 0);
+        (searchView.getChildAt(0)).setMinimumWidth(48);
         btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -143,23 +144,26 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         Cursor filterCursor = getContentResolver().query(FilterEntry.CONTENT_URI, p,
                 FilterEntry.COLUMN_FILTER_VALUE + "=?",
                 a, null);
-
         ArrayList<String> filters = new ArrayList<>();
 
         String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? ";
-
-        while(filterCursor.moveToNext()) {
+        filterCursor.moveToFirst();
+        Log.d("LOG_TAG: filter.count ", String.valueOf(filterCursor.getCount()));
+        while (!filterCursor.isAfterLast()) {
             String audience = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
             filters.add(audience);
-            selection += " OR " + SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ? ";
+            Log.d("LOG_TAG: filter ", "" + audience);
+            selection += " AND " + SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ? ";
+            filterCursor.moveToNext();
         }
-
+        filterCursor.close();
 
         String[] selectionArgs = new String[1+filters.size()];
         selectionArgs[0] = ("%" + mQuery + "%") ;
-        for(int i = 1; i < filters.size(); i++) {
-            selectionArgs[i] = ("%" + filters.get(i) + "%");
+        for(int i = 1; i < selectionArgs.length; i++) {
+            selectionArgs[i] = ("%" + filters.get(i-1) + "%");
         }
+        Log.d("LOG_TAG: filter.count ", "" + selectionArgs.length);
         return new CursorLoader(this,
                 SessionEntry.CONTENT_URI,
                 projection,
@@ -182,7 +186,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
 
     @Override
     public boolean onQueryTextChange(String newText) {
-
         mQuery = newText;
         getLoaderManager().restartLoader(0, null, this);
         return false;

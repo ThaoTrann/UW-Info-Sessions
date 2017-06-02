@@ -58,10 +58,14 @@ public class FilterActivity extends AppCompatActivity implements LoaderManager.L
                     int code = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
 
                     values.put(FilterEntry.COLUMN_FILTER_KEY, key);
-                    if(value == FilterEntry.VALUE_CHECKED) {
-                        values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+                    if(value == FilterEntry.VALUE_NOT_CODE) {
+                        if (value == FilterEntry.VALUE_CHECKED) {
+                            values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+                        } else {
+                            values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
+                        }
                     } else {
-                        values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
+                        values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
                     }
                     values.put(FilterEntry.COLUMN_FILTER_IS_CODE, code);
                 }

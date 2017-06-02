@@ -24,11 +24,7 @@ public class FilterCursorAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-        int code = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
-        /*if(code == FilterEntry.VALUE_CODE) {
-            return LayoutInflater.from(context).inflate(R.layout.item_filter_general, viewGroup, false);
-        } else {
-            */return LayoutInflater.from(context).inflate(R.layout.item_filter, viewGroup, false);
+        return LayoutInflater.from(context).inflate(R.layout.item_filter, viewGroup, false);
 
     }
 
@@ -37,7 +33,6 @@ public class FilterCursorAdapter extends CursorAdapter {
         String key = cursor.getString(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
         int value = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_VALUE));
         int code = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
-        Log.d("LOG_TAG", key + code);
         TextView textView = (TextView) view.findViewById(R.id.general_division);
         CheckedTextView box = (CheckedTextView) view.findViewById(R.id.specific_division);
 
@@ -48,10 +43,8 @@ public class FilterCursorAdapter extends CursorAdapter {
         } else {
             box.setVisibility(View.VISIBLE);
             textView.setVisibility(View.GONE);
-            //Log.d("LOG_TAG inside else", key + code);
             box.setTag(cursor.getPosition());
-            box.setText(key);
-
+            box.setText(key.substring(key.indexOf("-")+1, key.length()));
             if (value == FilterEntry.VALUE_CHECKED)
                 box.setChecked(true);
             else
