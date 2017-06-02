@@ -13,6 +13,7 @@ import android.content.Loader;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -52,6 +53,8 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         mCursorAdapter = new SessionCursorAdapter(this, null);
         sessionsListView.setAdapter(mCursorAdapter);
 
+        View emptyView = findViewById(R.id.empty_view);
+        sessionsListView.setEmptyView(emptyView);
         sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -69,6 +72,12 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
 
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
@@ -125,12 +134,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
         if(mQuery.trim().isEmpty()) {
-            return new CursorLoader(this,
-                    SessionEntry.CONTENT_URI,
-                    projection,
-                    null,
-                    null,
-                    null);
+            mQuery = "";
         }
 
         String[] p = {

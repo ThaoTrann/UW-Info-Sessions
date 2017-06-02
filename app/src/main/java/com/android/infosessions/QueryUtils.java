@@ -193,7 +193,7 @@ public final class QueryUtils extends AppCompatActivity {
         logos.add("wave_accounting");
         logos.add("whatsapp");
         logos.add("yelp");
-        logos.add("yext");
+        logos.add("ic_domain_black_24dp");
         String name = str;
         name = name.replace(" ", "_");
         name = name.toLowerCase();
