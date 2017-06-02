@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.infosessions.data.FilterContract.FilterEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
@@ -47,14 +48,17 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         setContentView(R.layout.sessions_list);
         setTitle("Search");
         sessionsListView = (ListView) findViewById(R.id.list);
+        View emptyView = findViewById(R.id.empty_view);
+        emptyView.setVisibility(View.VISIBLE);
+        sessionsListView.setEmptyView(emptyView);
+
         textView = (TextView) findViewById(R.id.text);
         textView.setVisibility(View.VISIBLE);
 
         mCursorAdapter = new SessionCursorAdapter(this, null);
         sessionsListView.setAdapter(mCursorAdapter);
 
-        View emptyView = findViewById(R.id.empty_view);
-        sessionsListView.setEmptyView(emptyView);
+
         sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -70,8 +74,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
             }
         });
 
-        LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -180,7 +183,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mCursorAdapter.swapCursor(data);
-        textView.setText("Return " + String.valueOf(data.getCount()) + "results:");
     }
 
     @Override
