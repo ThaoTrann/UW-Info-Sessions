@@ -25,8 +25,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.infosessions.data.FilterContract.FilterEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -75,7 +77,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(80, 80);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(60, 60);
 
         Button btnFilter = new Button(this);
         btnFilter.setBackgroundResource(R.drawable.ic_filter_list_white_24dp);
@@ -129,8 +131,35 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                     null,
                     null);
         }
-        String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? AND " + SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ?";
-        String[] selectionArgs = { "%" + mQuery + "%" , "%MATH%"};
+
+        String[] p = {
+                FilterEntry._ID,
+                FilterEntry.COLUMN_FILTER_KEY,
+                FilterEntry.COLUMN_FILTER_IS_CODE,
+                FilterEntry.COLUMN_FILTER_VALUE};
+
+        String[] a = { String.valueOf(FilterEntry.VALUE_CHECKED) };
+
+        Cursor filterCursor = getContentResolver().query(FilterEntry.CONTENT_URI, p,
+                FilterEntry.COLUMN_FILTER_VALUE + "=?",
+                a, null);
+
+        ArrayList<String> filters = new ArrayList<>();
+
+        String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? ";
+
+        while(filterCursor.moveToNext()) {
+            String audience = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
+            filters.add(audience);
+            selection += " OR " + SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ? ";
+        }
+
+
+        String[] selectionArgs = new String[1+filters.size()];
+        selectionArgs[0] = ("%" + mQuery + "%") ;
+        for(int i = 1; i < filters.size(); i++) {
+            selectionArgs[i] = ("%" + filters.get(i) + "%");
+        }
         return new CursorLoader(this,
                 SessionEntry.CONTENT_URI,
                 projection,

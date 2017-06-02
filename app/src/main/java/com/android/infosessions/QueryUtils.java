@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.android.infosessions.data.DbHelper;
+import com.android.infosessions.data.FilterContract.FilterEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import org.json.JSONArray;
@@ -30,7 +31,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public final class QueryUtils extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public final class QueryUtils extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
 
@@ -48,6 +49,7 @@ public final class QueryUtils extends AppCompatActivity implements LoaderManager
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         db.delete(SessionEntry.TABLE_NAME, null, null);
+        db.delete(FilterEntry.TABLE_NAME, null, null);
 
         // Create URL object
         URL url = createUrl(requestUrl);
@@ -207,21 +209,6 @@ public final class QueryUtils extends AppCompatActivity implements LoaderManager
             name = "nologo";
         }
         return name;
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }
 

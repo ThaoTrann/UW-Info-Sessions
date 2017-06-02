@@ -55,7 +55,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     private static final int LOADER_ID = 0;
     private SessionCursorAdapter mCursorAdapter;
 
-    private String audienceListSofar = "";
     public CurrentFragment() {
     }
 
@@ -88,6 +87,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Intent intent = new Intent(getContext(), DetailActivity.class);
 
                 Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
@@ -120,6 +120,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             toast.show();
         }
     }
+    private String generalAudienceListSofar = "";
+    private String specificAudienceListSofar = "";
 
     private void insertSession(ArrayList<Session> sessions) {
 
@@ -144,13 +146,25 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mMapUrl = session.getMapUrl();
             String mAudience = session.getAudience();
             ArrayList<String> mAudienceSA = session.getAudienceStringArray();
+
             for(int j = 0; j < mAudienceSA.size(); j++) {
-                if (!audienceListSofar.contains(mAudienceSA.get(j))) {
+                String audience = mAudienceSA.get(j).trim();
+                String domain = audience.substring(0, audience.indexOf('-')).trim();
+                if (!generalAudienceListSofar.contains(domain)) {
+                    generalAudienceListSofar += domain + ",";
                     ContentValues valuesAudience = new ContentValues();
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, mAudienceSA.get(j));
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, domain);
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_IS_CODE, FilterEntry.VALUE_CODE);
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
                     getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
-                    audienceListSofar += mAudienceSA.get(j) + ",";
+                }
+                if (!specificAudienceListSofar.contains(audience)) {
+                    ContentValues valuesAudience = new ContentValues();
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_IS_CODE, FilterEntry.VALUE_NOT_CODE);
+                    valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+                    getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
+                    specificAudienceListSofar += mAudienceSA.get(j) + ",";
                 }
             }
             // Create a new map of values, where column names are the keys
@@ -174,7 +188,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             // Insert a new row for pet in the database, returning the ID of that new row.
             Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
         }
-        Log.d("LOG_TAG", audienceListSofar);
+        Log.d("LOG_TAG", specificAudienceListSofar);
     }
 
     public long dayToMilliSeconds(String data) {

@@ -229,16 +229,30 @@ public class DbProvider extends ContentProvider {
                 selection = ContactEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateContract(uri, contentValues, selection, selectionArgs);
+            case FILTERS:
+                return updateFilter(uri, contentValues, selection, selectionArgs);
+            case FILTER_ID:
+                selection = FilterEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return updateFilter(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
+
         }
     }
 
-    /**
-     * Update pets in the database with the given content values. Apply the changes to the rows
-     * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
-     * Return the number of rows that were successfully updated.
-     */
+    private int updateFilter (Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        int rowUpdated = database.update(FilterEntry.TABLE_NAME, values, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        if(rowUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowUpdated;
+    }
+
     private int updateContract(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();

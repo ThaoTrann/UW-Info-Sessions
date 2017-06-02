@@ -35,8 +35,11 @@ public class FilterContract {
         public static final String TABLE_NAME = "filters";
         public final static String _ID = BaseColumns._ID;
         public static final String COLUMN_FILTER_KEY = "key";
+        public static final String COLUMN_FILTER_IS_CODE = "code";
         public static final String COLUMN_FILTER_VALUE = "value";
         public static final int VALUE_CHECKED = 1;
         public static final int VALUE_NOT_CHECKED = 0;
+        public static final int VALUE_CODE = 1;
+        public static final int VALUE_NOT_CODE = 0;
     }
 }
