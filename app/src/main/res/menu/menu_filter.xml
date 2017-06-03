@@ -5,8 +5,8 @@
     tools:context=".EditorActivity">
 
     <item
-        android:id="@+id/action_search"
-        android:title="Search"
-        android:icon="@drawable/ic_search_white_24dp"
+        android:id="@+id/action_save"
+        android:title="Done"
+        android:icon="@drawable/ic_done_white_24dp"
         app:showAsAction="always" />
 </menu>

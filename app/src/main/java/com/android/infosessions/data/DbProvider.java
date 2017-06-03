@@ -14,6 +14,7 @@ import android.util.Log;
 import com.android.infosessions.Session;
 import com.android.infosessions.data.ContactContract.ContactEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
+import com.android.infosessions.data.FilterContract.FilterEntry;
 /**
  * Created by Thao on 5/16/17.
  */
@@ -33,6 +34,8 @@ public class DbProvider extends ContentProvider {
     private static final int SEARCH_SUGGEST_NONE = 0;
     private static final int SEARCH_SUGGEST = 1;
 
+    private static final int FILTERS = 2;
+    private static final int FILTER_ID = 3;
     /**
      * URI matcher code for the content URI for a single entry in table
      */
@@ -56,6 +59,8 @@ public class DbProvider extends ContentProvider {
         sUriMatcher.addURI(ContactContract.CONTENT_AUTHORITY, ContactContract.PATH_CONTACTS + "/#", CONTACT_ID);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS, SESSIONS);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS + "/#", SESSION_ID);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, FilterContract.PATH_FILTERS, FILTERS);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, FilterContract.PATH_FILTERS + "/#", FILTER_ID);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH_SUGGEST_NONE);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY + "/*", SEARCH_SUGGEST);
     }
@@ -66,7 +71,7 @@ public class DbProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         // Make sure the variable is a global variable, so it can be referenced from other
-        // ContentProvider methods.
+        // ContentProvider methods
         mDbHelper = new DbHelper(getContext());
         return true;
     }
@@ -89,9 +94,6 @@ public class DbProvider extends ContentProvider {
             case CONTACTS:
                 cursor = database.query(ContactEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
-            case SESSIONS:
-                cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
             case CONTACT_ID:
                 selection = ContactEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
@@ -100,6 +102,21 @@ public class DbProvider extends ContentProvider {
                 // Cursor containing that row of the table.
                 cursor = database.query(ContactEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
+                break;
+            case FILTERS:
+                cursor = database.query(FilterEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case FILTER_ID:
+                selection = FilterEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+                // This will perform a query on the pets table where the _id equals 3 to return a
+                // Cursor containing that row of the table.
+                cursor = database.query(FilterEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
+            case SESSIONS:
+                cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case SESSION_ID:
                 selection = SessionEntry._ID + "=?";
@@ -137,6 +154,8 @@ public class DbProvider extends ContentProvider {
                 return insertContact(uri, contentValues);
             case SESSIONS:
                 return insertSession(uri, contentValues);
+            case FILTERS:
+                return insertFilter(uri, contentValues);
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
@@ -150,7 +169,7 @@ public class DbProvider extends ContentProvider {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Insert the new pet with the given values
+        // Insert the new data with the given values
         long id = database.insert(ContactEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
@@ -166,7 +185,7 @@ public class DbProvider extends ContentProvider {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Insert the new pet with the given values
+        // Insert the new data with the given values
         long id = database.insert(SessionEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
@@ -177,6 +196,23 @@ public class DbProvider extends ContentProvider {
         // Return the new URI with the ID (of the newly inserted row) appended at the end
         return ContentUris.withAppendedId(uri, id);
     }
+
+    private Uri insertFilter(Uri uri, ContentValues values) {
+        // Get writeable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Insert the new data with the given values
+        long id = database.insert(FilterEntry.TABLE_NAME, null, values);
+        // If the ID is -1, then the insertion failed. Log an error and return null.
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        // Return the new URI with the ID (of the newly inserted row) appended at the end
+        return ContentUris.withAppendedId(uri, id);
+    }
+
     /**
      * Updates the data at the given selection and selection arguments, with the new ContentValues.
      */
@@ -193,16 +229,30 @@ public class DbProvider extends ContentProvider {
                 selection = ContactEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateContract(uri, contentValues, selection, selectionArgs);
+            case FILTERS:
+                return updateFilter(uri, contentValues, selection, selectionArgs);
+            case FILTER_ID:
+                selection = FilterEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                return updateFilter(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
+
         }
     }
 
-    /**
-     * Update pets in the database with the given content values. Apply the changes to the rows
-     * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
-     * Return the number of rows that were successfully updated.
-     */
+    private int updateFilter (Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        int rowUpdated = database.update(FilterEntry.TABLE_NAME, values, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        if(rowUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowUpdated;
+    }
+
     private int updateContract(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();

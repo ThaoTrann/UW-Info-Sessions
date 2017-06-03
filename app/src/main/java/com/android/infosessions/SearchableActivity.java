@@ -1,5 +1,6 @@
 package com.android.infosessions;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.ContentUris;
@@ -12,15 +13,24 @@ import android.content.Loader;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.infosessions.data.FilterContract.FilterEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,14 +40,24 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     private SessionCursorAdapter mCursorAdapter;
     private String mQuery = "";
     private ListView sessionsListView;
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sessions_list);
+        setTitle("Search");
         sessionsListView = (ListView) findViewById(R.id.list);
+        View emptyView = findViewById(R.id.empty_view);
+        emptyView.setVisibility(View.VISIBLE);
+        sessionsListView.setEmptyView(emptyView);
+
+        textView = (TextView) findViewById(R.id.text);
+        textView.setVisibility(View.VISIBLE);
+
         mCursorAdapter = new SessionCursorAdapter(this, null);
         sessionsListView.setAdapter(mCursorAdapter);
+
 
         sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -54,8 +74,13 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
             }
         });
 
-        LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
@@ -64,8 +89,27 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_search, menu);
 
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(60, 60);
+
+        Button btnFilter = new Button(this);
+        btnFilter.setBackgroundResource(R.drawable.ic_filter_list_white_24dp);
+
         android.widget.SearchView searchView = (android.widget.SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setQueryHint("Search employer...");
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        ((LinearLayout) searchView.getChildAt(0)).addView(btnFilter, layoutParams);
+        ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.CENTER);
+        (searchView.getChildAt(0)).setPadding(0, 0, 50, 0);
+        (searchView.getChildAt(0)).setMinimumWidth(50);
+        btnFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent2 = new Intent(SearchableActivity.this, FilterActivity.class);
+                startActivity(intent2);
+            }
+        });
+
         // Assumes current activity is the searchable activity
         searchView.setOnQueryTextListener(this);
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
@@ -93,15 +137,49 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
         if(mQuery.trim().isEmpty()) {
-            return new CursorLoader(this,
-                    SessionEntry.CONTENT_URI,
-                    projection,
-                    null,
-                    null,
-                    null);
+            mQuery = "";
         }
-        String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? AND " + SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ?";
-        String[] selectionArgs = { "%" + mQuery + "%" , "%MATH%"};
+
+        String[] p = {
+                FilterEntry._ID,
+                FilterEntry.COLUMN_FILTER_KEY,
+                FilterEntry.COLUMN_FILTER_IS_CODE,
+                FilterEntry.COLUMN_FILTER_VALUE};
+
+        String[] a = { String.valueOf(FilterEntry.VALUE_CHECKED), String.valueOf(FilterEntry.VALUE_NOT_CODE) };
+
+        Cursor filterCursor = getContentResolver().query(FilterEntry.CONTENT_URI, p,
+                FilterEntry.COLUMN_FILTER_VALUE + "=? AND " + FilterEntry.COLUMN_FILTER_IS_CODE + "=?",
+                a, null);
+        ArrayList<String> filters = new ArrayList<>();
+
+        String selection = SessionEntry.COLUMN_SESSION_EMPLOYER + " LIKE ? ";
+        filterCursor.moveToFirst();
+        int count = filterCursor.getCount();
+        if(count > 0) {
+            selection += " AND (";
+        }
+        for(int i = 0; i < count; i++) {
+            String audience = filterCursor.getString(filterCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
+            filters.add(audience);
+            Log.d("LOG_TAG: filter ", "" + audience);
+            if(i != 0) {
+                selection += " OR ";
+            }
+            selection += SessionEntry.COLUMN_SESSION_AUDIENCE + " LIKE ? ";
+            filterCursor.moveToNext();
+        }
+        if(count > 0) {
+            selection += ")";
+        }
+        filterCursor.close();
+
+        String[] selectionArgs = new String[1+filters.size()];
+        selectionArgs[0] = ("%" + mQuery + "%") ;
+        for(int i = 1; i < selectionArgs.length; i++) {
+            selectionArgs[i] = ("%" + filters.get(i-1) + "%");
+        }
+        Log.d("LOG_TAG: selection", "" + selection);
         return new CursorLoader(this,
                 SessionEntry.CONTENT_URI,
                 projection,
@@ -123,7 +201,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
 
     @Override
     public boolean onQueryTextChange(String newText) {
-
         mQuery = newText;
         getLoaderManager().restartLoader(0, null, this);
         return false;

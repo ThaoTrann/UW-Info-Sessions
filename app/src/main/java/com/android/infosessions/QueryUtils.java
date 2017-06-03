@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.android.infosessions.data.DbHelper;
+import com.android.infosessions.data.FilterContract.FilterEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import org.json.JSONArray;
@@ -30,7 +31,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public final class QueryUtils extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public final class QueryUtils extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
 
@@ -48,6 +49,7 @@ public final class QueryUtils extends AppCompatActivity implements LoaderManager
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         db.delete(SessionEntry.TABLE_NAME, null, null);
+        db.delete(FilterEntry.TABLE_NAME, null, null);
 
         // Create URL object
         URL url = createUrl(requestUrl);
@@ -157,79 +159,6 @@ public final class QueryUtils extends AppCompatActivity implements LoaderManager
         return sessions;
     }
 
-    /*
-    private static void insertSession(JSONObject session, Context context) throws JSONException{
-        String mEmployer = session.getString("employer");
-        String mStartTime = session.getString("start_time");
-        String mEndTime = session.getString("end_time");
-        String mDate = session.getString("date");
-        String mDay = session.getString("day");
-        long mMinutes = dayToMilliSeconds(mDate);
-        String mWebsite = session.getString("website");
-        String mLink = session.getString("link");
-        String mDescription = session.getString("description");
-        String mLogo = getEmployerLogo(mEmployer);
-        if(mDescription.isEmpty()) {
-            mDescription = "Employer's Description is not provided.";
-        }
-        JSONObject building = session.getJSONObject("building");
-        String mCode = building.getString("code");
-        String mBuildingName = building.getString("name");
-        String mRoom = building.getString("room");
-        String mMapUrl = building.getString("map_url");
-        JSONArray mAudienceArray = session.getJSONArray("audience");
-        String mAudience = "Audience: \n";
-        for(int i = 0; i < mAudienceArray.length(); i++) {
-            mAudience += "\t\n" + mAudienceArray.getString(i);
-        }
-
-        DbHelper mDbHelper = new DbHelper(context);
-
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
-        values.put(SessionEntry.COLUMN_SESSION_START_TIME, mStartTime);
-        values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
-        values.put(SessionEntry.COLUMN_SESSION_DATE, mDate);
-        values.put(SessionEntry.COLUMN_SESSION_DAY, mDay);
-        values.put(SessionEntry.COLUMN_SESSION_MILLISECONDS, mMinutes);
-        values.put(SessionEntry.COLUMN_SESSION_WEBSITE, mWebsite);
-        values.put(SessionEntry.COLUMN_SESSION_LINK, mLink);
-        values.put(SessionEntry.COLUMN_SESSION_AUDIENCE, mAudience);
-        values.put(SessionEntry.COLUMN_SESSION_DESCRIPTION, mDescription);
-        values.put(SessionEntry.COLUMN_SESSION_BUILDING_CODE, mCode);
-        values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
-        values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mRoom);
-        values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
-        values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
-
-
-        // Insert a new row for pet in the database, returning the ID of that new row.
-        getContentResolver().insert(SessionEntry.CONTENT_URI, values);
-*//*
-        // Show a toast message depending on whether or not the insertion was successful
-        if (newRowId == -1) {
-            // If the row ID is -1, then there was an error with insertion.
-            Toast.makeText(context, "Error with saving session", Toast.LENGTH_SHORT).show();
-        } else {
-            // Otherwise, the insertion was successful and we can display a toast with the row ID.
-            Toast.makeText(context, "session saved with row id: " + newRowId, Toast.LENGTH_SHORT).show();
-        }*//*
-    }
-    public static long dayToMilliSeconds(String data) {
-        String[] mDay = data.split("-");
-        int day = Integer.parseInt(mDay[2]);
-        int month = Integer.parseInt(mDay[1]);
-        int year = Integer.parseInt(mDay[0]);
-        Date date = new Date(year, month, day);
-        Log.d("LOG_TAG data Minutes", String.valueOf(date.getTime()));
-        return date.getTime();
-    }*/
-
-
     public static String getEmployerLogo(String str) {
         logos.add("a500px");
         logos.add("a9");
@@ -264,7 +193,7 @@ public final class QueryUtils extends AppCompatActivity implements LoaderManager
         logos.add("wave_accounting");
         logos.add("whatsapp");
         logos.add("yelp");
-        logos.add("yext");
+        logos.add("ic_domain_black_24dp");
         String name = str;
         name = name.replace(" ", "_");
         name = name.toLowerCase();
@@ -280,21 +209,6 @@ public final class QueryUtils extends AppCompatActivity implements LoaderManager
             name = "nologo";
         }
         return name;
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }
 

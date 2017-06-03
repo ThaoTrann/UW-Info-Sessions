@@ -30,6 +30,7 @@ public class Session implements Serializable{
     private String mMapUrl;
     private String mLogoString;
     private String mAudience;
+    private ArrayList<String> mAudienceStringArray;
 
     public Session(JSONObject info, String logoString) throws JSONException {
         mInfo = info;
@@ -54,8 +55,10 @@ public class Session implements Serializable{
 
         JSONArray mAudienceArray = info.getJSONArray("audience");
         mAudience = "Audience: \n";
+        mAudienceStringArray = new ArrayList<>();
         for (int i = 0; i < mAudienceArray.length(); i++) {
-            mAudience += "\t\n" + mAudienceArray.getString(i);
+            mAudience += "\n" + mAudienceArray.getString(i);
+            mAudienceStringArray.add(mAudienceArray.getString(i));
         }
 
     }
@@ -107,4 +110,5 @@ public class Session implements Serializable{
         return mMapUrl;
     }
     public String getAudience() {return mAudience;}
+    public ArrayList<String> getAudienceStringArray() {return mAudienceStringArray;}
 }
