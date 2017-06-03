@@ -23,26 +23,49 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <HorizontalScrollView
-            android:id="@+id/filter_hsv"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/filter_tab"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="48dp"
+            android:orientation="horizontal"
             android:visibility="gone"
-            android:background="@color/colorPrimary"
-            android:scrollbars="none">
-            <LinearLayout
-                android:id="@+id/filter_ll"
-                android:layout_gravity="center_vertical"
+            android:background="@color/colorPrimary">
+
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:divider="@drawable/horizontal_divider"
-                android:orientation="horizontal"
-                android:showDividers="middle">
+                android:layout_height="wrap_content"
+                android:text="Filter by:"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="8dp"
+                android:textColor="@color/white"/>
 
-            </LinearLayout>
-        </HorizontalScrollView>
+            <HorizontalScrollView
+                android:id="@+id/filter_hsv"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:visibility="gone"
+                android:scrollbars="none">
+                <LinearLayout
+                    android:id="@+id/filter_ll"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:divider="@drawable/horizontal_divider"
+                    android:orientation="horizontal"
+                    android:showDividers="middle">
 
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+        <!--
+        <com.android.horizontallistview.HorizontalListView
+            android:id="@+id/hlvSimpleList"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"/>-->
         <ListView
             android:id="@+id/list"
             android:background="@android:color/white"

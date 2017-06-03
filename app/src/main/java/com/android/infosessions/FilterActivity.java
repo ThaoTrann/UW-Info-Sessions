@@ -45,39 +45,42 @@ public class FilterActivity extends AppCompatActivity implements LoaderManager.L
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Uri currentUri = ContentUris.withAppendedId(FilterEntry.CONTENT_URI, id);
-                String[] projection = {
-                        FilterEntry._ID,
-                        FilterEntry.COLUMN_FILTER_KEY,
-                        FilterEntry.COLUMN_FILTER_IS_CODE,
-                        FilterEntry.COLUMN_FILTER_VALUE};
-                Cursor cursor = getContentResolver().query(currentUri, projection, null, null, null);
-
-                ContentValues values = new ContentValues();
-                if (cursor.moveToFirst()) {
-                    String key = cursor.getString(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
-                    int value = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_VALUE));
-                    int code = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
-
-                    values.put(FilterEntry.COLUMN_FILTER_KEY, key);
-                    if(value == FilterEntry.VALUE_NOT_CODE) {
-                        if (value == FilterEntry.VALUE_CHECKED) {
-                            values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                        } else {
-                            values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
-                        }
-                    } else {
-                        values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                    }
-                    values.put(FilterEntry.COLUMN_FILTER_IS_CODE, code);
-                }
-                getContentResolver().update(currentUri, values, null, null);
+                update(id);
             }
         });
 
         getLoaderManager().initLoader(0, null, this);
         setTitle("Filter");
+    }
+
+    private void update(long id) {
+        Uri currentUri = ContentUris.withAppendedId(FilterEntry.CONTENT_URI, id);
+        String[] projection = {
+                FilterEntry._ID,
+                FilterEntry.COLUMN_FILTER_KEY,
+                FilterEntry.COLUMN_FILTER_IS_CODE,
+                FilterEntry.COLUMN_FILTER_VALUE};
+        Cursor cursor = getContentResolver().query(currentUri, projection, null, null, null);
+
+        ContentValues values = new ContentValues();
+        if (cursor.moveToFirst()) {
+            String key = cursor.getString(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
+            int value = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_VALUE));
+            int code = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
+
+            values.put(FilterEntry.COLUMN_FILTER_KEY, key);
+            if(value == FilterEntry.VALUE_NOT_CODE) {
+                if (value == FilterEntry.VALUE_CHECKED) {
+                    values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+                } else {
+                    values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
+                }
+            } else {
+                values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+            }
+            values.put(FilterEntry.COLUMN_FILTER_IS_CODE, code);
+        }
+        getContentResolver().update(currentUri, values, null, null);
     }
 
     @Override

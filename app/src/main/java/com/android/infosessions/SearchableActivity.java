@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.app.LoaderManager;
 import android.content.Loader;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -60,6 +63,8 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         emptyView.setVisibility(View.VISIBLE);
         sessionsListView.setEmptyView(emptyView);
 
+        LinearLayout ll = (LinearLayout) findViewById(R.id.filter_tab);
+        ll.setVisibility(View.VISIBLE);
         hsv = (HorizontalScrollView) findViewById(R.id.filter_hsv);
         hsv.setVisibility(View.VISIBLE);
         filterTabsLL = (LinearLayout) findViewById(R.id.filter_ll);
@@ -217,7 +222,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                         proj,
                         FilterEntry.COLUMN_FILTER_VALUE + "=? AND " + FilterEntry.COLUMN_FILTER_IS_CODE + "=?",
                         argus,
-                        null);
+                        FilterEntry.COLUMN_FILTER_KEY + " ASC");
             default:
                 return null;
         }
@@ -238,21 +243,63 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         }
     }
 
-    public void updateTabs(Cursor cursor) {
+    public void updateTabs(final Cursor cursor) {
         cursor.moveToFirst();
         hsv.removeAllViews();
         filterTabsLL.removeAllViews();
         while (!cursor.isAfterLast()) {
+            LinearLayout hll = new LinearLayout(this);
+            hll.setOrientation(LinearLayout.HORIZONTAL);
+            hll.setBackgroundResource(R.drawable.tags_border);
+
             TextView tv = new TextView(this);
             String key = cursor.getString(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
             tv.setText(key);
             tv.setTextColor(Color.WHITE);
-            tv.setPadding(40, 0, 40, 0);
-            filterTabsLL.addView(tv);
+            tv.setPadding(20, 0, 20, 0);
+            ImageView iv = new ImageView(this);
+            iv.setImageResource(R.drawable.ic_clear_white_24dp);
+            iv.setMaxWidth(10);
+            iv.setMaxHeight(10);
+
+            final int pos = cursor.getPosition();
+            iv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    update(cursor, pos);
+                }
+            });
+            hll.addView(tv);
+            hll.addView(iv);
+            filterTabsLL.addView(hll);
             cursor.moveToNext();
         }
         hsv.addView(filterTabsLL);
     }
+
+    private void update(Cursor mCursor, int pos) {
+        ContentValues values = new ContentValues();
+        int count = 0;
+        mCursor.moveToFirst();
+        while (count != pos) {
+            mCursor.moveToNext();
+            count ++;
+        }
+        String key = mCursor.getString(mCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
+        int value = mCursor.getInt(mCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_VALUE));
+        int code = mCursor.getInt(mCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
+        int id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FilterEntry._ID));
+
+        Uri currentUri = ContentUris.withAppendedId(FilterEntry.CONTENT_URI, id);
+
+        values.put(FilterEntry.COLUMN_FILTER_KEY, key);
+        values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+        values.put(FilterEntry.COLUMN_FILTER_IS_CODE, code);
+        getContentResolver().update(currentUri, values, null, null);
+        getLoaderManager().restartLoader(SESSION_LOADER, null, this);
+
+    }
+
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         switch (loader.getId()) {
