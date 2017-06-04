@@ -14,6 +14,9 @@ package com.android.infosessions;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -24,16 +27,15 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SearchView;
+import java.util.Calendar;
+
+import android.support.v7.app.NotificationCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.infosessions.data.SessionContract;
 
@@ -72,6 +74,17 @@ public class MainActivity extends AppCompatActivity{
             case R.id.action_search:
                 Intent intent = new Intent(this, SearchableActivity.class);
                 startActivity(intent);
+                return true;
+            case R.id.action_alert:
+                Long alertTime = Calendar.getInstance().getTimeInMillis() + 5*1000;
+                Intent alertIntent = new Intent(this, AlertReceiver.class);
+
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(this, 1, alertIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+                Toast toast = Toast.makeText(this, "alert click", Toast.LENGTH_LONG);
+                toast.show();
                 return true;
             default:
                 return false;
