@@ -8,14 +8,24 @@ import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 /**
  * Created by Thao on 6/3/17.
  */
 
 public class AlertReceiver extends BroadcastReceiver {
+    String[] value;
+    String title;
+    String time;
+    String location;
     @Override
     public void onReceive(Context context, Intent intent) {
-        createNotification(context, "Time up", "5s passed", "Alert");
+        value = intent.getStringExtra("VALUE").split(",");
+        title = value[0];
+        time = value[1];
+        location = value[2];
+        createNotification(context, "Info session: ", "Go by: ", "Alert");
     }
 
     public void createNotification(Context context, String msg, String msgText, String msgAlert) {
@@ -23,9 +33,9 @@ public class AlertReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(msg)
+                .setContentTitle(msg + title)
                 .setTicker(msgAlert)
-                .setContentText(msgText);
+                .setContentText(msgText + time + " At: " + location);
 
         mBuilder.setContentIntent(notifIntent);
         mBuilder.setDefaults(NotificationCompat.DEFAULT_SOUND);
@@ -33,6 +43,7 @@ public class AlertReceiver extends BroadcastReceiver {
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        mNotificationManager.notify(1, mBuilder.build());
+        int mNotificationId = 1;
+        mNotificationManager.notify(mNotificationId, mBuilder.build());
     }
 }

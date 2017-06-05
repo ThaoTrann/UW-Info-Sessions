@@ -47,6 +47,17 @@
             android:orientation="horizontal">
 
             <Button
+                android:text="Alert"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAllCaps="true"
+                android:textColor="@android:color/holo_blue_dark"
+                android:background="@null"
+                android:id="@+id/alert_button" />
+
+            <Button
                 android:text="RVSP"
                 android:layout_width="0dp"
                 android:layout_weight="1"

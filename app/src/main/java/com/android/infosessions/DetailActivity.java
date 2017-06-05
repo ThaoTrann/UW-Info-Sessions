@@ -1,6 +1,9 @@
 package com.android.infosessions;
 
+import android.app.AlarmManager;
 import android.app.LoaderManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -22,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import static com.android.infosessions.SessionAdapter.getImage;
 
@@ -29,6 +33,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     Uri mUri;
     private static final int LOADER_ID = 0;
     private SessionCursorAdapter mCursorAdapter;
+    private String employer;
+    private String time;
+    private String location;
     private String map_url;
     private String link;
     private String website;
@@ -45,9 +52,24 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mCursorAdapter = new SessionCursorAdapter(this, null);
         getLoaderManager().initLoader(LOADER_ID, null, this);
 
+        Button alert = (Button) findViewById(R.id.alert_button);
         Button rvsp = (Button) findViewById(R.id.rvsp_button);
         Button web = (Button) findViewById(R.id.website_button);
         Button nav = (Button) findViewById(R.id.nav_button);
+
+        alert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Long alertTime = Calendar.getInstance().getTimeInMillis() + 5*1000;
+                Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
+                alertIntent.putExtra("VALUE", employer + "," + time + "," + location);
+                sendBroadcast(alertIntent);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+                alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(getApplication(), 1, alertIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT));
+            }
+        });
 
         rvsp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +133,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         if (cursor.moveToFirst()) {
-            String employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
+            employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
             String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
             String end_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
             String description = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DESCRIPTION));
@@ -125,6 +147,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
             String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
             website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
+
+            time = start_time + " - " + end_time;
+            location = building_code + " " + building_room;
 
             TextView nameTextView = (TextView) findViewById(R.id.employer);
             nameTextView.setText(employer);

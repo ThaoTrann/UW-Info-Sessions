@@ -120,6 +120,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             toast.show();
         }
     }
+    
     private String generalAudienceListSofar = "";
     private String specificAudienceListSofar = "";
 

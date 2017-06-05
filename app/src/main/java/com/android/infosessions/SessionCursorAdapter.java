@@ -53,7 +53,7 @@ public class SessionCursorAdapter extends CursorAdapter {
         nameTextView.setText(employer);
 
         TextView timeTextView = (TextView) view.findViewById(R.id.time);
-        timeTextView.setText(start_time + " " + end_time);
+        timeTextView.setText(start_time + "-" + end_time);
 
         TextView dateTextView = (TextView) view.findViewById(R.id.date);
         dateTextView.setText(date);
