@@ -165,13 +165,12 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                 String[] p = {
                         FilterEntry._ID,
                         FilterEntry.COLUMN_FILTER_KEY,
-                        FilterEntry.COLUMN_FILTER_IS_CODE,
                         FilterEntry.COLUMN_FILTER_VALUE};
 
-                String[] a = { String.valueOf(FilterEntry.VALUE_CHECKED), String.valueOf(FilterEntry.VALUE_NOT_CODE) };
+                String[] a = { String.valueOf(FilterEntry.VALUE_CHECKED) };
 
                 Cursor filterCursor = getContentResolver().query(FilterEntry.CONTENT_URI, p,
-                        FilterEntry.COLUMN_FILTER_VALUE + "=? AND " + FilterEntry.COLUMN_FILTER_IS_CODE + "=?",
+                        FilterEntry.COLUMN_FILTER_VALUE + "=?",
                         a, null);
                 ArrayList<String> filters = new ArrayList<>();
 
@@ -209,18 +208,16 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                         selectionArgs,
                         null);
             case FILTER_LOADER:
-
                 String[] proj = {
                         FilterEntry._ID,
                         FilterEntry.COLUMN_FILTER_KEY,
-                        FilterEntry.COLUMN_FILTER_IS_CODE,
                         FilterEntry.COLUMN_FILTER_VALUE};
 
-                String[] argus = { String.valueOf(FilterEntry.VALUE_CHECKED), String.valueOf(FilterEntry.VALUE_NOT_CODE) };
+                String[] argus = { String.valueOf(FilterEntry.VALUE_CHECKED) };
                 return new CursorLoader(this,
                         FilterEntry.CONTENT_URI,
                         proj,
-                        FilterEntry.COLUMN_FILTER_VALUE + "=? AND " + FilterEntry.COLUMN_FILTER_IS_CODE + "=?",
+                        FilterEntry.COLUMN_FILTER_VALUE + "=?",
                         argus,
                         FilterEntry.COLUMN_FILTER_KEY + " ASC");
             default:
@@ -287,14 +284,12 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         }
         String key = mCursor.getString(mCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
         int value = mCursor.getInt(mCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_VALUE));
-        int code = mCursor.getInt(mCursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
         int id = mCursor.getInt(mCursor.getColumnIndexOrThrow(FilterEntry._ID));
 
         Uri currentUri = ContentUris.withAppendedId(FilterEntry.CONTENT_URI, id);
 
         values.put(FilterEntry.COLUMN_FILTER_KEY, key);
         values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-        values.put(FilterEntry.COLUMN_FILTER_IS_CODE, code);
         getContentResolver().update(currentUri, values, null, null);
         getLoaderManager().restartLoader(SESSION_LOADER, null, this);
 

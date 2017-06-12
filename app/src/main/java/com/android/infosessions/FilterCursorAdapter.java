@@ -32,23 +32,17 @@ public class FilterCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         String key = cursor.getString(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
         int value = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_VALUE));
-        int code = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
+
         TextView textView = (TextView) view.findViewById(R.id.general_division);
         CheckedTextView box = (CheckedTextView) view.findViewById(R.id.specific_division);
+        box.setVisibility(View.VISIBLE);
+        textView.setVisibility(View.GONE);
+        box.setTag(cursor.getPosition());
+        box.setText(key);
+        if (value == FilterEntry.VALUE_CHECKED)
+            box.setChecked(true);
+        else
+            box.setChecked(false);
 
-        if(code == FilterEntry.VALUE_CODE) {
-            box.setVisibility(View.GONE);
-            textView.setVisibility(View.VISIBLE);
-            textView.setText(key);
-        } else {
-            box.setVisibility(View.VISIBLE);
-            textView.setVisibility(View.GONE);
-            box.setTag(cursor.getPosition());
-            box.setText(key.substring(key.indexOf("-")+1, key.length()));
-            if (value == FilterEntry.VALUE_CHECKED)
-                box.setChecked(true);
-            else
-                box.setChecked(false);
-        }
     }
 }

@@ -120,8 +120,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             toast.show();
         }
     }
-    private String generalAudienceListSofar = "";
-    private String specificAudienceListSofar = "";
+    private String audienceListSofar = "";
 
     private void insertSession(ArrayList<Session> sessions) {
 
@@ -149,22 +148,12 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             for(int j = 0; j < mAudienceSA.size(); j++) {
                 String audience = mAudienceSA.get(j).trim();
-                String domain = audience.substring(0, audience.indexOf('-')).trim();
-                if (!generalAudienceListSofar.contains(domain)) {
-                    generalAudienceListSofar += domain + ",";
-                    ContentValues valuesAudience = new ContentValues();
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, domain);
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_IS_CODE, FilterEntry.VALUE_CODE);
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                    getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
-                }
-                if (!specificAudienceListSofar.contains(audience)) {
+                if (!audienceListSofar.contains(audience)) {
                     ContentValues valuesAudience = new ContentValues();
                     valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_IS_CODE, FilterEntry.VALUE_NOT_CODE);
                     valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
                     getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
-                    specificAudienceListSofar += mAudienceSA.get(j) + ",";
+                    audienceListSofar += mAudienceSA.get(j) + ",";
                 }
             }
             // Create a new map of values, where column names are the keys
@@ -188,7 +177,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             // Insert a new row for pet in the database, returning the ID of that new row.
             Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
         }
-        Log.d("LOG_TAG", specificAudienceListSofar);
+        Log.d("LOG_TAG", audienceListSofar);
     }
 
     public long dayToMilliSeconds(String data) {

@@ -70,7 +70,7 @@ public class Session implements Serializable{
         return mStartTime ;
     }
     public String getEndTime() {
-        return mStartTime ;
+        return mEndTime ;
     }
     public String getDay() {
         return mDay;

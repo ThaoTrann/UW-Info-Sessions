@@ -58,7 +58,6 @@ public class FilterActivity extends AppCompatActivity implements LoaderManager.L
         String[] projection = {
                 FilterEntry._ID,
                 FilterEntry.COLUMN_FILTER_KEY,
-                FilterEntry.COLUMN_FILTER_IS_CODE,
                 FilterEntry.COLUMN_FILTER_VALUE};
         Cursor cursor = getContentResolver().query(currentUri, projection, null, null, null);
 
@@ -66,19 +65,13 @@ public class FilterActivity extends AppCompatActivity implements LoaderManager.L
         if (cursor.moveToFirst()) {
             String key = cursor.getString(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_KEY));
             int value = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_VALUE));
-            int code = cursor.getInt(cursor.getColumnIndexOrThrow(FilterEntry.COLUMN_FILTER_IS_CODE));
 
             values.put(FilterEntry.COLUMN_FILTER_KEY, key);
-            if(value == FilterEntry.VALUE_NOT_CODE) {
-                if (value == FilterEntry.VALUE_CHECKED) {
-                    values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                } else {
-                    values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
-                }
-            } else {
+            if (value == FilterEntry.VALUE_CHECKED) {
                 values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+            } else {
+                values.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_CHECKED);
             }
-            values.put(FilterEntry.COLUMN_FILTER_IS_CODE, code);
         }
         getContentResolver().update(currentUri, values, null, null);
     }
@@ -105,7 +98,6 @@ public class FilterActivity extends AppCompatActivity implements LoaderManager.L
         String[] projection = {
                 FilterEntry._ID,
                 FilterEntry.COLUMN_FILTER_KEY,
-                FilterEntry.COLUMN_FILTER_IS_CODE,
                 FilterEntry.COLUMN_FILTER_VALUE};
 
         return new CursorLoader(this,

@@ -37,7 +37,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " + FilterEntry.TABLE_NAME + " (" +
                         FilterEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         FilterEntry.COLUMN_FILTER_KEY + " TEXT, " +
-                        FilterEntry.COLUMN_FILTER_IS_CODE + " INTEGER, " +
                         FilterEntry.COLUMN_FILTER_VALUE + " INTEGER);";
 
         db.execSQL(SQL_CREATE_FILTER_ENTRIES);
