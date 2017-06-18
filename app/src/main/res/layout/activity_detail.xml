@@ -32,7 +32,6 @@
                 android:layout_gravity="center_vertical"
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
-                android:maxLines="1"
                 android:textAllCaps="true"
                 android:textColor="@android:color/tertiary_text_dark"
                 android:textSize="24sp"
