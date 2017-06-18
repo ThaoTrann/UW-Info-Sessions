@@ -165,8 +165,11 @@ public final class QueryUtils extends AppCompatActivity {
 
                     URL logo_url = createUrl(LOGO_URL+ employer + DOMAIN);
                     Bitmap bmp = null;
+                    InputStream inputStream = null;
                     try {
-                        bmp = BitmapFactory.decodeStream(logo_url.openConnection().getInputStream());
+                        inputStream = logo_url.openConnection().getInputStream();
+                        bmp = BitmapFactory.decodeStream(inputStream);
+                        inputStream.close();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

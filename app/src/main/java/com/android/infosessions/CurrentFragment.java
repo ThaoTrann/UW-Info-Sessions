@@ -27,6 +27,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +57,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
     private ListView sessionsListView;
     private TextView updateTimeTV;
+    private RelativeLayout loadingRL;
+    private ProgressBar spinner;
 
     private static final String UWAPI_REQUEST_URL =
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
@@ -78,6 +82,9 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
         updateTimeTV = (TextView) rootView.findViewById(R.id.update_time);
         updateTimeTV.setVisibility(View.VISIBLE);
+
+        loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
+        spinner = (ProgressBar) loadingRL.findViewById(R.id.spinner);
 
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
@@ -127,13 +134,21 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected ArrayList<Session> doInBackground(String... params) {
             ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], getContext());
+            insertSession(sessions);
             return sessions;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingRL.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
-            insertSession(sessions);
+            //spinner.setVisibility(View.GONE);
+
             //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             //toast.show();
             Calendar rightNow = Calendar.getInstance();
@@ -205,7 +220,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             // Insert a new row for pet in the database, returning the ID of that new row.
             Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
         }
-        Log.d("LOG_TAG", audienceListSofar);
+        //Log.d("LOG_TAG", audienceListSofar);
     }
     // convert from bitmap to byte array
     public static byte[] getBytes(Bitmap bitmap) {
@@ -222,6 +237,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         Date date = new Date(year, month, day);
         return date.getTime();
     }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Define a projection that specifies the columns from the table we care about.
@@ -283,6 +299,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         mCursorAdapter.swapCursor(data);
+        loadingRL.setVisibility(View.GONE);
     }
 
     @Override
