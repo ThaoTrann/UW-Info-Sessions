@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -19,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,6 +37,8 @@ import java.util.Date;
 public final class QueryUtils extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
+    public static final String LOGO_URL = "https://logo.clearbit.com/";
+    public static final String DOMAIN = ".com";
 
     public static Calendar c;
 
@@ -143,9 +148,35 @@ public final class QueryUtils extends AppCompatActivity {
             for(int i = 0; i < sessionsJSONArray.length(); i++) {
                 JSONObject sessionJSONObject = sessionsJSONArray.getJSONObject(i);
 
-                String name = sessionJSONObject.getString("employer");
-                if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
-                    Session session = new Session(sessionJSONObject, getEmployerLogo(name));
+                String employer = sessionJSONObject.getString("employer");
+                
+                if(!employer.equals("Closed Info Session") && !employer.equals("Closed Information Session") ) {
+                    //employer = "google";
+                    if(employer.contains("**")) {
+                        employer = employer.substring(employer.indexOf("**", employer.indexOf("**") + 1), employer.length());
+                    }
+                    if(employer.contains("*")) {
+                        employer = employer.substring(employer.indexOf("*", employer.indexOf("*") ), employer.length());
+                    }
+                    employer = employer.replace(" ", "");
+                    employer = employer.replace("Inc.", "");
+                    employer = employer.replace(".", "");
+                    employer = employer.trim();
+
+                    URL logo_url = createUrl(LOGO_URL+ employer + DOMAIN);
+                    Bitmap bmp = null;
+                    try {
+                        bmp = BitmapFactory.decodeStream(logo_url.openConnection().getInputStream());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(bmp == null) {
+                        bmp = BitmapFactory.decodeResource(context.getResources(),
+                                R.drawable.nonlogo);
+                    }
+
+                    Session session = new Session(sessionJSONObject, bmp);
                     sessions.add(session);
                 }
             }
@@ -210,6 +241,7 @@ public final class QueryUtils extends AppCompatActivity {
         }
         return name;
     }
+
 }
 
 

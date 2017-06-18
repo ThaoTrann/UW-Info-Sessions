@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -36,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -135,7 +137,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mWebsite = session.getWebsite();
             String mLink = session.getLink();
             String mDescription = session.getDescription();
-            String mLogo = session.getLogoString();
+            Bitmap mLogo = session.getLogoBitmap();
+
             if (mDescription.isEmpty()) {
                 mDescription = "Employer's Description is not provided.";
             }
@@ -156,6 +159,9 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                     audienceListSofar += mAudienceSA.get(j) + ",";
                 }
             }
+            if(mLogo == null) {
+                Log.d("mLogo", "null logo");
+            }
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
             values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
@@ -172,12 +178,18 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
             values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mRoom);
             values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
-            values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
+            values.put(SessionEntry.COLUMN_SESSION_LOGO, getBytes(mLogo));
 
             // Insert a new row for pet in the database, returning the ID of that new row.
             Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
         }
         Log.d("LOG_TAG", audienceListSofar);
+    }
+    // convert from bitmap to byte array
+    public static byte[] getBytes(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        return stream.toByteArray();
     }
 
     public long dayToMilliSeconds(String data) {
