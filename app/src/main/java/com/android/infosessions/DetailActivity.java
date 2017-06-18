@@ -62,7 +62,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             public void onClick(View v) {
                 Long alertTime = Calendar.getInstance().getTimeInMillis() + 5*1000;
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
-                alertIntent.putExtra("VALUE", employer + "," + time + "," + location);
+                alertIntent.putExtra("VALUE", employer + "," + time + "," + location + "," + mUri);
                 sendBroadcast(alertIntent);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 

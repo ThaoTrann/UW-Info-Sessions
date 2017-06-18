@@ -3,10 +3,14 @@ package com.android.infosessions;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
+
+import com.android.infosessions.data.SessionContract;
 
 import java.util.ArrayList;
 
@@ -19,17 +23,22 @@ public class AlertReceiver extends BroadcastReceiver {
     String title;
     String time;
     String location;
+    Uri mUri;
     @Override
     public void onReceive(Context context, Intent intent) {
         value = intent.getStringExtra("VALUE").split(",");
         title = value[0];
         time = value[1];
         location = value[2];
+        mUri = Uri.parse(value[3]);
         createNotification(context, "Info session: ", "Go by: ", "Alert");
     }
 
     public void createNotification(Context context, String msg, String msgText, String msgAlert) {
-        PendingIntent notifIntent = PendingIntent.getActivity(context, 0, new Intent(context, MainActivity.class), 0);
+        Intent intent = new Intent(context, DetailActivity.class);
+        intent.setData(mUri);
+
+        PendingIntent notifIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)

@@ -159,13 +159,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
         }
     }
-<<<<<<< HEAD
-    
-    private String generalAudienceListSofar = "";
-    private String specificAudienceListSofar = "";
-=======
     private String audienceListSofar = "";
->>>>>>> master
 
     private void insertSession(ArrayList<Session> sessions) {
 
