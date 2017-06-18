@@ -189,59 +189,6 @@ public final class QueryUtils extends AppCompatActivity {
         // Return the list of earthquakes
         return sessions;
     }
-
-    public static String getEmployerLogo(String str) {
-        logos.add("a500px");
-        logos.add("a9");
-        logos.add("adroll");
-        logos.add("amazon");
-        logos.add("arista");
-        logos.add("autodesk");
-        logos.add("bazaarvoice");
-        logos.add("bloomberg");
-        logos.add("cibc");
-        logos.add("dac_group");
-        logos.add("digiflare");
-        logos.add("electronic_arts");
-        logos.add("facebook");
-        logos.add("genesys");
-        logos.add("google");
-        logos.add("groupby");
-        logos.add("hootsuite");
-        logos.add("league_inc");
-        logos.add("loblaw_digital");
-        logos.add("meraki");
-        logos.add("microsoft");
-        logos.add("pointclickcare");
-        logos.add("rbc_technology");
-        logos.add("redfin");
-        logos.add("td_technology");
-        logos.add("tribalscale");
-        logos.add("twitter");
-        logos.add("uber");
-        logos.add("uken_games");
-        logos.add("watpad");
-        logos.add("wave_accounting");
-        logos.add("whatsapp");
-        logos.add("yelp");
-        logos.add("ic_domain_black_24dp");
-        String name = str;
-        name = name.replace(" ", "_");
-        name = name.toLowerCase();
-        boolean replaced = false;
-        for(int i = 0; i < logos.size(); i++) {
-            if(name.compareToIgnoreCase(logos.get(i)) == 0 || name.contains(logos.get(i)) || logos.get(i).contains(name)) {
-                name = logos.get(i);
-                replaced = true;
-                break;
-            }
-        }
-        if(!replaced) {
-            name = "nologo";
-        }
-        return name;
-    }
-
 }
 
 
