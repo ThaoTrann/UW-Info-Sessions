@@ -37,7 +37,6 @@ public class DbHelper extends SQLiteOpenHelper {
                 "CREATE TABLE " + FilterEntry.TABLE_NAME + " (" +
                         FilterEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         FilterEntry.COLUMN_FILTER_KEY + " TEXT, " +
-                        FilterEntry.COLUMN_FILTER_IS_CODE + " INTEGER, " +
                         FilterEntry.COLUMN_FILTER_VALUE + " INTEGER);";
 
         db.execSQL(SQL_CREATE_FILTER_ENTRIES);
@@ -58,7 +57,7 @@ public class DbHelper extends SQLiteOpenHelper {
                         SessionEntry.COLUMN_SESSION_BUILDING_NAME + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_MAP_URL + " TEXT, " +
-                        SessionEntry.COLUMN_SESSION_LOGO + " TEXT, " +
+                        SessionEntry.COLUMN_SESSION_LOGO + " BLOB, " +
                         SessionEntry.COLUMN_SESSION_AUDIENCE + " TEXT);";
 
         db.execSQL(SQL_CREATE_SESSION_ENTRIES);

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
@@ -31,9 +32,6 @@ import java.util.Date;
 public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = MainActivity.class.getName();
     private ListView sessionsListView;
-    private static final String UWAPI_REQUEST_URL =
-            "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
-
     private SessionCursorAdapter mCursorAdapter;
 
     public ArchivedFragment() {
@@ -47,7 +45,6 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
         sessionsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

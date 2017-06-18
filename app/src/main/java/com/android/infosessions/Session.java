@@ -28,11 +28,11 @@ public class Session implements Serializable{
     private String mBuildingName;
     private String mRoom;
     private String mMapUrl;
-    private String mLogoString;
     private String mAudience;
+    private Bitmap mLogo;
     private ArrayList<String> mAudienceStringArray;
 
-    public Session(JSONObject info, String logoString) throws JSONException {
+    public Session(JSONObject info, Bitmap logo) throws JSONException {
         mInfo = info;
         mName = info.getString("employer");
         mStartTime = info.getString("start_time");
@@ -42,7 +42,7 @@ public class Session implements Serializable{
         mWebsite = info.getString("website");
         mLink = info.getString("link");
         mDetail = info.getString("description");
-        mLogoString = logoString;
+        mLogo = logo;
         if(mDetail.isEmpty()) {
             mDetail = "Employer's Description is not provided.";
         }
@@ -103,8 +103,8 @@ public class Session implements Serializable{
     public String toJSONString() {
         return mInfo.toString();
     }
-    public String getLogoString() {
-        return mLogoString;
+    public Bitmap getLogoBitmap() {
+        return mLogo;
     }
     public String getMapUrl() {
         return mMapUrl;

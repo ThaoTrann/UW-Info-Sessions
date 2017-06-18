@@ -8,6 +8,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -26,8 +28,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import static com.android.infosessions.SessionAdapter.getImage;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     Uri mUri;
@@ -145,7 +145,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
             String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
             link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
-            String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+            //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
             website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
 
             time = start_time + " - " + end_time;
@@ -170,11 +170,18 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             audienceTextView.setText(audience);
 
             ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
-            Drawable drawable = getImage(logoView.getContext(), logo);
+            byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+            Bitmap logo = getImage(image);
 
-            logoView.setImageDrawable(drawable);
+            //logoView.setImageDrawable(drawable);
+            logoView.setImageBitmap(logo);
 
         }
+    }
+
+    // convert from byte array to bitmap
+    public static Bitmap getImage(byte[] image) {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
     @Override
