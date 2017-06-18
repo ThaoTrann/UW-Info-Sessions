@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.infosessions.data.DbHelper;
@@ -38,6 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -52,6 +54,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public static final String LOG_TAG = MainActivity.class.getName();
 
     private ListView sessionsListView;
+    private TextView updateTimeTV;
+
     private static final String UWAPI_REQUEST_URL =
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
     private static final int LOADER_ID = 0;
@@ -72,6 +76,9 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
+        updateTimeTV = (TextView) rootView.findViewById(R.id.update_time);
+        updateTimeTV.setVisibility(View.VISIBLE);
+
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
 
@@ -106,6 +113,15 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         return rootView;
     }
+    String getMonthForInt(int num) {
+        String month = "wrong";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (num >= 0 && num <= 11 ) {
+            month = months[num];
+        }
+        return month;
+    }
 
     public class SessionTask extends AsyncTask<String, Void, ArrayList<Session>> {
         @Override
@@ -118,8 +134,14 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
             insertSession(sessions);
-            Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
-            toast.show();
+            //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
+            //toast.show();
+            Calendar rightNow = Calendar.getInstance();
+            int day = rightNow.get(rightNow.DAY_OF_MONTH);
+            int month = rightNow.get(rightNow.MONTH) + 1;
+            int year = rightNow.get(rightNow.YEAR);
+
+            updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
         }
     }
     private String audienceListSofar = "";

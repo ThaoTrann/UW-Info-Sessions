@@ -74,7 +74,17 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
+        <TextView
+            android:id="@+id/update_time"
+            android:layout_gravity="center"
+            android:textColor="@color/textColorEmployerDetails"
+            android:padding="12dp"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
     </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
