@@ -1,5 +1,6 @@
 package com.android.infosessions;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.app.SearchManager;
@@ -88,6 +89,16 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
+        sessionsListView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                sessionsListView.removeOnLayoutChangeListener(this);
+                Log.e(LOG_TAG, "finish updated");
+            }
+        });
+
+        mCursorAdapter.notifyDataSetChanged();
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
@@ -134,7 +145,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected ArrayList<Session> doInBackground(String... params) {
             ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], getContext());
-            insertSession(sessions);
+            insertSession(sessions, getActivity());
             return sessions;
         }
 
@@ -161,7 +172,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     }
     private String audienceListSofar = "";
 
-    private void insertSession(ArrayList<Session> sessions) {
+    private void insertSession(ArrayList<Session> sessions, Activity activity) {
 
         for(int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
@@ -192,7 +203,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                     ContentValues valuesAudience = new ContentValues();
                     valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
                     valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                    getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
+                    activity.getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
                     audienceListSofar += mAudienceSA.get(j) + ",";
                 }
             }
@@ -218,7 +229,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_LOGO, getBytes(mLogo));
 
             // Insert a new row for pet in the database, returning the ID of that new row.
-            Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+            Uri newUri = activity.getContentResolver().insert(SessionEntry.CONTENT_URI, values);
         }
         //Log.d("LOG_TAG", audienceListSofar);
     }
@@ -283,6 +294,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             SessionTask sessionTask = new SessionTask();
             sessionTask.execute(UWAPI_REQUEST_URL);
         }
+
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
         String[] selectionArgs = { String.valueOf(milliSeconds) };
 
