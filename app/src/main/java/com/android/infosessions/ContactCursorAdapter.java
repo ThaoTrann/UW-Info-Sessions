@@ -2,6 +2,7 @@ package com.android.infosessions;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +33,10 @@ public class ContactCursorAdapter extends CursorAdapter {
         TextView tvBody = (TextView) view.findViewById(R.id.name);
 
         TextView tvName_tag = (TextView) view.findViewById(R.id.name_tag);
-        TextView tvPriority = (TextView) view.findViewById(R.id.summary);
+        TextView tvPriority = (TextView) view.findViewById(R.id.phone_number);
         // Extract properties from cursor
-        String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactEntry.COLUMN_CONTACT_NAME));
-        String summary = cursor.getString(cursor.getColumnIndexOrThrow(ContactEntry.COLUMN_CONTACT_EMAIL));
+        String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+        String summary = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
 
 //        tvName_tag.setText(name.charAt(0));
 

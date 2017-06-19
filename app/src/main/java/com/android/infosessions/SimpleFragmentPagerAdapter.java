@@ -10,7 +10,7 @@ import android.support.v13.app.FragmentPagerAdapter;
  */
 public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private String tabTitles[] = new String[] { "Current", "Archived"};
+    private String tabTitles[] = new String[] { "Current", "Archived", "Contacts"};
 
     public SimpleFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -20,8 +20,10 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         if (position == 0) {
             return new CurrentFragment();
+        } if (position == 1) {
+            return new ArchivedFragment();
         }
-        return new ArchivedFragment();
+        return new ContactFragment();
     }
     @Override
     public CharSequence getPageTitle(int position) {
@@ -30,6 +32,6 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
     }
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 }

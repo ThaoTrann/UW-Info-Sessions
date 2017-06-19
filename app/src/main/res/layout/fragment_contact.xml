@@ -45,4 +45,4 @@
         android:layout_margin="20dp"
         android:src="@drawable/ic_person_add_black_24dp"/>
 
-    </RelativeLayout>
+</RelativeLayout>
