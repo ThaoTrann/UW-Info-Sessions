@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
     <TextView
         android:paddingTop="24dp"
+        android:paddingBottom="24dp"
         android:id="@+id/general_division"
         android:textColor="@color/textColorEmployerDetails"
         android:layout_width="match_parent"

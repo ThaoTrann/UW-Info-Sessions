@@ -2,6 +2,8 @@ package com.android.infosessions;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.SpannableString;
+import android.text.style.LeadingMarginSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,11 +40,17 @@ public class FilterCursorAdapter extends CursorAdapter {
         box.setVisibility(View.VISIBLE);
         textView.setVisibility(View.GONE);
         box.setTag(cursor.getPosition());
-        box.setText(key);
+        box.setText(createIndentedText(key, 0, 50));
         if (value == FilterEntry.VALUE_CHECKED)
             box.setChecked(true);
         else
             box.setChecked(false);
 
+    }
+
+    static SpannableString createIndentedText(String text, int marginFirstLine, int marginNextLines) {
+        SpannableString result=new SpannableString(text);
+        result.setSpan(new LeadingMarginSpan.Standard(marginFirstLine, marginNextLines),0,text.length(),0);
+        return result;
     }
 }

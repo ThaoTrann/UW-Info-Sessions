@@ -32,7 +32,7 @@ public class Session implements Serializable{
     private Bitmap mLogo;
     private ArrayList<String> mAudienceStringArray;
 
-    public Session(JSONObject info, Bitmap logo) throws JSONException {
+    public Session(JSONObject info) throws JSONException {
         mInfo = info;
         mName = info.getString("employer");
         mStartTime = info.getString("start_time");
@@ -42,7 +42,6 @@ public class Session implements Serializable{
         mWebsite = info.getString("website");
         mLink = info.getString("link");
         mDetail = info.getString("description");
-        mLogo = logo;
         if(mDetail.isEmpty()) {
             mDetail = "Employer's Description is not provided.";
         }
