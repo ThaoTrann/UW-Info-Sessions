@@ -140,11 +140,13 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         }
         return month;
     }
+    private String audienceListSofar = "";
 
     public class SessionTask extends AsyncTask<String, Void, ArrayList<Session>> {
         @Override
         protected ArrayList<Session> doInBackground(String... params) {
             ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], getContext());
+            audienceListSofar = "";
             insertSession(sessions);
             return sessions;
         }
@@ -173,7 +175,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             sessionsListView.setVisibility(View.VISIBLE);
         }
     }
-    private String audienceListSofar = "";
 
     private void insertSession(ArrayList<Session> sessions) {
 

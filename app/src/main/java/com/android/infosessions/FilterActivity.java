@@ -32,7 +32,7 @@ public class FilterActivity extends AppCompatActivity implements LoaderManager.L
 
     private boolean expanded = false;
     private ListView listView;
-    private static final int LOADER_ID = 2;
+    private static final int LOADER_ID = 0;
     private FilterCursorAdapter mCursorAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
