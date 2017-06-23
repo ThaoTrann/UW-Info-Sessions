@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -19,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -34,6 +37,8 @@ import java.util.Date;
 public final class QueryUtils extends AppCompatActivity {
     public static final String LOG_TAG = MainActivity.class.getName();
     private static ArrayList<String> logos = new ArrayList<>();
+    public static final String LOGO_URL = "https://logo.clearbit.com/";
+    public static final String DOMAIN = ".com";
 
     public static Calendar c;
 
@@ -143,9 +148,38 @@ public final class QueryUtils extends AppCompatActivity {
             for(int i = 0; i < sessionsJSONArray.length(); i++) {
                 JSONObject sessionJSONObject = sessionsJSONArray.getJSONObject(i);
 
-                String name = sessionJSONObject.getString("employer");
-                if(!name.equals("Closed Info Session") && !name.equals("Closed Information Session") ) {
-                    Session session = new Session(sessionJSONObject, getEmployerLogo(name));
+                String employer = sessionJSONObject.getString("employer");
+                
+                if(!employer.equals("Closed Info Session") && !employer.equals("Closed Information Session") ) {
+                    //employer = "google";
+                    if(employer.contains("**")) {
+                        employer = employer.substring(employer.indexOf("**", employer.indexOf("**") + 1), employer.length());
+                    }
+                    if(employer.contains("*")) {
+                        employer = employer.substring(employer.indexOf("*", employer.indexOf("*") ), employer.length());
+                    }
+                    employer = employer.replace(" ", "");
+                    employer = employer.replace("Inc.", "");
+                    employer = employer.replace(".", "");
+                    employer = employer.trim();
+
+                    URL logo_url = createUrl(LOGO_URL+ employer + DOMAIN);
+                    Bitmap bmp = null;
+                    InputStream inputStream = null;
+                    try {
+                        inputStream = logo_url.openConnection().getInputStream();
+                        bmp = BitmapFactory.decodeStream(inputStream);
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(bmp == null) {
+                        bmp = BitmapFactory.decodeResource(context.getResources(),
+                                R.drawable.nonlogo);
+                    }
+
+                    Session session = new Session(sessionJSONObject, bmp);
                     sessions.add(session);
                 }
             }
@@ -157,58 +191,6 @@ public final class QueryUtils extends AppCompatActivity {
         }
         // Return the list of earthquakes
         return sessions;
-    }
-
-    public static String getEmployerLogo(String str) {
-        logos.add("a500px");
-        logos.add("a9");
-        logos.add("adroll");
-        logos.add("amazon");
-        logos.add("arista");
-        logos.add("autodesk");
-        logos.add("bazaarvoice");
-        logos.add("bloomberg");
-        logos.add("cibc");
-        logos.add("dac_group");
-        logos.add("digiflare");
-        logos.add("electronic_arts");
-        logos.add("facebook");
-        logos.add("genesys");
-        logos.add("google");
-        logos.add("groupby");
-        logos.add("hootsuite");
-        logos.add("league_inc");
-        logos.add("loblaw_digital");
-        logos.add("meraki");
-        logos.add("microsoft");
-        logos.add("pointclickcare");
-        logos.add("rbc_technology");
-        logos.add("redfin");
-        logos.add("td_technology");
-        logos.add("tribalscale");
-        logos.add("twitter");
-        logos.add("uber");
-        logos.add("uken_games");
-        logos.add("watpad");
-        logos.add("wave_accounting");
-        logos.add("whatsapp");
-        logos.add("yelp");
-        logos.add("ic_domain_black_24dp");
-        String name = str;
-        name = name.replace(" ", "_");
-        name = name.toLowerCase();
-        boolean replaced = false;
-        for(int i = 0; i < logos.size(); i++) {
-            if(name.compareToIgnoreCase(logos.get(i)) == 0 || name.contains(logos.get(i)) || logos.get(i).contains(name)) {
-                name = logos.get(i);
-                replaced = true;
-                break;
-            }
-        }
-        if(!replaced) {
-            name = "nologo";
-        }
-        return name;
     }
 }
 

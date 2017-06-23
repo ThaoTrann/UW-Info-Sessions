@@ -1,5 +1,6 @@
 package com.android.infosessions;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.app.SearchManager;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -26,6 +28,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.infosessions.data.DbHelper;
@@ -36,6 +41,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -50,6 +57,10 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public static final String LOG_TAG = MainActivity.class.getName();
 
     private ListView sessionsListView;
+    private TextView updateTimeTV;
+    private RelativeLayout loadingRL;
+    private ProgressBar spinner;
+
     private static final String UWAPI_REQUEST_URL =
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
     private static final int LOADER_ID = 0;
@@ -70,8 +81,24 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
+        updateTimeTV = (TextView) rootView.findViewById(R.id.update_time);
+        updateTimeTV.setVisibility(View.VISIBLE);
+
+        loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
+        spinner = (ProgressBar) loadingRL.findViewById(R.id.spinner);
+
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
+        sessionsListView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                sessionsListView.removeOnLayoutChangeListener(this);
+                Log.e(LOG_TAG, "finish updated");
+            }
+        });
+
+        mCursorAdapter.notifyDataSetChanged();
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
@@ -104,25 +131,48 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         return rootView;
     }
+    String getMonthForInt(int num) {
+        String month = "wrong";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (num >= 0 && num <= 11 ) {
+            month = months[num];
+        }
+        return month;
+    }
 
     public class SessionTask extends AsyncTask<String, Void, ArrayList<Session>> {
         @Override
         protected ArrayList<Session> doInBackground(String... params) {
             ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], getContext());
+            insertSession(sessions, getActivity());
             return sessions;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loadingRL.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
-            insertSession(sessions);
-            Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
-            toast.show();
+            //spinner.setVisibility(View.GONE);
+
+            //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
+            //toast.show();
+            Calendar rightNow = Calendar.getInstance();
+            int day = rightNow.get(rightNow.DAY_OF_MONTH);
+            int month = rightNow.get(rightNow.MONTH) + 1;
+            int year = rightNow.get(rightNow.YEAR);
+
+            updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
         }
     }
     private String audienceListSofar = "";
 
-    private void insertSession(ArrayList<Session> sessions) {
+    private void insertSession(ArrayList<Session> sessions, Activity activity) {
 
         for(int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
@@ -135,7 +185,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mWebsite = session.getWebsite();
             String mLink = session.getLink();
             String mDescription = session.getDescription();
-            String mLogo = session.getLogoString();
+            Bitmap mLogo = session.getLogoBitmap();
+
             if (mDescription.isEmpty()) {
                 mDescription = "Employer's Description is not provided.";
             }
@@ -152,9 +203,12 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                     ContentValues valuesAudience = new ContentValues();
                     valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
                     valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                    getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
+                    activity.getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
                     audienceListSofar += mAudienceSA.get(j) + ",";
                 }
+            }
+            if(mLogo == null) {
+                Log.d("mLogo", "null logo");
             }
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
@@ -172,12 +226,18 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
             values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mRoom);
             values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
-            values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
+            values.put(SessionEntry.COLUMN_SESSION_LOGO, getBytes(mLogo));
 
             // Insert a new row for pet in the database, returning the ID of that new row.
-            Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+            Uri newUri = activity.getContentResolver().insert(SessionEntry.CONTENT_URI, values);
         }
-        Log.d("LOG_TAG", audienceListSofar);
+        //Log.d("LOG_TAG", audienceListSofar);
+    }
+    // convert from bitmap to byte array
+    public static byte[] getBytes(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        return stream.toByteArray();
     }
 
     public long dayToMilliSeconds(String data) {
@@ -188,6 +248,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         Date date = new Date(year, month, day);
         return date.getTime();
     }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Define a projection that specifies the columns from the table we care about.
@@ -233,6 +294,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             SessionTask sessionTask = new SessionTask();
             sessionTask.execute(UWAPI_REQUEST_URL);
         }
+
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
         String[] selectionArgs = { String.valueOf(milliSeconds) };
 
@@ -249,6 +311,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         mCursorAdapter.swapCursor(data);
+        loadingRL.setVisibility(View.GONE);
     }
 
     @Override
