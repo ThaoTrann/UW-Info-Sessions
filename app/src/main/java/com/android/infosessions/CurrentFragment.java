@@ -85,6 +85,10 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
         loadingRL.setVisibility(View.VISIBLE);
+<<<<<<< HEAD
+=======
+        spinner = (ProgressBar) loadingRL.findViewById(R.id.spinner);
+>>>>>>> master
 
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
@@ -151,22 +155,32 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Toast toast = Toast.makeText(getContext(), "PreExecute", Toast.LENGTH_SHORT);
+            toast.show();
             loadingRL.setVisibility(View.VISIBLE);
+            sessionsListView.setVisibility(View.GONE);
         }
 
         @Override
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
+<<<<<<< HEAD
             //spinner.setVisibility(View.GONE);
             loadingRL.setVisibility(View.GONE);
+=======
+
+>>>>>>> master
             //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             //toast.show();
             Calendar rightNow = Calendar.getInstance();
             int day = rightNow.get(rightNow.DAY_OF_MONTH);
             int month = rightNow.get(rightNow.MONTH) + 1;
             int year = rightNow.get(rightNow.YEAR);
-
+            Toast toast = Toast.makeText(getContext(), "PostExecute", Toast.LENGTH_SHORT);
+            toast.show();
             updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
+            loadingRL.setVisibility(View.GONE);
+            sessionsListView.setVisibility(View.VISIBLE);
         }
     }
     private String audienceListSofar = "";
@@ -194,18 +208,21 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mCode = session.getBuildingCode();
             String mMapUrl = session.getMapUrl();
             String mAudience = session.getAudience();
-            ArrayList<String> mAudienceSA = session.getAudienceStringArray();
-
-            for(int j = 0; j < mAudienceSA.size(); j++) {
-                String audience = mAudienceSA.get(j).trim();
-                if (!audienceListSofar.contains(audience)) {
-                    ContentValues valuesAudience = new ContentValues();
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                    activity.getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
-                    audienceListSofar += mAudienceSA.get(j) + ",";
+            if(!mAudience.isEmpty()) {
+                ArrayList<String> mAudienceSA = session.getAudienceStringArray();
+                
+                for (int j = 0; j < mAudienceSA.size(); j++) {
+                    String audience = mAudienceSA.get(j).trim();
+                    if (!audienceListSofar.contains(audience)) {
+                        ContentValues valuesAudience = new ContentValues();
+                        valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
+                        valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+                        getContext().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
+                        audienceListSofar += mAudienceSA.get(j) + ",";
+                    }
                 }
             }
+
             if(mLogo == null) {
                 Log.d("mLogo", "null logo");
             }
@@ -228,7 +245,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_LOGO, getBytes(mLogo));
 
             // Insert a new row for pet in the database, returning the ID of that new row.
-            Uri newUri = activity.getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+            getContext().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+
         }
         //Log.d("LOG_TAG", audienceListSofar);
     }
@@ -290,11 +308,14 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 null);
 
         if(cursor.getCount() == 0) {
+            loadingRL.setVisibility(View.VISIBLE);
             SessionTask sessionTask = new SessionTask();
             sessionTask.execute(UWAPI_REQUEST_URL);
         } else {
             loadingRL.setVisibility(View.GONE);
         }
+
+        db.close();
 
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
         String[] selectionArgs = { String.valueOf(milliSeconds) };
@@ -321,5 +342,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
+        loadingRL.setVisibility(View.GONE);
     }
 }
