@@ -49,8 +49,8 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     HorizontalScrollView hsv;
     private LinearLayout filterTabsLL;
 
-    private static final int SESSION_LOADER = 0;
-    private static final int FILTER_LOADER = 1;
+    private static final int SESSION_LOADER = 3;
+    private static final int FILTER_LOADER = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

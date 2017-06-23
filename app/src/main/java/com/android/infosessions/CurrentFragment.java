@@ -59,7 +59,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     private ListView sessionsListView;
     private TextView updateTimeTV;
     private RelativeLayout loadingRL;
-    private ProgressBar spinner;
 
     private static final String UWAPI_REQUEST_URL =
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
@@ -85,7 +84,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         updateTimeTV.setVisibility(View.VISIBLE);
 
         loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
-        spinner = (ProgressBar) loadingRL.findViewById(R.id.spinner);
+        loadingRL.setVisibility(View.VISIBLE);
 
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
@@ -159,7 +158,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
             //spinner.setVisibility(View.GONE);
-
+            loadingRL.setVisibility(View.GONE);
             //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             //toast.show();
             Calendar rightNow = Calendar.getInstance();
@@ -293,6 +292,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         if(cursor.getCount() == 0) {
             SessionTask sessionTask = new SessionTask();
             sessionTask.execute(UWAPI_REQUEST_URL);
+        } else {
+            loadingRL.setVisibility(View.GONE);
         }
 
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
@@ -311,7 +312,9 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         mCursorAdapter.swapCursor(data);
-        loadingRL.setVisibility(View.GONE);
+        //loadingRL.setVisibility(View.GONE);
+        Toast toast = Toast.makeText(getContext(), "onLoadFinished", Toast.LENGTH_SHORT);
+        toast.show();
     }
 
     @Override
