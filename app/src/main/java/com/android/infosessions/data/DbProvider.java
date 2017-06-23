@@ -8,13 +8,12 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.android.infosessions.Session;
 import com.android.infosessions.data.ContactContract.ContactEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 import com.android.infosessions.data.FilterContract.FilterEntry;
+import com.android.infosessions.data.LogoContract.LogoEntry;
 /**
  * Created by Thao on 5/16/17.
  */
@@ -30,17 +29,19 @@ public class DbProvider extends ContentProvider {
      */
     private static final int CONTACTS = 100;
     private static final int SESSIONS = 200;
+    private static final int LOGOS = 300;
+    private static final int FILTERS = 400;
 
     private static final int SEARCH_SUGGEST_NONE = 0;
     private static final int SEARCH_SUGGEST = 1;
 
-    private static final int FILTERS = 2;
-    private static final int FILTER_ID = 3;
     /**
      * URI matcher code for the content URI for a single entry in table
      */
     private static final int CONTACT_ID = 101;
     private static final int SESSION_ID = 201;
+    private static final int LOGO_ID = 301;
+    private static final int FILTER_ID = 401;
 
     /**
      * UriMatcher object to match a content URI to a corresponding code.
@@ -61,6 +62,8 @@ public class DbProvider extends ContentProvider {
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SessionContract.PATH_SESSIONS + "/#", SESSION_ID);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, FilterContract.PATH_FILTERS, FILTERS);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, FilterContract.PATH_FILTERS + "/#", FILTER_ID);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, LogoContract.PATH_FILTERS, LOGOS);
+        sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, LogoContract.PATH_FILTERS + "/#", LOGO_ID);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH_SUGGEST_NONE);
         sUriMatcher.addURI(SessionContract.CONTENT_AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY + "/*", SEARCH_SUGGEST);
     }
@@ -115,6 +118,18 @@ public class DbProvider extends ContentProvider {
                 cursor = database.query(FilterEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
+            case LOGOS:
+                cursor = database.query(LogoEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case LOGO_ID:
+                selection = FilterEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+
+                // This will perform a query on the pets table where the _id equals 3 to return a
+                // Cursor containing that row of the table.
+                cursor = database.query(LogoEntry.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+                break;
             case SESSIONS:
                 cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -156,6 +171,8 @@ public class DbProvider extends ContentProvider {
                 return insertSession(uri, contentValues);
             case FILTERS:
                 return insertFilter(uri, contentValues);
+            case LOGOS:
+                return insertLogo(uri, contentValues);
             default:
                 throw new IllegalArgumentException("Insertion is not supported for " + uri);
         }
@@ -203,6 +220,22 @@ public class DbProvider extends ContentProvider {
 
         // Insert the new data with the given values
         long id = database.insert(FilterEntry.TABLE_NAME, null, values);
+        // If the ID is -1, then the insertion failed. Log an error and return null.
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        // Return the new URI with the ID (of the newly inserted row) appended at the end
+        return ContentUris.withAppendedId(uri, id);
+    }
+
+    private Uri insertLogo(Uri uri, ContentValues values) {
+        // Get writeable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Insert the new data with the given values
+        long id = database.insert(LogoEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
