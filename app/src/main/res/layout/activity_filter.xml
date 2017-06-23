@@ -11,6 +11,5 @@
         android:layout_height="match_parent"
         android:dividerPadding="0dp"
         android:showDividers="none"
-        android:divider="@null"
-        android:paddingBottom="16dp"/>
+        android:divider="@null"/>
 </RelativeLayout>
