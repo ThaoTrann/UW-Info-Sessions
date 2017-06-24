@@ -21,7 +21,7 @@
     <color name="colorPrimaryDark">#23303D</color>
 
     <!-- Accent color of the app -->
-    <color name="colorAccent">#10CAC9</color>
+    <color name="colorAccent">#f1f424</color>
     <color name="white">#FFFFFF</color>
 
     <!-- Text color for the details of the earthquake in the list item -->

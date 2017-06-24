@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -68,14 +70,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
     public CurrentFragment() {
     }
-
-    // Required empty public constructor
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -85,7 +79,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         updateTimeTV.setVisibility(View.VISIBLE);
 
         loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
-        loadingRL.setVisibility(View.VISIBLE);
 
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
@@ -254,6 +247,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                     null);
 
             if(cursor.getCount() == 0) {
+                loadingRL.setVisibility(View.VISIBLE);
                 // fetch logo image from clearbit
                 mLogo = getBytes(QueryUtils.fetchImage(mEmployer, getContext()));
 
