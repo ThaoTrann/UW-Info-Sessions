@@ -171,7 +171,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             int month = rightNow.get(rightNow.MONTH) + 1;
             int year = rightNow.get(rightNow.YEAR);
             updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
-            loadingRL.setVisibility(View.GONE);
             sessionsListView.setVisibility(View.VISIBLE);
         }
     }

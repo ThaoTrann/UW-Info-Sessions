@@ -46,8 +46,8 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contact, container, false);
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-/*
+        /*FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,8 +86,10 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Should we show an explanation?
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.READ_CONTACTS},
+                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            /*// Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.READ_CONTACTS)) {
 
@@ -106,7 +108,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
-            }
+            }*/
         }
 
         return rootView;
@@ -165,13 +167,18 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         String[] projection = {
                 ContactsContract.Contacts._ID,
                 ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.Contacts.DISPLAY_NAME};
+                ContactsContract.CommonDataKinds.Organization.COMPANY,
+                ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+        String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
+        String[] orgWhereParams = new String[]{
+                ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE};
 
         return new CursorLoader(getContext(),   // Parent activity context
-                ContactsContract.Contacts.CONTENT_URI,   // Provider content URI to query
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
+                ContactsContract.Data.CONTENT_URI,   // Provider content URI to query
+                null,             // Columns to include in the resulting Cursor
+                orgWhere,                   // No selection clause
+                orgWhereParams,                   // No selection arguments
                 null);                  // Default sort order
     }
 
