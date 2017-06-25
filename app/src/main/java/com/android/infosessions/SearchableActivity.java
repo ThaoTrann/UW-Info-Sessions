@@ -263,7 +263,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    update(cursor, pos);
+                    updateCursor(cursor, pos);
                 }
             });
             hll.addView(tv);
@@ -274,7 +274,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         hsv.addView(filterTabsLL);
     }
 
-    private void update(Cursor mCursor, int pos) {
+    private void updateCursor(Cursor mCursor, int pos) {
         ContentValues values = new ContentValues();
         int count = 0;
         mCursor.moveToFirst();
