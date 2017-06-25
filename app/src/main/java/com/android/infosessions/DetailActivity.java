@@ -208,7 +208,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             if(employer.contains(company)) {
                 TextView tv = new TextView(this);
                 tv.setText(name + " " + company + " " + title);
-                tv.setPadding(20, 0, 20, 0);
+                tv.setBackgroundResource(R.drawable.contacts_border);
+                tv.setPadding(40, 40, 40, 40);
 
                 final int id = cursor.getPosition();
                 tv.setOnClickListener(new View.OnClickListener() {
