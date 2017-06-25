@@ -41,8 +41,7 @@ public class ContactCursorAdapter extends CursorAdapter {
         String company = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DATA));
         String title = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
 
-
-//        tvName_tag.setText(name.charAt(0));
+        //        tvName_tag.setText(name.charAt(0));
 
         // Populate fields with extracted properties
         tvName_tag.setText(name.charAt(0) + "");

@@ -39,6 +39,7 @@ public class SessionContract {
         public static final String COLUMN_SESSION_MAP_URL = "map_url";
         public static final String COLUMN_SESSION_AUDIENCE = "audience";
         public static final String COLUMN_SESSION_LOGO = "logo";
+        public static final String COLUMN_SESSION_NUMBER_CONTACTS = "number_of_contacts";
     }
 }
 

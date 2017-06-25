@@ -139,7 +139,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SESSION_LOADER:
-
                 String[] projection = {
                         SessionEntry._ID,
                         SessionEntry.COLUMN_SESSION_EMPLOYER,
@@ -156,6 +155,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                         SessionEntry.COLUMN_SESSION_MAP_URL,
                         SessionEntry.COLUMN_SESSION_LOGO,
+                        SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                         SessionEntry.COLUMN_SESSION_AUDIENCE};
 
                 if(mQuery.trim().isEmpty()) {

@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -147,8 +148,9 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            /*
             Toast toast = Toast.makeText(getContext(), "PreExecute", Toast.LENGTH_SHORT);
-            toast.show();
+            toast.show();*/
             loadingRL.setVisibility(View.VISIBLE);
             sessionsListView.setVisibility(View.GONE);
         }
@@ -223,29 +225,31 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
 
 
+            // retrieve logo image from logo database
             byte[] mLogo;
 
-            String[] projection = {
+            String[] logo_projection = {
                     LogoEntry._ID,
                     LogoEntry.COLUMN_LOGO_EMPLOYER,
                     LogoEntry.COLUMN_LOGO_IMAGE};
 
 
-            String selection = LogoEntry.COLUMN_LOGO_EMPLOYER + " LIKE ? ";
-            String[] selectionArgs = { mEmployer };
+            String logo_selection = LogoEntry.COLUMN_LOGO_EMPLOYER + " LIKE ? ";
+            String[] logo_selectionArgs = { mEmployer };
 
             DbHelper mDbHelper = new DbHelper(getContext());
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             // Perform a query on the pets table
             Cursor cursor = db.query(
                     LogoEntry.TABLE_NAME,   // The table to query
-                    projection,            // The columns to return
-                    selection,                  // The columns for the WHERE clause
-                    selectionArgs,                  // The values for the WHERE clause
+                    logo_projection,            // The columns to return
+                    logo_selection,                  // The columns for the WHERE clause
+                    logo_selectionArgs,                  // The values for the WHERE clause
                     null,                  // Don't group the rows
                     null,                  // Don't filter by row groups
                     null);
-
+            int mContacts;
+            mContacts = cursor.getCount();
             if(cursor.getCount() == 0) {
                 loadingRL.setVisibility(View.VISIBLE);
                 // fetch logo image from clearbit
@@ -265,6 +269,24 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             db.close();
 
             values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
+
+
+            // retrieve related contacts from contact database
+            String orgWhere = ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.CommonDataKinds.Organization.DATA + " LIKE ? ";
+            String[] orgWhereParams = new String[]{
+                    ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE, mEmployer};
+
+            Cursor contact_cursor = getContext().getContentResolver().query(
+                    ContactsContract.Data.CONTENT_URI,
+                    null,             // Columns to include in the resulting Cursor
+                    orgWhere,                   // No selection clause
+                    orgWhereParams,                   // No selection arguments
+                    null);
+
+            mContacts = contact_cursor.getCount();
+            //contact_cursor.moveToFirst();
+
+            values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);
 
             // Insert a new row for pet in the database, returning the ID of that new row.
             getContext().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
@@ -315,6 +337,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                 SessionEntry.COLUMN_SESSION_MAP_URL,
                 SessionEntry.COLUMN_SESSION_LOGO,
+                SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
         DbHelper mDbHelper = new DbHelper(getContext());

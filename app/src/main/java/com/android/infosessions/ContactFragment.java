@@ -163,12 +163,6 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Define a projection that specifies the columns from the table we care about.
-        String[] projection = {
-                ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Organization.COMPANY,
-                ContactsContract.CommonDataKinds.Phone.NUMBER};
 
         String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
         String[] orgWhereParams = new String[]{
