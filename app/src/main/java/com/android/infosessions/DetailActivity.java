@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.infosessions.data.FilterContract;
 import com.android.infosessions.data.SessionContract.SessionEntry;
@@ -191,7 +193,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
-    public void updateContactLL(Cursor cursor) {
+    public void updateContactLL(final Cursor cursor) {
         cursor.moveToFirst();
         contactLL.removeAllViews();
         while (!cursor.isAfterLast()) {
@@ -208,19 +210,46 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 tv.setText(name + " " + company + " " + title);
                 tv.setPadding(20, 0, 20, 0);
 
-                final int pos = cursor.getPosition();
-            /*iv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    updateCursor(cursor, pos);
-                }
-            });*/
+                final int id = cursor.getPosition();
+                tv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openContact(cursor, id);
+                    }
+                });
                 hll.addView(tv);
                 contactLL.addView(hll);
             }
             cursor.moveToNext();
         }
     }
+
+    public void openContact(Cursor mCursor, int pos) {
+        int count = 0;
+        mCursor.moveToFirst();
+        while (count != pos) {
+            mCursor.moveToNext();
+            count ++;
+        }
+        int mLookupKeyIndex = mCursor.getColumnIndex(Contacts.LOOKUP_KEY);
+        // Gets the lookup key value
+        String mCurrentLookupKey = mCursor.getString(mLookupKeyIndex);
+        // Gets the _ID column index
+        int mIdIndex = mCursor.getColumnIndex(Contacts._ID);
+        Long mCurrentId = mCursor.getLong(mIdIndex);
+        Uri mSelectedContactUri =
+                Contacts.getLookupUri(mCurrentId, mCurrentLookupKey);
+
+        // Creates a new Intent to edit a contact
+        Intent editIntent = new Intent(Intent.ACTION_VIEW);
+    /*
+     * Sets the contact URI to edit, and the data type that the
+     * Intent must match
+     */
+        editIntent.setDataAndType(mSelectedContactUri,Contacts.CONTENT_ITEM_TYPE);
+        startActivity(editIntent);
+    }
+
     // convert from byte array to bitmap
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
