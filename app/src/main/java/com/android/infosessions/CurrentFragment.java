@@ -270,11 +270,26 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
 
+            String[] mEmployerSplit = mEmployer.split(" ");
 
             // retrieve related contacts from contact database
-            String orgWhere = ContactsContract.Data.MIMETYPE + " = ? AND " + ContactsContract.CommonDataKinds.Organization.DATA + " LIKE ? ";
-            String[] orgWhereParams = new String[]{
-                    ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE, mEmployer};
+            String orgWhere = ContactsContract.Data.MIMETYPE + " = ? AND ";
+            String[] orgWhereParams = new String[ mEmployerSplit.length + 1];
+
+            orgWhereParams[0] =  ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
+
+            if (mEmployerSplit.length > 1) {
+                orgWhere += "(";
+            }
+            for(int j = 1; j <= mEmployerSplit.length; j++) {
+                orgWhere += ContactsContract.CommonDataKinds.Organization.DATA + " LIKE ? ";
+                orgWhereParams[j] = mEmployerSplit[j-1];
+                if(j != mEmployerSplit.length) {
+                    orgWhere += " OR ";
+                } else if (mEmployerSplit.length > 1) {
+                    orgWhere += ")";
+                }
+            }
 
             Cursor contact_cursor = getContext().getContentResolver().query(
                     ContactsContract.Data.CONTENT_URI,
