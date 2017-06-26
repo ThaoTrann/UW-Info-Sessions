@@ -192,7 +192,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mCode = session.getBuildingCode();
             String mMapUrl = session.getMapUrl();
             String mAudience = session.getAudience();
-            if(!mAudience.isEmpty()) {
+            if(mAudience != null && !mAudience.isEmpty()) {
                 ArrayList<String> mAudienceSA = session.getAudienceStringArray();
                 
                 for (int j = 0; j < mAudienceSA.size(); j++) {

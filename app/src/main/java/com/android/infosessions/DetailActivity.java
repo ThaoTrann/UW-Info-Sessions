@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -196,9 +197,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void updateContactLL(final Cursor cursor) {
         cursor.moveToFirst();
         contactLL.removeAllViews();
+        boolean hasContact = false;
         while (!cursor.isAfterLast()) {
-            LinearLayout hll = new LinearLayout(this);
-            hll.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout vll = new LinearLayout(this);
+            vll.setOrientation(LinearLayout.VERTICAL);
 
             // Extract properties from cursor
             String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
@@ -206,21 +208,40 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             String title = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
 
             if(employer.contains(company)) {
-                TextView tv = new TextView(this);
-                tv.setText(name + " " + company + " " + title);
-                tv.setBackgroundResource(R.drawable.contacts_border);
-                tv.setPadding(40, 40, 40, 40);
+                if(!hasContact) {
+                    TextView tv = new TextView(this);
+                    tv.setText("Contacts:");
+                    contactLL.addView(tv);
+                    hasContact = true;
+                }
+
+                TextView name_tv = new TextView(this);
+                name_tv.setText(name);
+                name_tv.setTextColor(getResources().getColor(R.color.textColorEmployer));
+                name_tv.setPadding(16, 8, 16, 8);
 
                 final int id = cursor.getPosition();
-                tv.setOnClickListener(new View.OnClickListener() {
+                vll.addView(name_tv);
+
+                if(title == null) {
+                    title = "No tilte";
+                }
+
+                TextView title_tv = new TextView(this);
+                title_tv.setText(title);
+                title_tv.setPadding(16, 8, 16, 8);
+                vll.addView(title_tv);
+                vll.setBackgroundResource(R.drawable.contacts_border);
+
+                vll.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         openContact(cursor, id);
                     }
                 });
-                hll.addView(tv);
-                contactLL.addView(hll);
+                contactLL.addView(vll);
             }
+
             cursor.moveToNext();
         }
     }

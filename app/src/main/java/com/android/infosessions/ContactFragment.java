@@ -46,34 +46,20 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contact, container, false);
-        /*FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), EditorActivity.class);
-                startActivity(intent);
-            }
-        });*/
+        ListView listView = (ListView) rootView.findViewById(R.id.list);
 
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Create new intent to go to {@link EditorActivity}
-                Intent intent = new Intent(getContext(), EditorActivity.class);
-
-                Uri currentPetUri = ContentUris.withAppendedId(ContactEntry.CONTENT_URI, id);
-
-                // Set the URI on the data field of the intent
-                intent.setData(currentPetUri);
-
-                // Launch the {@link EditorActivity} to display the data for the current pet.
-                startActivity(intent);
+                Cursor cursor = ((ContactCursorAdapter) parent.getAdapter()).getCursor();
+                // Move to the selected contact
+                cursor.moveToPosition(position);
+                openContact(cursor, id);
             }
-        });*/
+        });
 
-
-        ListView listView = (ListView) rootView.findViewById(R.id.list);
 
         View emptyView = rootView.findViewById(R.id.empty_view);
 
@@ -113,6 +99,23 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
         return rootView;
     }
+
+    public void openContact(Cursor mCursor, long id) {
+        int mLookupKeyIndex = mCursor.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY);
+        // Gets the lookup key value
+        String mCurrentLookupKey = mCursor.getString(mLookupKeyIndex);
+        Uri mSelectedContactUri =
+                ContactsContract.Contacts.getLookupUri(id, mCurrentLookupKey);
+
+        // Creates a new Intent to edit a contact
+        Intent editIntent = new Intent(Intent.ACTION_VIEW);
+    /*
+     * Sets the contact URI to edit, and the data type that the
+     * Intent must match
+     */
+        editIntent.setDataAndType(mSelectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
+        startActivity(editIntent);
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -138,28 +141,6 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
             // permissions this app might request
         }
     }
-
-/*
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // Define a projection that specifies the columns from the table we care about.
-        String[] projection = {
-                ContactEntry._ID,
-                ContactEntry.COLUMN_CONTACT_NAME,
-                ContactEntry.COLUMN_CONTACT_COMPANY,
-                ContactEntry.COLUMN_CONTACT_POSITION,
-                ContactEntry.COLUMN_CONTACT_EMAIL,
-                ContactEntry.COLUMN_CONTACT_PHONE_NUMBER };
-
-        return new CursorLoader(getContext(),   // Parent activity context
-                ContactEntry.CONTENT_URI,   // Provider content URI to query
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order
-    }
-*/
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
