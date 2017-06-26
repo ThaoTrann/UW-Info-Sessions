@@ -66,6 +66,7 @@ public class DbHelper extends SQLiteOpenHelper {
                         SessionEntry.COLUMN_SESSION_BUILDING_NAME + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_MAP_URL + " TEXT, " +
+                        SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS + " INTEGER, " +
                         SessionEntry.COLUMN_SESSION_LOGO + " BLOB, " +
                         SessionEntry.COLUMN_SESSION_AUDIENCE + " TEXT);";
 

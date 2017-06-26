@@ -45,10 +45,11 @@ public class SessionCursorAdapter extends CursorAdapter {
         String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
         String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
         String link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
+        Integer contacts = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS));
         //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
 
         TextView nameTextView = (TextView) view.findViewById(R.id.employer);
-        nameTextView.setText(employer);
+        TextView nameMPTextView = (TextView) view.findViewById(R.id.employer_mp);
 
         TextView timeTextView = (TextView) view.findViewById(R.id.time);
         timeTextView.setText(start_time + " " + end_time);
@@ -61,6 +62,25 @@ public class SessionCursorAdapter extends CursorAdapter {
 
         TextView locationTextView = (TextView) view.findViewById(R.id.location);
         locationTextView.setText(building_code);
+
+        TextView contactTextView = (TextView) view.findViewById(R.id.contacts);
+        if(contacts == 0) {
+            nameTextView.setVisibility(View.GONE);
+            nameMPTextView.setVisibility(View.VISIBLE);
+            contactTextView.setVisibility(View.GONE);
+        } else if(contacts == 1) {
+            nameTextView.setVisibility(View.VISIBLE);
+            nameMPTextView.setVisibility(View.GONE);
+            contactTextView.setVisibility(View.VISIBLE);
+            contactTextView.setText(contacts + " connection");
+        } else {
+            nameTextView.setVisibility(View.VISIBLE);
+            nameMPTextView.setVisibility(View.GONE);
+            contactTextView.setVisibility(View.VISIBLE);
+            contactTextView.setText(contacts + " connections");
+        }
+        nameTextView.setText(employer);
+        nameMPTextView.setText(employer);
 
         ImageView logoView = (ImageView) view.findViewById(R.id.employer_logo);
         //Drawable drawable = getImage(logoView.getContext(), logo);

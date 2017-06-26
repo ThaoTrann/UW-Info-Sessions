@@ -53,7 +53,9 @@ public class Session implements Serializable{
 
 
         JSONArray mAudienceArray = info.getJSONArray("audience");
-        mAudience = "Audience: \n";
+        if(mAudienceArray.length() > 0) {
+            mAudience = "Audience:";
+        }
         mAudienceStringArray = new ArrayList<>();
         for (int i = 0; i < mAudienceArray.length(); i++) {
             mAudience += "\n" + mAudienceArray.getString(i);

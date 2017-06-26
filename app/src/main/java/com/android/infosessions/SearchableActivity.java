@@ -139,7 +139,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case SESSION_LOADER:
-
                 String[] projection = {
                         SessionEntry._ID,
                         SessionEntry.COLUMN_SESSION_EMPLOYER,
@@ -156,6 +155,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                         SessionEntry.COLUMN_SESSION_MAP_URL,
                         SessionEntry.COLUMN_SESSION_LOGO,
+                        SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                         SessionEntry.COLUMN_SESSION_AUDIENCE};
 
                 if(mQuery.trim().isEmpty()) {
@@ -263,7 +263,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    update(cursor, pos);
+                    updateCursor(cursor, pos);
                 }
             });
             hll.addView(tv);
@@ -274,7 +274,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         hsv.addView(filterTabsLL);
     }
 
-    private void update(Cursor mCursor, int pos) {
+    private void updateCursor(Cursor mCursor, int pos) {
         ContentValues values = new ContentValues();
         int count = 0;
         mCursor.moveToFirst();

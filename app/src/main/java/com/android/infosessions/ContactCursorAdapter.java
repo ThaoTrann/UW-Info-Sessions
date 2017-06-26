@@ -2,6 +2,7 @@ package com.android.infosessions;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,18 +30,23 @@ public class ContactCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find fields to populate in inflated template
-        TextView tvBody = (TextView) view.findViewById(R.id.name);
+        TextView tvName = (TextView) view.findViewById(R.id.name);
 
         TextView tvName_tag = (TextView) view.findViewById(R.id.name_tag);
-        TextView tvPriority = (TextView) view.findViewById(R.id.summary);
-        // Extract properties from cursor
-        String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactEntry.COLUMN_CONTACT_NAME));
-        String summary = cursor.getString(cursor.getColumnIndexOrThrow(ContactEntry.COLUMN_CONTACT_EMAIL));
+        TextView tvCompany = (TextView) view.findViewById(R.id.company);
+        TextView tvTitle = (TextView) view.findViewById(R.id.title);
 
-//        tvName_tag.setText(name.charAt(0));
+        // Extract properties from cursor
+        String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+        String company = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DATA));
+        String title = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
+
+        //        tvName_tag.setText(name.charAt(0));
 
         // Populate fields with extracted properties
-        tvBody.setText(name);
-        tvPriority.setText(summary);
+        tvName_tag.setText(name.charAt(0) + "");
+        tvName.setText(name);
+        tvCompany.setText(company);
+        tvTitle.setText(title);
     }
 }
