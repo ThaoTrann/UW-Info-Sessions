@@ -10,8 +10,11 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -19,8 +22,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.infosessions.data.FilterContract;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import org.json.JSONException;
@@ -31,7 +39,9 @@ import java.util.Calendar;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     Uri mUri;
-    private static final int LOADER_ID = 0;
+    private static final int SESSION_LOADER = 0;
+    private static final int CONTACT_LOADER = 1;
+
     private SessionCursorAdapter mCursorAdapter;
     private String employer;
     private String time;
@@ -39,6 +49,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String map_url;
     private String link;
     private String website;
+    private String employer;
+    private LinearLayout contactLL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +62,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mUri = intent.getData();
 
         mCursorAdapter = new SessionCursorAdapter(this, null);
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(SESSION_LOADER, null, this);
+        getLoaderManager().initLoader(CONTACT_LOADER, null, this);
 
         Button alert = (Button) findViewById(R.id.alert_button);
         Button rvsp = (Button) findViewById(R.id.rvsp_button);
@@ -94,44 +107,113 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 startActivity(webIntent);
             }
         });
+        contactLL = (LinearLayout) findViewById(R.id.contacts);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection = {
-                SessionEntry._ID,
-                SessionEntry.COLUMN_SESSION_EMPLOYER,
-                SessionEntry.COLUMN_SESSION_START_TIME,
-                SessionEntry.COLUMN_SESSION_END_TIME,
-                SessionEntry.COLUMN_SESSION_DATE,
-                SessionEntry.COLUMN_SESSION_DAY,
-                SessionEntry.COLUMN_SESSION_MILLISECONDS,
-                SessionEntry.COLUMN_SESSION_WEBSITE,
-                SessionEntry.COLUMN_SESSION_LINK,
-                SessionEntry.COLUMN_SESSION_DESCRIPTION,
-                SessionEntry.COLUMN_SESSION_BUILDING_CODE,
-                SessionEntry.COLUMN_SESSION_BUILDING_NAME,
-                SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
-                SessionEntry.COLUMN_SESSION_MAP_URL,
-                SessionEntry.COLUMN_SESSION_LOGO,
-                SessionEntry.COLUMN_SESSION_AUDIENCE};
+        switch (id) {
+            case SESSION_LOADER:
+                String[] projection = {
+                        SessionEntry._ID,
+                        SessionEntry.COLUMN_SESSION_EMPLOYER,
+                        SessionEntry.COLUMN_SESSION_START_TIME,
+                        SessionEntry.COLUMN_SESSION_END_TIME,
+                        SessionEntry.COLUMN_SESSION_DATE,
+                        SessionEntry.COLUMN_SESSION_DAY,
+                        SessionEntry.COLUMN_SESSION_MILLISECONDS,
+                        SessionEntry.COLUMN_SESSION_WEBSITE,
+                        SessionEntry.COLUMN_SESSION_LINK,
+                        SessionEntry.COLUMN_SESSION_DESCRIPTION,
+                        SessionEntry.COLUMN_SESSION_BUILDING_CODE,
+                        SessionEntry.COLUMN_SESSION_BUILDING_NAME,
+                        SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
+                        SessionEntry.COLUMN_SESSION_MAP_URL,
+                        SessionEntry.COLUMN_SESSION_LOGO,
+                        SessionEntry.COLUMN_SESSION_AUDIENCE};
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mUri,   // Provider content URI to query
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order
+                // This loader will execute the ContentProvider's query method on a background thread
+                return new CursorLoader(this,   // Parent activity context
+                        mUri,   // Provider content URI to query
+                        projection,             // Columns to include in the resulting Cursor
+                        null,                   // No selection clause
+                        null,                   // No selection arguments
+                        null);                  // Default sort order
+            case CONTACT_LOADER:
+                String orgWhere = ContactsContract.Data.MIMETYPE + " = ?";
+                String[] orgWhereParams = new String[]{
+                        ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE};
 
+                return new CursorLoader(this,   // Parent activity context
+                        ContactsContract.Data.CONTENT_URI,   // Provider content URI to query
+                        null,             // Columns to include in the resulting Cursor
+                        orgWhere,                   // No selection clause
+                        orgWhereParams,                   // No selection arguments
+                        null);                  // Default sort order
+            default:
+                return null;
+        }
     }
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || cursor.getCount() < 1) {
             return;
-        }
+        } else {
+            cursor.moveToFirst();
+            switch (loader.getId()) {
+                case SESSION_LOADER:
+                    if (cursor.moveToFirst()) {
+                        employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
+                        String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
+                        String end_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
+                        String description = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DESCRIPTION));
+                        String date = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DATE));
+                        String day = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DAY));
+                        map_url = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MAP_URL));
+                        String audience = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_AUDIENCE));
+                        String building_room = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_ROOM));
+                        String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
+                        String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
+                        link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
+                        //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+                        website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
 
+                        TextView nameTextView = (TextView) findViewById(R.id.employer);
+                        nameTextView.setText(employer);
+
+                        TextView timeTextView = (TextView) findViewById(R.id.time);
+                        timeTextView.setText(start_time + " - " + end_time);
+
+                        TextView dateTextView = (TextView) findViewById(R.id.date);
+                        dateTextView.setText(day + " - " + date);
+
+                        TextView detailTextView = (TextView) findViewById(R.id.description);
+                        detailTextView.setText(description);
+
+                        TextView locationTextView = (TextView) findViewById(R.id.location);
+                        locationTextView.setText(building_code + " (" + building_name + ") - " + building_room);
+
+                        TextView audienceTextView = (TextView) findViewById(R.id.audience);
+                        audienceTextView.setText(audience);
+
+                        ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
+                        byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+                        Bitmap logo = getImage(image);
+
+                        //logoView.setImageDrawable(drawable);
+                        logoView.setImageBitmap(logo);
+
+                    }
+                    break;
+                case CONTACT_LOADER:
+                    updateContactLL(cursor);
+                    break;
+                default:
+                    return;
+            }
+        }
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
+<<<<<<< HEAD
         if (cursor.moveToFirst()) {
             employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
             String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
@@ -175,8 +257,87 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             //logoView.setImageDrawable(drawable);
             logoView.setImageBitmap(logo);
+=======
+>>>>>>> master
 
+    }
+
+    public void updateContactLL(final Cursor cursor) {
+        cursor.moveToFirst();
+        contactLL.removeAllViews();
+        boolean hasContact = false;
+        while (!cursor.isAfterLast()) {
+            LinearLayout vll = new LinearLayout(this);
+            vll.setOrientation(LinearLayout.VERTICAL);
+
+            // Extract properties from cursor
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+            String company = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DATA));
+            String title = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
+
+            if(employer.contains(company)) {
+                if(!hasContact) {
+                    TextView tv = new TextView(this);
+                    tv.setText("Contacts:");
+                    contactLL.addView(tv);
+                    hasContact = true;
+                }
+
+                TextView name_tv = new TextView(this);
+                name_tv.setText(name);
+                name_tv.setTextColor(getResources().getColor(R.color.textColorEmployer));
+                name_tv.setPadding(16, 8, 16, 8);
+
+                final int id = cursor.getPosition();
+                vll.addView(name_tv);
+
+                if(title == null) {
+                    title = "No tilte";
+                }
+
+                TextView title_tv = new TextView(this);
+                title_tv.setText(title);
+                title_tv.setPadding(16, 8, 16, 8);
+                vll.addView(title_tv);
+                vll.setBackgroundResource(R.drawable.contacts_border);
+
+                vll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        openContact(cursor, id);
+                    }
+                });
+                contactLL.addView(vll);
+            }
+
+            cursor.moveToNext();
         }
+    }
+
+    public void openContact(Cursor mCursor, int pos) {
+        int count = 0;
+        mCursor.moveToFirst();
+        while (count != pos) {
+            mCursor.moveToNext();
+            count ++;
+        }
+        int mLookupKeyIndex = mCursor.getColumnIndex(Contacts.LOOKUP_KEY);
+        // Gets the lookup key value
+        String mCurrentLookupKey = mCursor.getString(mLookupKeyIndex);
+        // Gets the _ID column index
+        int mIdIndex = mCursor.getColumnIndex(Contacts._ID);
+        Long mCurrentId = mCursor.getLong(mIdIndex);
+        Uri mSelectedContactUri =
+                Contacts.getLookupUri(mCurrentId, mCurrentLookupKey);
+
+        // Creates a new Intent to edit a contact
+        Intent editIntent = new Intent(Intent.ACTION_VIEW);
+    /*
+     * Sets the contact URI to edit, and the data type that the
+     * Intent must match
+     */
+        editIntent.setDataAndType(mSelectedContactUri,Contacts.CONTENT_ITEM_TYPE);
+        startActivity(editIntent);
     }
 
     // convert from byte array to bitmap

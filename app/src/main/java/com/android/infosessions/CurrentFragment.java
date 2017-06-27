@@ -1,5 +1,6 @@
 package com.android.infosessions;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.app.SearchManager;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -16,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -34,6 +37,7 @@ import android.widget.Toast;
 
 import com.android.infosessions.data.DbHelper;
 import com.android.infosessions.data.FilterContract.FilterEntry;
+import com.android.infosessions.data.LogoContract.LogoEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
 import org.json.JSONArray;
@@ -46,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -58,7 +63,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     private ListView sessionsListView;
     private TextView updateTimeTV;
     private RelativeLayout loadingRL;
-    private ProgressBar spinner;
 
     private static final String UWAPI_REQUEST_URL =
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
@@ -67,14 +71,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
     public CurrentFragment() {
     }
-
-    // Required empty public constructor
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -84,10 +80,19 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         updateTimeTV.setVisibility(View.VISIBLE);
 
         loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
-        spinner = (ProgressBar) loadingRL.findViewById(R.id.spinner);
 
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);
+        sessionsListView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                sessionsListView.removeOnLayoutChangeListener(this);
+                Log.e(LOG_TAG, "finish updated");
+            }
+        });
+
+        mCursorAdapter.notifyDataSetChanged();
 
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
@@ -129,11 +134,13 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         }
         return month;
     }
+    private String audienceListSofar = "";
 
     public class SessionTask extends AsyncTask<String, Void, ArrayList<Session>> {
         @Override
         protected ArrayList<Session> doInBackground(String... params) {
             ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], getContext());
+            audienceListSofar = "";
             insertSession(sessions);
             return sessions;
         }
@@ -141,25 +148,27 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            /*
+            Toast toast = Toast.makeText(getContext(), "PreExecute", Toast.LENGTH_SHORT);
+            toast.show();*/
             loadingRL.setVisibility(View.VISIBLE);
+            sessionsListView.setVisibility(View.GONE);
         }
 
         @Override
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
-            //spinner.setVisibility(View.GONE);
-
+            loadingRL.setVisibility(View.GONE);
             //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             //toast.show();
             Calendar rightNow = Calendar.getInstance();
             int day = rightNow.get(rightNow.DAY_OF_MONTH);
             int month = rightNow.get(rightNow.MONTH) + 1;
             int year = rightNow.get(rightNow.YEAR);
-
             updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
+            sessionsListView.setVisibility(View.VISIBLE);
         }
     }
-    private String audienceListSofar = "";
 
     private void insertSession(ArrayList<Session> sessions) {
 
@@ -174,7 +183,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mWebsite = session.getWebsite();
             String mLink = session.getLink();
             String mDescription = session.getDescription();
-            Bitmap mLogo = session.getLogoBitmap();
 
             if (mDescription.isEmpty()) {
                 mDescription = "Employer's Description is not provided.";
@@ -184,21 +192,21 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mCode = session.getBuildingCode();
             String mMapUrl = session.getMapUrl();
             String mAudience = session.getAudience();
-            ArrayList<String> mAudienceSA = session.getAudienceStringArray();
-
-            for(int j = 0; j < mAudienceSA.size(); j++) {
-                String audience = mAudienceSA.get(j).trim();
-                if (!audienceListSofar.contains(audience)) {
-                    ContentValues valuesAudience = new ContentValues();
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
-                    valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                    getActivity().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
-                    audienceListSofar += mAudienceSA.get(j) + ",";
+            if(mAudience != null && !mAudience.isEmpty()) {
+                ArrayList<String> mAudienceSA = session.getAudienceStringArray();
+                
+                for (int j = 0; j < mAudienceSA.size(); j++) {
+                    String audience = mAudienceSA.get(j).trim();
+                    if (!audienceListSofar.contains(audience)) {
+                        ContentValues valuesAudience = new ContentValues();
+                        valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
+                        valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
+                        getContext().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
+                        audienceListSofar += mAudienceSA.get(j) + ",";
+                    }
                 }
             }
-            if(mLogo == null) {
-                Log.d("mLogo", "null logo");
-            }
+
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
             values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
@@ -215,10 +223,89 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
             values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mRoom);
             values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
-            values.put(SessionEntry.COLUMN_SESSION_LOGO, getBytes(mLogo));
+
+
+            // retrieve logo image from logo database
+            byte[] mLogo;
+
+            String[] logo_projection = {
+                    LogoEntry._ID,
+                    LogoEntry.COLUMN_LOGO_EMPLOYER,
+                    LogoEntry.COLUMN_LOGO_IMAGE};
+
+
+            String logo_selection = LogoEntry.COLUMN_LOGO_EMPLOYER + " LIKE ? ";
+            String[] logo_selectionArgs = { mEmployer };
+
+            DbHelper mDbHelper = new DbHelper(getContext());
+            SQLiteDatabase db = mDbHelper.getWritableDatabase();
+            // Perform a query on the pets table
+            Cursor cursor = db.query(
+                    LogoEntry.TABLE_NAME,   // The table to query
+                    logo_projection,            // The columns to return
+                    logo_selection,                  // The columns for the WHERE clause
+                    logo_selectionArgs,                  // The values for the WHERE clause
+                    null,                  // Don't group the rows
+                    null,                  // Don't filter by row groups
+                    null);
+            int mContacts;
+            mContacts = cursor.getCount();
+            if(cursor.getCount() == 0) {
+                loadingRL.setVisibility(View.VISIBLE);
+                // fetch logo image from clearbit
+                mLogo = getBytes(QueryUtils.fetchImage(mEmployer, getContext()));
+
+                //save image to db
+                ContentValues logo_values = new ContentValues();
+                logo_values.put(LogoEntry.COLUMN_LOGO_EMPLOYER, mEmployer);
+                logo_values.put(LogoEntry.COLUMN_LOGO_IMAGE, mLogo);
+                db.insert(LogoEntry.TABLE_NAME, null, logo_values);
+
+            } else {
+                cursor.moveToFirst();
+                mLogo = cursor.getBlob(cursor.getColumnIndexOrThrow(LogoEntry.COLUMN_LOGO_IMAGE));
+            }
+
+            db.close();
+
+            values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
+
+            String[] mEmployerSplit = mEmployer.split(" ");
+
+            // retrieve related contacts from contact database
+            String orgWhere = ContactsContract.Data.MIMETYPE + " = ? AND ";
+            String[] orgWhereParams = new String[ mEmployerSplit.length + 1];
+
+            orgWhereParams[0] =  ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
+
+            if (mEmployerSplit.length > 1) {
+                orgWhere += "(";
+            }
+            for(int j = 1; j <= mEmployerSplit.length; j++) {
+                orgWhere += ContactsContract.CommonDataKinds.Organization.DATA + " LIKE ? ";
+                orgWhereParams[j] = mEmployerSplit[j-1];
+                if(j != mEmployerSplit.length) {
+                    orgWhere += " OR ";
+                } else if (mEmployerSplit.length > 1) {
+                    orgWhere += ")";
+                }
+            }
+
+            Cursor contact_cursor = getContext().getContentResolver().query(
+                    ContactsContract.Data.CONTENT_URI,
+                    null,             // Columns to include in the resulting Cursor
+                    orgWhere,                   // No selection clause
+                    orgWhereParams,                   // No selection arguments
+                    null);
+
+            mContacts = contact_cursor.getCount();
+            //contact_cursor.moveToFirst();
+
+            values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);
 
             // Insert a new row for pet in the database, returning the ID of that new row.
-            Uri newUri = getActivity().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+            getContext().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+
         }
         //Log.d("LOG_TAG", audienceListSofar);
     }
@@ -265,6 +352,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                 SessionEntry.COLUMN_SESSION_MAP_URL,
                 SessionEntry.COLUMN_SESSION_LOGO,
+                SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
         DbHelper mDbHelper = new DbHelper(getContext());
@@ -280,9 +368,15 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 null);
 
         if(cursor.getCount() == 0) {
+            loadingRL.setVisibility(View.VISIBLE);
             SessionTask sessionTask = new SessionTask();
             sessionTask.execute(UWAPI_REQUEST_URL);
+        } else {
+            loadingRL.setVisibility(View.GONE);
         }
+
+        db.close();
+
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
         String[] selectionArgs = { String.valueOf(milliSeconds) };
 
@@ -299,12 +393,12 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         mCursorAdapter.swapCursor(data);
-        loadingRL.setVisibility(View.GONE);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
+        loadingRL.setVisibility(View.GONE);
     }
 }

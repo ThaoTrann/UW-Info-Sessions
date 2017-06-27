@@ -32,6 +32,7 @@ import java.util.Date;
 public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String LOG_TAG = MainActivity.class.getName();
     private ListView sessionsListView;
+    private static final int LOADER_ID = 1;
     private SessionCursorAdapter mCursorAdapter;
 
     public ArchivedFragment() {
@@ -63,7 +64,7 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
         });
 
         fab.setVisibility(View.GONE);
-        getLoaderManager().initLoader(0, null, ArchivedFragment.this);
+        getLoaderManager().initLoader(LOADER_ID, null, ArchivedFragment.this);
         return rootView;
     }
 
@@ -99,6 +100,7 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
                 SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                 SessionEntry.COLUMN_SESSION_MAP_URL,
                 SessionEntry.COLUMN_SESSION_LOGO,
+                SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
         String sortOrder = SessionEntry.COLUMN_SESSION_MILLISECONDS + " DESC";

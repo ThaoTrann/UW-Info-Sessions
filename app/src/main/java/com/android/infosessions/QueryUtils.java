@@ -129,7 +129,41 @@ public final class QueryUtils extends AppCompatActivity {
         return output.toString();
     }
 
-    /**
+    public static Bitmap fetchImage(String employer, Context context) {
+        Bitmap bmp = null;
+        if (!employer.equals("Closed Info Session") && !employer.equals("Closed Information Session")) {
+            //employer = "google";
+            if (employer.contains("**")) {
+                employer = employer.substring(employer.indexOf("**", employer.indexOf("**") + 1), employer.length());
+            }
+            if (employer.contains("*")) {
+                employer = employer.substring(employer.indexOf("*", employer.indexOf("*")), employer.length());
+            }
+            employer = employer.replace(" ", "");
+            employer = employer.replace("Inc.", "");
+            employer = employer.replace(".", "");
+            employer = employer.trim();
+
+            URL logo_url = createUrl(LOGO_URL + employer + DOMAIN);
+            InputStream inputStream = null;
+            try {
+                inputStream = logo_url.openConnection().getInputStream();
+                bmp = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (bmp == null) {
+                bmp = BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.nonlogo);
+            }
+
+        }
+        return bmp;
+    }
+
+     /**
      * Return a list of {@link Session} objects that has been built up from
      * parsing a JSON response.
      */
@@ -147,39 +181,9 @@ public final class QueryUtils extends AppCompatActivity {
             JSONArray sessionsJSONArray = root.getJSONArray("data");
             for(int i = 0; i < sessionsJSONArray.length(); i++) {
                 JSONObject sessionJSONObject = sessionsJSONArray.getJSONObject(i);
-
-                String employer = sessionJSONObject.getString("employer");
-                
-                if(!employer.equals("Closed Info Session") && !employer.equals("Closed Information Session") ) {
-                    //employer = "google";
-                    if(employer.contains("**")) {
-                        employer = employer.substring(employer.indexOf("**", employer.indexOf("**") + 1), employer.length());
-                    }
-                    if(employer.contains("*")) {
-                        employer = employer.substring(employer.indexOf("*", employer.indexOf("*") ), employer.length());
-                    }
-                    employer = employer.replace(" ", "");
-                    employer = employer.replace("Inc.", "");
-                    employer = employer.replace(".", "");
-                    employer = employer.trim();
-
-                    URL logo_url = createUrl(LOGO_URL+ employer + DOMAIN);
-                    Bitmap bmp = null;
-                    InputStream inputStream = null;
-                    try {
-                        inputStream = logo_url.openConnection().getInputStream();
-                        bmp = BitmapFactory.decodeStream(inputStream);
-                        inputStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    if(bmp == null) {
-                        bmp = BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.nonlogo);
-                    }
-
-                    Session session = new Session(sessionJSONObject, bmp);
+                Session session = new Session(sessionJSONObject);
+                String employer = session.getEmployer();
+                if (!employer.equals("Closed Info Session") && !employer.equals("Closed Information Session")) {
                     sessions.add(session);
                 }
             }

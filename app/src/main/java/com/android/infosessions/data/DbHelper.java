@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.android.infosessions.data.ContactContract.ContactEntry;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 import com.android.infosessions.data.FilterContract.FilterEntry;
+import com.android.infosessions.data.LogoContract.LogoEntry;
 
 /**
  * Created by Thao on 5/11/17.
@@ -41,6 +42,14 @@ public class DbHelper extends SQLiteOpenHelper {
 
         db.execSQL(SQL_CREATE_FILTER_ENTRIES);
 
+        String SQL_CREATE_LOGO_ENTRIES =
+                "CREATE TABLE " + LogoEntry.TABLE_NAME + " (" +
+                        LogoEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        LogoEntry.COLUMN_LOGO_EMPLOYER + " TEXT, " +
+                        LogoEntry.COLUMN_LOGO_IMAGE + " BLOB);";
+
+        db.execSQL(SQL_CREATE_LOGO_ENTRIES);
+
         String SQL_CREATE_SESSION_ENTRIES =
                 "CREATE TABLE " + SessionEntry.TABLE_NAME + " (" +
                         SessionEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -57,6 +66,7 @@ public class DbHelper extends SQLiteOpenHelper {
                         SessionEntry.COLUMN_SESSION_BUILDING_NAME + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_MAP_URL + " TEXT, " +
+                        SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS + " INTEGER, " +
                         SessionEntry.COLUMN_SESSION_LOGO + " BLOB, " +
                         SessionEntry.COLUMN_SESSION_AUDIENCE + " TEXT);";
 

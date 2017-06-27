@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:nestedScrollingEnabled="true"
     android:background="@android:color/background_light">
 
     <LinearLayout
@@ -197,10 +198,19 @@
             android:ellipsize="end"
             android:textColor="@android:color/tertiary_text_dark"
             android:textSize="14sp"
-            android:paddingLeft="16dp"
+            android:padding="16dp"
             android:lineSpacingExtra="3dp"
             android:elegantTextHeight="true"
             tools:text="Bot"/>
+
+        <LinearLayout
+            android:id="@+id/contacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="16dp"
+            android:divider="@drawable/vertical_divider"
+            android:showDividers="middle"/>
 
     </LinearLayout>
 </ScrollView>
