@@ -43,7 +43,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final int CONTACT_LOADER = 1;
 
     private SessionCursorAdapter mCursorAdapter;
-    private String employer;
     private String time;
     private String location;
     private String map_url;
@@ -76,11 +75,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Long alertTime = Calendar.getInstance().getTimeInMillis() + 5*1000;
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
                 alertIntent.putExtra("VALUE", employer + "," + time + "," + location + "," + mUri);
-                sendBroadcast(alertIntent);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-                alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(getApplication(), 1, alertIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT));
+                alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime,
+                        PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             }
         });
 
@@ -178,6 +176,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
                         website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
 
+                        time = start_time + " - " + end_time;
+                        location = building_code + " " + building_room;
+
                         TextView nameTextView = (TextView) findViewById(R.id.employer);
                         nameTextView.setText(employer);
 
@@ -213,53 +214,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         }
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
-<<<<<<< HEAD
-        if (cursor.moveToFirst()) {
-            employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
-            String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
-            String end_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
-            String description = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DESCRIPTION));
-            String date = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DATE));
-            String day = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DAY));
-            map_url = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MAP_URL));
-            String audience = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_AUDIENCE));
-            String building_room = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_ROOM));
-            String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
-            String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
-            link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
-            //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
-            website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
-
-            time = start_time + " - " + end_time;
-            location = building_code + " " + building_room;
-
-            TextView nameTextView = (TextView) findViewById(R.id.employer);
-            nameTextView.setText(employer);
-
-            TextView timeTextView = (TextView) findViewById(R.id.time);
-            timeTextView.setText(start_time + " - " + end_time);
-
-            TextView dateTextView = (TextView) findViewById(R.id.date);
-            dateTextView.setText(day + " - " + date);
-
-            TextView detailTextView = (TextView) findViewById(R.id.description);
-            detailTextView.setText(description);
-
-            TextView locationTextView = (TextView) findViewById(R.id.location);
-            locationTextView.setText(building_code + " (" + building_name + ") - " + building_room);
-
-            TextView audienceTextView = (TextView) findViewById(R.id.audience);
-            audienceTextView.setText(audience);
-
-            ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
-            byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
-            Bitmap logo = getImage(image);
-
-            //logoView.setImageDrawable(drawable);
-            logoView.setImageBitmap(logo);
-=======
->>>>>>> master
-
     }
 
     public void updateContactLL(final Cursor cursor) {

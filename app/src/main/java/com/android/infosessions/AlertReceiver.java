@@ -13,6 +13,8 @@ import android.widget.Toast;
 import com.android.infosessions.data.SessionContract;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 /**
  * Created by Thao on 6/3/17.
@@ -51,8 +53,12 @@ public class AlertReceiver extends BroadcastReceiver {
         mBuilder.setAutoCancel(true);
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Random rand = new Random();
 
-        int mNotificationId = 1;
+        int  mNotificationId = rand.nextInt(Integer.MAX_VALUE) + Integer.MIN_VALUE;
+
+        //int mNotificationId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
         mNotificationManager.notify(mNotificationId, mBuilder.build());
     }
 }
