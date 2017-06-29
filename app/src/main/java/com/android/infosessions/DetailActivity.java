@@ -4,6 +4,7 @@ import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -44,6 +45,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String website;
     private String employer;
     private LinearLayout contactLL;
+    private TextView contact_title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
         contactLL = (LinearLayout) findViewById(R.id.contacts);
+        contact_title = (TextView) findViewById(R.id.contacts_title);
     }
 
     @Override
@@ -209,16 +212,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             if(employer.contains(company)) {
                 if(!hasContact) {
-                    TextView tv = new TextView(this);
-                    tv.setText("Contacts:");
-                    contactLL.addView(tv);
+                    contact_title.setVisibility(View.VISIBLE);
                     hasContact = true;
                 }
 
                 TextView name_tv = new TextView(this);
                 name_tv.setText(name);
-                name_tv.setTextColor(getResources().getColor(R.color.textColorEmployer));
-                name_tv.setPadding(16, 8, 16, 8);
+                name_tv.setTextSize(16);
 
                 final int id = cursor.getPosition();
                 vll.addView(name_tv);
@@ -229,9 +229,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                 TextView title_tv = new TextView(this);
                 title_tv.setText(title);
-                title_tv.setPadding(16, 8, 16, 8);
+                title_tv.setPadding(16, 0, 0, 0);
                 vll.addView(title_tv);
                 vll.setBackgroundResource(R.drawable.contacts_border);
+
+                int[] attrs = new int[]{R.attr.selectableItemBackground};
+                TypedArray typedArray = obtainStyledAttributes(attrs);
+                int backgroundResource = typedArray.getResourceId(0, 0);
+                vll.setBackgroundResource(backgroundResource);
 
                 vll.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -287,7 +292,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 return super.onOptionsItemSelected(item);
         }
     }
-    
+
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // Callback called when the data needs to be deleted
