@@ -26,6 +26,7 @@ public class AlertReceiver extends BroadcastReceiver {
     String time;
     String location;
     Uri mUri;
+    int mId;
     @Override
     public void onReceive(Context context, Intent intent) {
         value = intent.getStringExtra("VALUE").split(",");
@@ -33,6 +34,7 @@ public class AlertReceiver extends BroadcastReceiver {
         time = value[1];
         location = value[2];
         mUri = Uri.parse(value[3]);
+        mId = Integer.parseInt(value[4]);
         createNotification(context, "Alert");
     }
 
@@ -59,6 +61,6 @@ public class AlertReceiver extends BroadcastReceiver {
 
         //int mNotificationId = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
 
-        mNotificationManager.notify(mNotificationId, mBuilder.build());
+        mNotificationManager.notify(mId, mBuilder.build());
     }
 }

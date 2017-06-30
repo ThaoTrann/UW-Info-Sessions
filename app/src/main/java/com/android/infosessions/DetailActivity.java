@@ -51,6 +51,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String link;
     private String website;
     private String employer;
+    private int id;
     private Long milliseconds;
     private LinearLayout contactLL;
 
@@ -81,8 +82,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Log.d("LOG_TAG milliseconds ", milliseconds.toString());
 
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
-                alertIntent.putExtra("VALUE", employer + "," + time + "," + location + "," + mUri);
+                alertIntent.putExtra("VALUE", employer + "," + time + "," + location + "," + mUri + "," + id);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                Log.d("alert id", id + "");
 
                 alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime,
                         PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
@@ -168,6 +170,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             switch (loader.getId()) {
                 case SESSION_LOADER:
                     if (cursor.moveToFirst()) {
+                        id = cursor.getInt(cursor.getColumnIndex("_id"));
                         employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
                         String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
                         String end_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
