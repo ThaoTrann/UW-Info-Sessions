@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
+import java.text.DateFormatSymbols;
+
 /**
  * Created by Thao on 5/16/17.
  */
@@ -29,7 +31,6 @@ public class SessionCursorAdapter extends CursorAdapter {
         // Inflate a list item view using the layout specified in item_session.xmlxml
         return LayoutInflater.from(context).inflate(R.layout.item_session, parent, false);
     }
-
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {

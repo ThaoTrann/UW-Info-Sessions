@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".EditorActivity">
     <item
-        android:id="@+id/action_alert"
-        android:title="alert"
-        android:icon="@drawable/ic_done_white_24dp"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/action_search"
         android:title="Search"
         android:icon="@drawable/ic_search_white_24dp"

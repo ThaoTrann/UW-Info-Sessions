@@ -72,17 +72,10 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Define a projection that specifies the columns from the table we care about.
-        ArrayList<Session> filtered = new ArrayList<>();
-        Calendar rightNow = Calendar.getInstance();
-        int day = rightNow.get(rightNow.DAY_OF_MONTH);
-        int month = rightNow.get(rightNow.MONTH) + 1;
-        int year = rightNow.get(rightNow.YEAR);
-        Date date = new Date(year, month, day);
-        long milliSeconds = date.getTime();
-        Log.d("LOG_TAG current", String.valueOf(month));
+        long rightnow_milliseconds = Calendar.getInstance().getTimeInMillis();
 
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + " <=?";
-        String[] selectionArgs = { String.valueOf(milliSeconds) };
+        String[] selectionArgs = { String.valueOf(rightnow_milliseconds) };
 
         String[] projection = {
                 SessionEntry._ID,

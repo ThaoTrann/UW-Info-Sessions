@@ -46,6 +46,8 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormatSymbols;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -179,7 +181,12 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mEndTime = session.getEndTime();
             String mDate = session.getDate();
             String mDay = session.getDay();
-            long mMinutes = dayToMilliSeconds(mDate);
+            long mMilliseconds = 0;
+            try {
+                mMilliseconds = dayToMilliSeconds(mDate + " " + mStartTime);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             String mWebsite = session.getWebsite();
             String mLink = session.getLink();
             String mDescription = session.getDescription();
@@ -214,7 +221,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
             values.put(SessionEntry.COLUMN_SESSION_DATE, mDate);
             values.put(SessionEntry.COLUMN_SESSION_DAY, mDay);
-            values.put(SessionEntry.COLUMN_SESSION_MILLISECONDS, mMinutes);
+            values.put(SessionEntry.COLUMN_SESSION_MILLISECONDS, mMilliseconds);
             values.put(SessionEntry.COLUMN_SESSION_WEBSITE, mWebsite);
             values.put(SessionEntry.COLUMN_SESSION_LINK, mLink);
             values.put(SessionEntry.COLUMN_SESSION_AUDIENCE, mAudience);
@@ -316,25 +323,32 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         return stream.toByteArray();
     }
 
-    public long dayToMilliSeconds(String data) {
-        String[] mDay = data.split("-");
+    public long dayToMilliSeconds(String data) throws ParseException {
+        /*String[] mDay = data.split("-");
         int day = Integer.parseInt(mDay[2]);
         int month = Integer.parseInt(mDay[1]);
         int year = Integer.parseInt(mDay[0]);
-        Date date = new Date(year, month, day);
+        Date date1 = new Date(year, month, day);*/
+
+        String myDate = "2017-05-02 17:00";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = sdf.parse(data);
+        long millis = date.getTime();
+
         return date.getTime();
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Define a projection that specifies the columns from the table we care about.
-
+/*
         Calendar rightNow = Calendar.getInstance();
         int day = rightNow.get(rightNow.DAY_OF_MONTH);
         int month = rightNow.get(rightNow.MONTH) + 1;
         int year = rightNow.get(rightNow.YEAR);
-        Date date = new Date(year, month, day);
-        long milliSeconds = date.getTime();
+        Date date = new Date(year, month, day);*/
+        //long rightnow_milliseconds = date.getTime();
+        long rightnow_milliseconds = Calendar.getInstance().getTimeInMillis();
 
         String[] projection = {
                 SessionEntry._ID,
@@ -378,7 +392,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         db.close();
 
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
-        String[] selectionArgs = { String.valueOf(milliSeconds) };
+        String[] selectionArgs = { String.valueOf(rightnow_milliseconds) };
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(getContext(),

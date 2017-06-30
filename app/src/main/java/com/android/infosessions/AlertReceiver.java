@@ -33,10 +33,10 @@ public class AlertReceiver extends BroadcastReceiver {
         time = value[1];
         location = value[2];
         mUri = Uri.parse(value[3]);
-        createNotification(context, "Info session: ", "Go by: ", "Alert");
+        createNotification(context, "Alert");
     }
 
-    public void createNotification(Context context, String msg, String msgText, String msgAlert) {
+    public void createNotification(Context context, String msgAlert) {
         Intent intent = new Intent(context, DetailActivity.class);
         intent.setData(mUri);
 
@@ -44,9 +44,9 @@ public class AlertReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(msg + title)
+                .setContentTitle(title)
                 .setTicker(msgAlert)
-                .setContentText(msgText + time + " At: " + location);
+                .setContentText(location + " " + time);
 
         mBuilder.setContentIntent(notifIntent);
         mBuilder.setDefaults(NotificationCompat.DEFAULT_SOUND);

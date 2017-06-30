@@ -75,16 +75,6 @@ public class MainActivity extends AppCompatActivity{
                 Intent intent = new Intent(this, SearchableActivity.class);
                 startActivity(intent);
                 return true;
-            case R.id.action_alert:
-                Long alertTime = Calendar.getInstance().getTimeInMillis() + 5*1000;
-                Intent alertIntent = new Intent(this, AlertReceiver.class);
-                alertIntent.putExtra("VALUE", 100);
-                sendBroadcast(alertIntent);
-                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, PendingIntent.getBroadcast(this, 1, alertIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT));
-                return true;
             default:
                 return false;
         }

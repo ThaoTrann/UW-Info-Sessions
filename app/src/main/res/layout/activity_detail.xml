@@ -53,8 +53,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:textAllCaps="true"
-                android:textColor="@android:color/holo_blue_dark"
-                android:background="@null"
+                android:textColor="@color/colorAccent"
+                android:background="@color/white"
                 android:id="@+id/alert_button" />
 
             <Button
@@ -64,8 +64,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:textAllCaps="true"
-                android:textColor="@android:color/holo_blue_dark"
-                android:background="@null"
+                android:background="@color/white"
+                android:textColor="@color/colorAccent"
                 android:id="@+id/rvsp_button" />
 
             <Button
@@ -75,8 +75,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:textAllCaps="true"
-                android:textColor="@android:color/holo_blue_dark"
-                android:background="@null"
+                android:textColor="@color/colorAccent"
+                android:background="@color/white"
                 android:id="@+id/website_button" />
 
             <Button
@@ -86,8 +86,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:textAllCaps="true"
-                android:textColor="@android:color/holo_blue_dark"
-                android:background="@null"
+                android:textColor="@color/colorAccent"
+                android:background="@color/white"
                 android:id="@+id/nav_button" />
 
         </LinearLayout>

@@ -17,6 +17,7 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,6 +35,7 @@ import com.android.infosessions.data.SessionContract.SessionEntry;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -49,6 +51,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String link;
     private String website;
     private String employer;
+    private Long milliseconds;
     private LinearLayout contactLL;
 
     @Override
@@ -72,7 +75,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         alert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Long alertTime = Calendar.getInstance().getTimeInMillis() + 5*1000;
+                Long current = Calendar.getInstance().getTimeInMillis();
+                Long alertTime = milliseconds;
+                Log.d("LOG_TAG current time ", current.toString());
+                Log.d("LOG_TAG milliseconds ", milliseconds.toString());
+
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
                 alertIntent.putExtra("VALUE", employer + "," + time + "," + location + "," + mUri);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -175,6 +182,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
                         //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
                         website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
+                        milliseconds = cursor.getLong(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MILLISECONDS));
 
                         time = start_time + " - " + end_time;
                         location = building_code + " " + building_room;
@@ -185,8 +193,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         TextView timeTextView = (TextView) findViewById(R.id.time);
                         timeTextView.setText(start_time + " - " + end_time);
 
+                        String[] date_split = date.split("-");
+                        String month = getMonthForInt(Integer.parseInt(date_split[1])-1);
+                        String formated_date = month + " " + date_split[2] + " " + date_split[0];
+
                         TextView dateTextView = (TextView) findViewById(R.id.date);
-                        dateTextView.setText(day + " - " + date);
+                        dateTextView.setText(formated_date);
+
 
                         TextView detailTextView = (TextView) findViewById(R.id.description);
                         detailTextView.setText(description);
@@ -214,6 +227,15 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         }
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
+    }
+    String getMonthForInt(int num) {
+        String month = "wrong";
+        DateFormatSymbols dfs = new DateFormatSymbols();
+        String[] months = dfs.getMonths();
+        if (num >= 0 && num <= 11 ) {
+            month = months[num];
+        }
+        return month;
     }
 
     public void updateContactLL(final Cursor cursor) {
