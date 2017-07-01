@@ -216,6 +216,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
+            values.put(SessionEntry._ID, session.getId());
             values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
             values.put(SessionEntry.COLUMN_SESSION_START_TIME, mStartTime);
             values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
@@ -366,6 +367,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                 SessionEntry.COLUMN_SESSION_MAP_URL,
                 SessionEntry.COLUMN_SESSION_LOGO,
+                SessionEntry.COLUMN_SESSION_ALERTED,
                 SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 

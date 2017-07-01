@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -68,7 +69,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         getLoaderManager().initLoader(SESSION_LOADER, null, this);
         getLoaderManager().initLoader(CONTACT_LOADER, null, this);
 
-        Button alert = (Button) findViewById(R.id.alert_button);
+        ImageButton alert = (ImageButton) findViewById(R.id.alert_button);
         Button rvsp = (Button) findViewById(R.id.rvsp_button);
         Button web = (Button) findViewById(R.id.website_button);
         Button nav = (Button) findViewById(R.id.nav_button);
@@ -136,6 +137,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         SessionEntry.COLUMN_SESSION_BUILDING_NAME,
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                         SessionEntry.COLUMN_SESSION_MAP_URL,
+                        SessionEntry.COLUMN_SESSION_ALERTED,
                         SessionEntry.COLUMN_SESSION_LOGO,
                         SessionEntry.COLUMN_SESSION_AUDIENCE};
 
@@ -183,6 +185,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
                         String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
                         link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
+                        int alerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
+
                         //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
                         website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
                         milliseconds = cursor.getLong(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MILLISECONDS));
@@ -202,7 +206,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                         TextView dateTextView = (TextView) findViewById(R.id.date);
                         dateTextView.setText(formated_date);
-
+/*
+                        ImageView alertImageView = (ImageView) findViewById(R.id.alert_image);
+                        if(alerted == SessionEntry.ALERTED) {
+                            alertImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_active_black_24dp));
+                        } else {
+                            alertImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_off_black_24dp));
+                        }*/
 
                         TextView detailTextView = (TextView) findViewById(R.id.description);
                         detailTextView.setText(description);

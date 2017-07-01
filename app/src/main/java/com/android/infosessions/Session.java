@@ -30,11 +30,13 @@ public class Session implements Serializable{
     private String mMapUrl;
     private String mAudience;
     private Bitmap mLogo;
+    private int mId;
     private ArrayList<String> mAudienceStringArray;
 
     public Session(JSONObject info) throws JSONException {
         mInfo = info;
         mName = info.getString("employer");
+        mId = info.getInt("id");
         mStartTime = info.getString("start_time");
         mEndTime = info.getString("end_time");
         mDate = info.getString("date");
@@ -67,6 +69,7 @@ public class Session implements Serializable{
     public String getEmployer() {
         return mName;
     }
+    public int getId() {return mId;}
     public String getStartTime() {
         return mStartTime ;
     }
