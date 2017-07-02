@@ -1,6 +1,7 @@
 package com.android.infosessions;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.app.PendingIntent;
 import android.content.ContentUris;
@@ -19,12 +20,16 @@ import android.provider.ContactsContract.Contacts;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,23 +96,65 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             @Override
             public void onClick(View v) {
                 Long current = Calendar.getInstance().getTimeInMillis() + 5*1000;
-                Long alertTime = milliseconds;
+                final Long alertTime = milliseconds;
                 /*
                 Log.d("LOG_TAG current time ", current.toString());
                 Log.d("LOG_TAG milliseconds ", milliseconds.toString());
 
                 Log.d("alert id", mId + "");*/
+
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
                 alertIntent.putExtra("VALUE", mEmployer + "," + mTime + "," + mLocation + "," + mUri + "," + mId);
                 alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 pendingIntent = PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 if(mAlerted == SessionEntry.NOT_ALERTED) {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, pendingIntent);
+                    final int[] extra_time = new int[1];
+                    final AlertDialog mBuilder = new AlertDialog.Builder(DetailActivity.this).create();
+                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE );
+                    final View mView = inflater.inflate(R.layout.alert_time_preference, null);
+                    //RadioButton on_time = (TextView) mView.findViewById(R.id.on_time);
+                    RadioGroup radioGroup = (RadioGroup) mView.findViewById(R.id.radio_group);
+                    radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(RadioGroup group, int checkedId) {
+                            if (checkedId == R.id.on_time) {
+                                extra_time[0] = 0;
+                            } else if (checkedId == R.id.five_minutes) {
+                                extra_time[0] = 1000;
+                            } else if (checkedId == R.id.thirty_minutes) {
+                                extra_time[0] = 5000;
+                            } else if (checkedId == R.id.aday) {
+                                extra_time[0] = 10000;
+                            }
+                        }
+                    });
+
+                    Button mAdd = (Button) mView.findViewById(R.id.add_btn);
+                    Button mCnl = (Button) mView.findViewById(R.id.cancel_btn);
+
+                    mBuilder.setView(mView);
+                    mBuilder.setCancelable(true);
+                    mAdd.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime + extra_time[0], pendingIntent);
+                            mBuilder.dismiss();
+                            updateSession(mId);
+                        }
+                    });
+
+                    mCnl.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mBuilder.dismiss();
+                        }
+                    });
+                    mBuilder.show();
                 } else {
                     alarmManager.cancel(pendingIntent);
+                    updateSession(mId);
                 }
-                updateSession(mId);
 
             }
         });

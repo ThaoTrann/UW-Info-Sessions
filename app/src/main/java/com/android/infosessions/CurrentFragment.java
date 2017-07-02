@@ -403,6 +403,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         String selection = SessionEntry.COLUMN_SESSION_MILLISECONDS + ">?";
         String[] selectionArgs = { String.valueOf(rightnow_milliseconds) };
+        String sortOrder = SessionEntry.COLUMN_SESSION_MILLISECONDS + " ASC";
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(mContext,
@@ -410,7 +411,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 projection,
                 selection,
                 selectionArgs,
-                null);
+                sortOrder);
     }
 
     @Override
