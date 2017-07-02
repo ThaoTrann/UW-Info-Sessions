@@ -95,7 +95,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         alert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Long current = Calendar.getInstance().getTimeInMillis() + 5*1000;
+                final Long current = Calendar.getInstance().getTimeInMillis() + 5*1000;
                 final Long alertTime = milliseconds;
                 /*
                 Log.d("LOG_TAG current time ", current.toString());
@@ -104,12 +104,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Log.d("alert id", mId + "");*/
 
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
-                alertIntent.putExtra("VALUE", mEmployer + "," + mTime + "," + mLocation + "," + mUri + "," + mId);
+                alertIntent.putExtra("VALUE", mEmployer + "," + mDate + " " + mTime + "," + mLocation + "," + mUri + "," + mId);
                 alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 pendingIntent = PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 if(mAlerted == SessionEntry.NOT_ALERTED) {
-                    final int[] extra_time = new int[1];
+                    final long[] extra_time = new long[1];
                     final AlertDialog mBuilder = new AlertDialog.Builder(DetailActivity.this).create();
                     LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE );
                     final View mView = inflater.inflate(R.layout.alert_time_preference, null);
@@ -120,12 +120,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         public void onCheckedChanged(RadioGroup group, int checkedId) {
                             if (checkedId == R.id.on_time) {
                                 extra_time[0] = 0;
-                            } else if (checkedId == R.id.five_minutes) {
-                                extra_time[0] = 1000;
+                            } else if (checkedId == R.id.fifteen_minutes) {
+                                extra_time[0] = 900000;
                             } else if (checkedId == R.id.thirty_minutes) {
-                                extra_time[0] = 5000;
+                                extra_time[0] = 1800000;
                             } else if (checkedId == R.id.aday) {
-                                extra_time[0] = 10000;
+                                extra_time[0] = 86400000;
                             }
                         }
                     });
@@ -138,9 +138,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     mAdd.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime + extra_time[0], pendingIntent);
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime - extra_time[0], pendingIntent);
                             mBuilder.dismiss();
                             updateSession(mId);
+                            Log.d("current ", current + "");
+                            Log.d("alert extra ", alertTime + extra_time[0] + "");
                         }
                     });
 

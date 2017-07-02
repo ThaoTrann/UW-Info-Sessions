@@ -48,7 +48,7 @@ public class AlertReceiver extends BroadcastReceiver {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(title)
                 .setTicker(msgAlert)
-                .setContentText(location + " " + time);
+                .setContentText(location + ", " + time);
 
         mBuilder.setContentIntent(notifIntent);
         mBuilder.setDefaults(NotificationCompat.DEFAULT_SOUND);

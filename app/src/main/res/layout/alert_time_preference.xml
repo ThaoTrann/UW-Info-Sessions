@@ -24,7 +24,7 @@
                 android:text="Alert 15 minutes before"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/five_minutes" />
+                android:id="@+id/fifteen_minutes" />
             <RadioButton
                 android:text="Alert 30 minutes before"
                 android:layout_width="wrap_content"
