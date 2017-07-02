@@ -10,7 +10,7 @@ import android.support.v13.app.FragmentPagerAdapter;
  */
 public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
-    private String tabTitles[] = new String[] { "Current", "Archived", "Contacts"};
+    private String tabTitles[] = new String[] { "Current", "Archived", "Connections"};
 
     public SimpleFragmentPagerAdapter(FragmentManager fm) {
         super(fm);

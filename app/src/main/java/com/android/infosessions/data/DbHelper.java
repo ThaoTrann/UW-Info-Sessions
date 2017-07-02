@@ -53,6 +53,7 @@ public class DbHelper extends SQLiteOpenHelper {
         String SQL_CREATE_SESSION_ENTRIES =
                 "CREATE TABLE " + SessionEntry.TABLE_NAME + " (" +
                         SessionEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        SessionEntry.COLUMN_SESSION_ALERTED + " INTEGER, " +
                         SessionEntry.COLUMN_SESSION_EMPLOYER + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_START_TIME + " TEXT, " +
                         SessionEntry.COLUMN_SESSION_END_TIME + " TEXT, " +

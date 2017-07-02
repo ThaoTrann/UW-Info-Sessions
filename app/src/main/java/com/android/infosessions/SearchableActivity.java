@@ -111,7 +111,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(60, 60);
 
         Button btnFilter = new Button(this);
-        btnFilter.setBackgroundResource(R.drawable.ic_filter_list_white_24dp);
+        btnFilter.setBackgroundResource(R.drawable.filter_button);
 
         android.widget.SearchView searchView = (android.widget.SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setQueryHint("Search employer...");

@@ -40,6 +40,10 @@ public class SessionContract {
         public static final String COLUMN_SESSION_AUDIENCE = "audience";
         public static final String COLUMN_SESSION_LOGO = "logo";
         public static final String COLUMN_SESSION_NUMBER_CONTACTS = "number_of_contacts";
+        public static final String COLUMN_SESSION_ALERTED = "alerted";
+
+        public static final int ALERTED = 1;
+        public static final int NOT_ALERTED = 0;
     }
 }
 

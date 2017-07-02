@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
+import java.text.DateFormatSymbols;
+
 /**
  * Created by Thao on 5/16/17.
  */
@@ -30,7 +32,6 @@ public class SessionCursorAdapter extends CursorAdapter {
         return LayoutInflater.from(context).inflate(R.layout.item_session, parent, false);
     }
 
-
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         String employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
@@ -46,13 +47,15 @@ public class SessionCursorAdapter extends CursorAdapter {
         String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
         String link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
         Integer contacts = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS));
+//        Integer alerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
+
         //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
 
         TextView nameTextView = (TextView) view.findViewById(R.id.employer);
         TextView nameMPTextView = (TextView) view.findViewById(R.id.employer_mp);
 
         TextView timeTextView = (TextView) view.findViewById(R.id.time);
-        timeTextView.setText(start_time + " " + end_time);
+        timeTextView.setText(start_time + "-" + end_time);
 
         TextView dateTextView = (TextView) view.findViewById(R.id.date);
         dateTextView.setText(date);
