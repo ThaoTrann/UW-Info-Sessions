@@ -70,9 +70,17 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             "https://api.uwaterloo.ca/v2/resources/infosessions.json?key=123afda14d0a233ecb585591a95e0339";
     private static final int LOADER_ID = 0;
     private SessionCursorAdapter mCursorAdapter;
+    private Context mContext;
 
     public CurrentFragment() {
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext = getContext();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,7 +91,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
 
-        mCursorAdapter = new SessionCursorAdapter(getContext(), null);
+        mCursorAdapter = new SessionCursorAdapter(mContext, null);
         sessionsListView.setAdapter(mCursorAdapter);
         sessionsListView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 
@@ -111,7 +119,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent(getContext(), DetailActivity.class);
+                Intent intent = new Intent(mContext, DetailActivity.class);
 
                 Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
 
@@ -141,7 +149,8 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public class SessionTask extends AsyncTask<String, Void, ArrayList<Session>> {
         @Override
         protected ArrayList<Session> doInBackground(String... params) {
-            ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], getContext());
+
+            ArrayList<Session> sessions =  QueryUtils.fetchInfos(params[0], mContext);
             audienceListSofar = "";
             insertSession(sessions);
             return sessions;
@@ -207,7 +216,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                         ContentValues valuesAudience = new ContentValues();
                         valuesAudience.put(FilterEntry.COLUMN_FILTER_KEY, audience);
                         valuesAudience.put(FilterEntry.COLUMN_FILTER_VALUE, FilterEntry.VALUE_NOT_CHECKED);
-                        getContext().getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
+                        mContext.getContentResolver().insert(FilterEntry.CONTENT_URI, valuesAudience);
                         audienceListSofar += mAudienceSA.get(j) + ",";
                     }
                 }
@@ -244,7 +253,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String logo_selection = LogoEntry.COLUMN_LOGO_EMPLOYER + " LIKE ? ";
             String[] logo_selectionArgs = { mEmployer };
 
-            DbHelper mDbHelper = new DbHelper(getContext());
+            DbHelper mDbHelper = new DbHelper(mContext);
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
             // Perform a query on the pets table
             Cursor cursor = db.query(
@@ -258,9 +267,9 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             int mContacts;
             mContacts = cursor.getCount();
             if(cursor.getCount() == 0) {
-                loadingRL.setVisibility(View.VISIBLE);
+                //loadingRL.setVisibility(View.VISIBLE);
                 // fetch logo image from clearbit
-                mLogo = getBytes(QueryUtils.fetchImage(mEmployer, getContext()));
+                mLogo = getBytes(QueryUtils.fetchImage(mEmployer, mContext));
 
                 //save image to db
                 ContentValues logo_values = new ContentValues();
@@ -298,7 +307,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 }
             }
 
-            Cursor contact_cursor = getContext().getContentResolver().query(
+            Cursor contact_cursor = mContext.getContentResolver().query(
                     ContactsContract.Data.CONTENT_URI,
                     null,             // Columns to include in the resulting Cursor
                     orgWhere,                   // No selection clause
@@ -311,7 +320,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);
 
             // Insert a new row for pet in the database, returning the ID of that new row.
-            getContext().getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+            mContext.getContentResolver().insert(SessionEntry.CONTENT_URI, values);
 
         }
         //Log.d("LOG_TAG", audienceListSofar);
@@ -370,7 +379,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};
 
-        DbHelper mDbHelper = new DbHelper(getContext());
+        DbHelper mDbHelper = new DbHelper(mContext);
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         // Perform a query on the pets table
         Cursor cursor = db.query(
@@ -396,7 +405,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         String[] selectionArgs = { String.valueOf(rightnow_milliseconds) };
 
         // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(getContext(),
+        return new CursorLoader(mContext,
                 SessionEntry.CONTENT_URI,
                 projection,
                 selection,

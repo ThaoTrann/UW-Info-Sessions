@@ -207,14 +207,24 @@
             android:elegantTextHeight="true"
             tools:text="Bot"/>
 
+        <TextView
+            android:id="@+id/contacts_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:text="Contacts:"
+            android:visibility="gone"/>
+
         <LinearLayout
             android:id="@+id/contacts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="16dp"
-            android:divider="@drawable/vertical_divider"
-            android:showDividers="middle"/>
+            android:layout_marginLeft="16dp"
+            android:paddingLeft="16dp"
+            android:divider="?android:dividerHorizontal"
+            android:showDividers="middle"
+            android:clickable="true"/>
 
     </LinearLayout>
 </ScrollView>
