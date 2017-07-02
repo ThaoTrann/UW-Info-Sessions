@@ -173,7 +173,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void insertSession(ArrayList<Session> sessions) {
-
         for(int i = 0; i < sessions.size(); i++) {
             Session session = sessions.get(i);
             String mEmployer = session.getEmployer();

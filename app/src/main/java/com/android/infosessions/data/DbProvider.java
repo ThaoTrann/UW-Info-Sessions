@@ -253,6 +253,12 @@ public class DbProvider extends ContentProvider {
     public int update(Uri uri, ContentValues contentValues, String selection,
                       String[] selectionArgs) {final int match = sUriMatcher.match(uri);
         switch (match) {
+            case SESSIONS:
+                return updateSession(uri, contentValues, selection, selectionArgs);
+            case SESSION_ID:
+                selection = SessionEntry._ID + "=?";
+                selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
+                return updateSession(uri, contentValues, selection, selectionArgs);
             case CONTACTS:
                 return updateContract(uri, contentValues, selection, selectionArgs);
             case CONTACT_ID:
@@ -274,12 +280,22 @@ public class DbProvider extends ContentProvider {
         }
     }
 
+    private int updateSession(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        int rowUpdated = database.update(SessionEntry.TABLE_NAME, values, selection, selectionArgs);
+        if(rowUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowUpdated;
+    }
+
     private int updateFilter (Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         int rowUpdated = database.update(FilterEntry.TABLE_NAME, values, selection, selectionArgs);
-        getContext().getContentResolver().notifyChange(uri, null);
         if(rowUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -291,7 +307,6 @@ public class DbProvider extends ContentProvider {
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         int rowUpdated = database.update(SessionEntry.TABLE_NAME, values, selection, selectionArgs);
-        getContext().getContentResolver().notifyChange(uri, null);
         if(rowUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }

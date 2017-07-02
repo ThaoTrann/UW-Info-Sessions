@@ -3,6 +3,8 @@ package com.android.infosessions;
 import android.app.AlarmManager;
 import android.app.LoaderManager;
 import android.app.PendingIntent;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -10,8 +12,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
@@ -20,24 +20,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.infosessions.data.FilterContract;
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.sql.Blob;
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -46,13 +40,28 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final int CONTACT_LOADER = 1;
 
     private SessionCursorAdapter mCursorAdapter;
-    private String time;
-    private String location;
-    private String map_url;
-    private String link;
-    private String website;
-    private String employer;
-    private int id;
+    private String mTime;
+    private String mLocation;
+    private String mMapUrl;
+    private String mWebsite;
+    private String mEmployer;
+    private String mStartTime;
+    private String mEndTime;
+    private String mLink;
+    private String mDescription;
+    private String mDate;
+    private String mDay;
+    private String mBuildingRoom;
+    private String mBuildingCode;
+    private String mBuildingName;
+    private String mMilliseconds;
+    private String mAudience;
+    private byte[] mLogo;
+    private String mContacts;
+    private ImageButton alert;
+
+    private int mId;
+    private int mAlerted;
     private Long milliseconds;
     private LinearLayout contactLL;
 
@@ -69,7 +78,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         getLoaderManager().initLoader(SESSION_LOADER, null, this);
         getLoaderManager().initLoader(CONTACT_LOADER, null, this);
 
-        ImageButton alert = (ImageButton) findViewById(R.id.alert_button);
+        alert = (ImageButton) findViewById(R.id.alert_button);
         Button rvsp = (Button) findViewById(R.id.rvsp_button);
         Button web = (Button) findViewById(R.id.website_button);
         Button nav = (Button) findViewById(R.id.nav_button);
@@ -83,9 +92,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Log.d("LOG_TAG milliseconds ", milliseconds.toString());
 
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
-                alertIntent.putExtra("VALUE", employer + "," + time + "," + location + "," + mUri + "," + id);
+                alertIntent.putExtra("VALUE", mEmployer + "," + mTime + "," + mLocation + "," + mUri + "," + mId);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                Log.d("alert id", id + "");
+                Log.d("alert id", mId + "");
+                updateSession(mId);
 
                 alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime,
                         PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
@@ -95,7 +105,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         rvsp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mLink));
                 startActivity(webIntent);
             }
         });
@@ -103,7 +113,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(website));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mWebsite));
                 startActivity(webIntent);
             }
         });
@@ -111,11 +121,45 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         nav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(map_url));
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mMapUrl));
                 startActivity(webIntent);
             }
         });
         contactLL = (LinearLayout) findViewById(R.id.contacts);
+    }
+
+    private void updateSession(long id) {
+        Uri currentUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
+        ContentValues values = new ContentValues();
+        /*
+        values.put(SessionEntry._ID, id);
+        values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
+        values.put(SessionEntry.COLUMN_SESSION_START_TIME, mStartTime);
+        values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
+        values.put(SessionEntry.COLUMN_SESSION_DATE, mDate);
+        values.put(SessionEntry.COLUMN_SESSION_DAY, mDay);
+        values.put(SessionEntry.COLUMN_SESSION_MILLISECONDS, mMilliseconds);
+        values.put(SessionEntry.COLUMN_SESSION_WEBSITE, mWebsite);
+        values.put(SessionEntry.COLUMN_SESSION_LINK, mLink);
+        values.put(SessionEntry.COLUMN_SESSION_AUDIENCE, mAudience);
+        values.put(SessionEntry.COLUMN_SESSION_DESCRIPTION, mDescription);
+        values.put(SessionEntry.COLUMN_SESSION_BUILDING_CODE, mBuildingCode);
+        values.put(SessionEntry.COLUMN_SESSION_BUILDING_NAME, mBuildingName);
+        values.put(SessionEntry.COLUMN_SESSION_BUILDING_ROOM, mBuildingRoom);
+        values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
+        values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
+        values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);*/
+        if(mAlerted == SessionEntry.ALERTED) {
+            values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.NOT_ALERTED);
+            Toast toast = Toast.makeText(getApplicationContext(), "Notification removed", Toast.LENGTH_LONG);
+            toast.show();
+        } else {
+            values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.ALERTED);
+            Toast toast = Toast.makeText(getApplicationContext(), "Notification set", Toast.LENGTH_LONG);
+            toast.show();
+        }
+
+        getContentResolver().update(currentUri, values, null, null);
     }
 
     @Override
@@ -139,6 +183,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         SessionEntry.COLUMN_SESSION_MAP_URL,
                         SessionEntry.COLUMN_SESSION_ALERTED,
                         SessionEntry.COLUMN_SESSION_LOGO,
+                        SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                         SessionEntry.COLUMN_SESSION_AUDIENCE};
 
                 // This loader will execute the ContentProvider's query method on a background thread
@@ -172,68 +217,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             switch (loader.getId()) {
                 case SESSION_LOADER:
                     if (cursor.moveToFirst()) {
-                        id = cursor.getInt(cursor.getColumnIndex("_id"));
-                        employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
-                        String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
-                        String end_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
-                        String description = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DESCRIPTION));
-                        String date = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DATE));
-                        String day = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DAY));
-                        map_url = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MAP_URL));
-                        String audience = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_AUDIENCE));
-                        String building_room = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_ROOM));
-                        String building_code = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
-                        String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
-                        link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
-                        int alerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
-
-                        //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
-                        website = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
-                        milliseconds = cursor.getLong(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MILLISECONDS));
-
-                        time = start_time + " - " + end_time;
-                        location = building_code + " " + building_room;
-
-                        TextView nameTextView = (TextView) findViewById(R.id.employer);
-                        nameTextView.setText(employer);
-
-                        TextView timeTextView = (TextView) findViewById(R.id.time);
-                        timeTextView.setText(start_time + " - " + end_time);
-
-                        String[] date_split = date.split("-");
-                        String month = getMonthForInt(Integer.parseInt(date_split[1])-1);
-                        String formated_date = month + " " + date_split[2] + " " + date_split[0];
-
-                        TextView dateTextView = (TextView) findViewById(R.id.date);
-                        dateTextView.setText(formated_date);
-/*
-                        ImageView alertImageView = (ImageView) findViewById(R.id.alert_image);
-                        if(alerted == SessionEntry.ALERTED) {
-                            alertImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_active_black_24dp));
-                        } else {
-                            alertImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_notifications_off_black_24dp));
-                        }*/
-
-                        TextView detailTextView = (TextView) findViewById(R.id.description);
-                        detailTextView.setText(description);
-
-                        TextView locationTextView = (TextView) findViewById(R.id.location);
-                        locationTextView.setText(building_code + " (" + building_name + ") - " + building_room);
-
-                        TextView audienceTextView = (TextView) findViewById(R.id.audience);
-                        audienceTextView.setText(audience);
-
-                        ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
-                        byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
-                        Bitmap logo = getImage(image);
-
-                        //logoView.setImageDrawable(drawable);
-                        logoView.setImageBitmap(logo);
-
+                        updateDetail(cursor);
                     }
                     break;
                 case CONTACT_LOADER:
-                    updateContactLL(cursor);
+                    if (cursor.moveToFirst()) {
+                        updateContactLL(cursor);
+                    }
                     break;
                 default:
                     return;
@@ -251,6 +241,67 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         return month;
     }
 
+    public void updateDetail(final Cursor cursor) {
+
+        mId = cursor.getInt(cursor.getColumnIndex("_id"));
+        mEmployer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
+        mStartTime = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
+        mEndTime = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
+        mDescription = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DESCRIPTION));
+        mDate = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DATE));
+        mDay = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_DAY));
+        mMapUrl = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MAP_URL));
+        mAudience = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_AUDIENCE));
+        mBuildingRoom = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_ROOM));
+        mBuildingCode = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_CODE));
+        mBuildingName = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
+        mLink = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
+        mAlerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
+
+        mLogo = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+        mWebsite = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
+        milliseconds = cursor.getLong(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MILLISECONDS));
+        mContacts = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS));
+
+        mTime = mStartTime + " - " + mEndTime;
+        mLocation = mBuildingCode + " " + mBuildingRoom;
+
+        TextView nameTextView = (TextView) findViewById(R.id.employer);
+        nameTextView.setText(mEmployer);
+
+        TextView timeTextView = (TextView) findViewById(R.id.time);
+        timeTextView.setText(mStartTime + " - " + mEndTime);
+
+        String[] date_split = mDate.split("-");
+        String month = getMonthForInt(Integer.parseInt(date_split[1])-1);
+        String formated_date = month + " " + date_split[2] + " " + date_split[0];
+
+        TextView dateTextView = (TextView) findViewById(R.id.date);
+        dateTextView.setText(formated_date);
+
+        if(mAlerted == SessionEntry.ALERTED) {
+            alert.setImageResource(R.drawable.ic_notifications_active_black_24dp);
+        } else {
+            alert.setImageResource(R.drawable.ic_notifications_off_black_24dp);
+        }
+
+        TextView detailTextView = (TextView) findViewById(R.id.description);
+        detailTextView.setText(mDescription);
+
+        TextView locationTextView = (TextView) findViewById(R.id.location);
+        locationTextView.setText(mBuildingCode + " (" + mBuildingName + ") - " + mBuildingRoom);
+
+        TextView audienceTextView = (TextView) findViewById(R.id.audience);
+        audienceTextView.setText(mAudience);
+
+        ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
+        byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+        Bitmap logo = getImage(image);
+
+        //logoView.setImageDrawable(drawable);
+        logoView.setImageBitmap(logo);
+
+    }
     public void updateContactLL(final Cursor cursor) {
         cursor.moveToFirst();
         contactLL.removeAllViews();
@@ -264,7 +315,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             String company = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DATA));
             String title = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
 
-            if(employer.contains(company)) {
+            if(mEmployer.contains(company)) {
                 if(!hasContact) {
                     TextView tv = new TextView(this);
                     tv.setText("Contacts:");
