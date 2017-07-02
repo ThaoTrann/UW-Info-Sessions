@@ -59,6 +59,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private byte[] mLogo;
     private String mContacts;
     private ImageButton alert;
+    private AlarmManager alarmManager;
+    private PendingIntent pendingIntent;
 
     private int mId;
     private int mAlerted;
@@ -86,19 +88,25 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         alert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Long current = Calendar.getInstance().getTimeInMillis();
+                Long current = Calendar.getInstance().getTimeInMillis() + 5*1000;
                 Long alertTime = milliseconds;
+                /*
                 Log.d("LOG_TAG current time ", current.toString());
                 Log.d("LOG_TAG milliseconds ", milliseconds.toString());
 
+                Log.d("alert id", mId + "");*/
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
                 alertIntent.putExtra("VALUE", mEmployer + "," + mTime + "," + mLocation + "," + mUri + "," + mId);
-                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                Log.d("alert id", mId + "");
+                alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                pendingIntent = PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                if(mAlerted == SessionEntry.NOT_ALERTED) {
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime, pendingIntent);
+                } else {
+                    alarmManager.cancel(pendingIntent);
+                }
                 updateSession(mId);
 
-                alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime,
-                        PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             }
         });
 
@@ -242,7 +250,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     public void updateDetail(final Cursor cursor) {
-
         mId = cursor.getInt(cursor.getColumnIndex("_id"));
         mEmployer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
         mStartTime = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
