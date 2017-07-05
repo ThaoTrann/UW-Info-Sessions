@@ -23,44 +23,57 @@
             android:id="@+id/employer_logo"
             android:src="@drawable/ic_domain_black_24dp"/>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="5"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/employer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textAllCaps="true"
-                android:textColor="@color/textColorEmployer"
-                android:textSize="18sp"
-                tools:text="Wattpad" />
-            <TextView
-                android:id="@+id/employer_mp"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent"
-                android:gravity="center_vertical"
-                android:foregroundGravity="center"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/employer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAllCaps="true"
+                    android:textColor="@color/textColorEmployer"
+                    android:textSize="18sp"
+                    tools:text="Wattpad" />
+                <TextView
+                    android:id="@+id/employer_mp"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"
+                    android:gravity="center_vertical"
+                    android:foregroundGravity="center"
+                    android:visibility="gone"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAllCaps="true"
+                    android:textColor="@color/textColorEmployer"
+                    android:textSize="18sp"
+                    tools:text="Wattpad" />
+                <TextView
+                    android:id="@+id/contacts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorAccent"
+                    tools:text="2 connections"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/alert"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:paddingLeft="8dp"
                 android:visibility="gone"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textAllCaps="true"
-                android:textColor="@color/textColorEmployer"
-                android:textSize="18sp"
-                tools:text="Wattpad" />
-            <TextView
-                android:id="@+id/contacts"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorAccent"
-                tools:text="2 connections"/>
-
-        </LinearLayout>
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
 
     </LinearLayout>
     <LinearLayout

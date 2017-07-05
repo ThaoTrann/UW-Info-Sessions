@@ -47,7 +47,7 @@ public class SessionCursorAdapter extends CursorAdapter {
         String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
         String link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
         Integer contacts = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS));
-//        Integer alerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
+        Integer alerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
 
         //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
 
@@ -93,6 +93,14 @@ public class SessionCursorAdapter extends CursorAdapter {
 
         //logoView.setImageDrawable(drawable);
         logoView.setImageBitmap(logo);
+
+        ImageView alertImage = (ImageView) view.findViewById(R.id.alert);
+        if (alerted == SessionEntry.ALERTED) {
+            alertImage.setImageResource(R.drawable.ic_alert);
+            alertImage.setVisibility(View.VISIBLE);
+        } else {
+            alertImage.setVisibility(View.GONE);
+        }
     }
 
     // convert from byte array to bitmap

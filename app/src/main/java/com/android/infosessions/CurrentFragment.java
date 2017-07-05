@@ -121,6 +121,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
                 Intent intent = new Intent(mContext, DetailActivity.class);
 
+                Log.d("current uri id", id + "");
                 Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
@@ -169,7 +170,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
         @Override
         protected void onPostExecute(ArrayList<Session> sessions) {
             super.onPostExecute(sessions);
-            loadingRL.setVisibility(View.GONE);
             //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             //toast.show();
             Calendar rightNow = Calendar.getInstance();
@@ -177,6 +177,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             int month = rightNow.get(rightNow.MONTH) + 1;
             int year = rightNow.get(rightNow.YEAR);
             updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
+            loadingRL.setVisibility(View.GONE);
             sessionsListView.setVisibility(View.VISIBLE);
         }
     }
@@ -207,6 +208,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             String mCode = session.getBuildingCode();
             String mMapUrl = session.getMapUrl();
             String mAudience = session.getAudience();
+            int mId = session.getId();
             if(mAudience != null && !mAudience.isEmpty()) {
                 ArrayList<String> mAudienceSA = session.getAudienceStringArray();
                 
@@ -224,7 +226,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
-            values.put(SessionEntry._ID, session.getId());
+            values.put(SessionEntry._ID, mId);
             values.put(SessionEntry.COLUMN_SESSION_EMPLOYER, mEmployer);
             values.put(SessionEntry.COLUMN_SESSION_START_TIME, mStartTime);
             values.put(SessionEntry.COLUMN_SESSION_END_TIME, mEndTime);
@@ -267,7 +269,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             int mContacts;
             mContacts = cursor.getCount();
             if(cursor.getCount() == 0) {
-                //loadingRL.setVisibility(View.VISIBLE);
+                loadingRL.setVisibility(View.VISIBLE);
                 // fetch logo image from clearbit
                 mLogo = getBytes(QueryUtils.fetchImage(mEmployer, mContext));
 
@@ -315,15 +317,28 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                     null);
 
             mContacts = contact_cursor.getCount();
+            contact_cursor.close();
             //contact_cursor.moveToFirst();
 
             values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);
 
-            // Insert a new row for pet in the database, returning the ID of that new row.
-            mContext.getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+            values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.ALERTED);
+            Uri mCurrentUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, mId);
+            Cursor crs = mContext.getContentResolver().query(mCurrentUri, new String[]
+                    {SessionEntry._ID, SessionEntry.COLUMN_SESSION_ALERTED}, null, null, null);
 
+            if (crs.getCount() < 1) {
+                Log.d("crs.getCount ", mId + "");
+                values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.NOT_ALERTED);
+                mContext.getContentResolver().insert(SessionEntry.CONTENT_URI, values);
+            } else {
+                crs.moveToFirst();
+                int alerted_state = crs.getInt(crs.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
+                values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.ALERTED);
+                mContext.getContentResolver().update(mCurrentUri, values, null, null);
+            }
+            crs.close();
         }
-        //Log.d("LOG_TAG", audienceListSofar);
     }
     // convert from bitmap to byte array
     public static byte[] getBytes(Bitmap bitmap) {
