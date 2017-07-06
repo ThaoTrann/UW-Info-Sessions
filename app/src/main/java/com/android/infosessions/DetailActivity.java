@@ -289,6 +289,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     return;
             }
         }
+        Log.d("alert id", mId + "");
         // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
     }
     String getMonthForInt(int num) {

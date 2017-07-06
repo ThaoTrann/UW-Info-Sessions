@@ -53,7 +53,6 @@ public final class QueryUtils extends AppCompatActivity {
         // Gets the data repository in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        db.delete(SessionEntry.TABLE_NAME, null, null);
         db.delete(FilterEntry.TABLE_NAME, null, null);
 
         // Create URL object

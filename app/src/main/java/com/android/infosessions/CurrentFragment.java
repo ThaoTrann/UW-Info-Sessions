@@ -121,11 +121,10 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
                 Intent intent = new Intent(mContext, DetailActivity.class);
 
-                Log.d("current uri id", id + "");
-                Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
+                Uri currentUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
-                intent.setData(currentPetUri);
+                intent.setData(currentUri);
 
                 // Launch the {@link EditorActivity} to display the data for the current pet.
                 startActivity(intent);
@@ -322,19 +321,17 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);
 
-            values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.ALERTED);
             Uri mCurrentUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, mId);
             Cursor crs = mContext.getContentResolver().query(mCurrentUri, new String[]
                     {SessionEntry._ID, SessionEntry.COLUMN_SESSION_ALERTED}, null, null, null);
 
             if (crs.getCount() < 1) {
-                Log.d("crs.getCount ", mId + "");
                 values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.NOT_ALERTED);
                 mContext.getContentResolver().insert(SessionEntry.CONTENT_URI, values);
             } else {
                 crs.moveToFirst();
                 int alerted_state = crs.getInt(crs.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
-                values.put(SessionEntry.COLUMN_SESSION_ALERTED, SessionEntry.ALERTED);
+                values.put(SessionEntry.COLUMN_SESSION_ALERTED, alerted_state);
                 mContext.getContentResolver().update(mCurrentUri, values, null, null);
             }
             crs.close();
