@@ -74,6 +74,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private int mId;
     private int mAlerted;
     private Long milliseconds;
+    private Button rsvp;
+    private Button web;
+    private Button nav;
+
     private LinearLayout contactLL;
     private TextView contact_title;
 
@@ -98,9 +102,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         alert = (ImageButton) findViewById(R.id.alert_button);
-        Button rvsp = (Button) findViewById(R.id.rvsp_button);
-        Button web = (Button) findViewById(R.id.website_button);
-        Button nav = (Button) findViewById(R.id.nav_button);
+        rsvp = (Button) findViewById(R.id.rvsp_button);
+        web = (Button) findViewById(R.id.website_button);
+        nav = (Button) findViewById(R.id.nav_button);
 
         alert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,7 +175,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
-        rvsp.setOnClickListener(new View.OnClickListener() {
+        rsvp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mLink));
@@ -336,6 +340,21 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mTime = mStartTime + " - " + mEndTime;
         mLocation = mBuildingCode + " " + mBuildingRoom;
 
+        if(mLink.isEmpty() || mLink == null) {
+            rsvp.setVisibility(View.GONE);
+        } else {
+            rsvp.setVisibility(View.VISIBLE);
+        }
+        if(mWebsite.isEmpty() || mWebsite == null) {
+            web.setVisibility(View.GONE);
+        } else {
+            web.setVisibility(View.VISIBLE);
+        }
+        if(mMapUrl.isEmpty() || mMapUrl == null) {
+            nav.setVisibility(View.GONE);
+        } else {
+            nav.setVisibility(View.VISIBLE);
+        }
         TextView nameTextView = (TextView) findViewById(R.id.employer);
         nameTextView.setText(mEmployer);
 
