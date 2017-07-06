@@ -10,30 +10,37 @@
         android:layout_height="match_parent"/>
 
     <!-- Empty view for the list -->
-    <RelativeLayout
-        android:id="@+id/empty_view"
+    <TextView
+        android:id="@+id/empty_title_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
-        <ImageView
-            android:id="@+id/sad_cloud_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/sad_cloud"/>
+        android:textColor="@android:color/white"
+        android:text="No result found"
+        android:layout_centerHorizontal="true"
+        android:fontFamily="sans-serif-medium"
+        android:paddingTop="16dp"
+        android:textAppearance="?android:textAppearanceMedium"/>
+
+    <!-- Denial access to contact app-->
+    <LinearLayout
+        android:id="@+id/denied_access_explanation"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
 
         <TextView
-            android:id="@+id/empty_title_text"
+            android:id="@+id/explanation_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/sad_cloud_image"
-            android:textColor="@android:color/white"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-medium"
-            android:paddingTop="16dp"
-            android:textAppearance="?android:textAppearanceMedium"/>
-
-
-    </RelativeLayout>
-
+            android:gravity="center"
+            android:text="Enable access to your contacts to match your connections to employers"/>
+        <Button
+            android:id="@+id/access_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Access Allowance"/>
+    </LinearLayout>
 </RelativeLayout>

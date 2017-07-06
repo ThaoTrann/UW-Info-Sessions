@@ -1,5 +1,6 @@
 package com.android.infosessions;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -11,6 +12,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -20,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -308,18 +311,24 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 }
             }
 
-            Cursor contact_cursor = mContext.getContentResolver().query(
-                    ContactsContract.Data.CONTENT_URI,
-                    null,             // Columns to include in the resulting Cursor
-                    orgWhere,                   // No selection clause
-                    orgWhereParams,                   // No selection arguments
-                    null);
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, SessionEntry.NO_CONTACT);
+            } else {
+                Cursor contact_cursor = mContext.getContentResolver().query(
+                        ContactsContract.Data.CONTENT_URI,
+                        null,             // Columns to include in the resulting Cursor
+                        orgWhere,                   // No selection clause
+                        orgWhereParams,                   // No selection arguments
+                        null);
 
-            mContacts = contact_cursor.getCount();
-            contact_cursor.close();
-            //contact_cursor.moveToFirst();
+                mContacts = contact_cursor.getCount();
+                contact_cursor.close();
+                //contact_cursor.moveToFirst();
 
-            values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);
+                values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, mContacts);
+            }
 
             Uri mCurrentUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, mId);
             Cursor crs = mContext.getContentResolver().query(mCurrentUri, new String[]

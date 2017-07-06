@@ -24,10 +24,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.android.infosessions.data.ContactContract.ContactEntry;
 import android.provider.ContactsContract;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /**
  * Created by Thao on 5/10/17.
@@ -36,6 +39,7 @@ import android.provider.ContactsContract;
 public class ContactFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
     private ContactCursorAdapter mCursorAdapter;
+    private LinearLayout denialAccessView;
     private static final int LOADER_ID = 0;
     private final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100;
 
@@ -46,6 +50,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_contact, container, false);
+        denialAccessView = (LinearLayout) rootView.findViewById(R.id.denied_access_explanation);
 
         ListView listView = (ListView) rootView.findViewById(R.id.list);
 
@@ -63,19 +68,23 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
         View emptyView = rootView.findViewById(R.id.empty_view);
 
-        mCursorAdapter = new ContactCursorAdapter(getContext(), null);
-        listView.setAdapter(mCursorAdapter);
-
         listView.setEmptyView(emptyView);
-        getLoaderManager().initLoader(LOADER_ID, null, this);
 
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_CONTACTS},
-                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            /*// Should we show an explanation?
+            denialAccessView.setVisibility(View.VISIBLE);
+            Button access_btn = (Button) rootView.findViewById(R.id.access_btn);
+            access_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_CONTACTS},
+                            MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                }
+            });
+
+            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     Manifest.permission.READ_CONTACTS)) {
 
@@ -94,7 +103,12 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
                 // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
                 // app-defined int constant. The callback method gets the
                 // result of the request.
-            }*/
+            }
+        } else {
+            denialAccessView.setVisibility(View.GONE);
+            mCursorAdapter = new ContactCursorAdapter(getContext(), null);
+            listView.setAdapter(mCursorAdapter);
+            getLoaderManager().initLoader(LOADER_ID, null, this);
         }
 
         return rootView;

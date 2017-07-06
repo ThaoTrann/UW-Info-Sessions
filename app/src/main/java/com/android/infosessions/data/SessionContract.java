@@ -44,6 +44,7 @@ public class SessionContract {
 
         public static final int ALERTED = 1;
         public static final int NOT_ALERTED = 0;
+        public static final int NO_CONTACT = 0;
     }
 }
 

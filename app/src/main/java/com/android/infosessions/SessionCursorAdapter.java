@@ -1,14 +1,18 @@
 package com.android.infosessions;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,8 +26,11 @@ import java.text.DateFormatSymbols;
 
 public class SessionCursorAdapter extends CursorAdapter {
 
+    private Context mContext;
+    private int mId;
     public SessionCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
+        mContext = context;
     }
 
     @Override
@@ -33,7 +40,8 @@ public class SessionCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
+        mId = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
         String employer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
         String start_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_START_TIME));
         String end_time = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_END_TIME));
@@ -47,7 +55,7 @@ public class SessionCursorAdapter extends CursorAdapter {
         String building_name = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_BUILDING_NAME));
         String link = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
         Integer contacts = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS));
-        Integer alerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
+        final Integer alerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
 
         //String logo = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
 
@@ -96,7 +104,6 @@ public class SessionCursorAdapter extends CursorAdapter {
 
         ImageView alertImage = (ImageView) view.findViewById(R.id.alert);
         if (alerted == SessionEntry.ALERTED) {
-            alertImage.setImageResource(R.drawable.ic_alert);
             alertImage.setVisibility(View.VISIBLE);
         } else {
             alertImage.setVisibility(View.GONE);
