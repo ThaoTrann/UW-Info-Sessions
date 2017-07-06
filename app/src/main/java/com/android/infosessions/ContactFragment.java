@@ -64,12 +64,25 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
                 openContact(cursor, id);
             }
         });
+        mCursorAdapter = new ContactCursorAdapter(getContext(), null);
+        listView.setAdapter(mCursorAdapter);
 
 
         View emptyView = rootView.findViewById(R.id.empty_view);
 
         listView.setEmptyView(emptyView);
 
+        showRequestView();
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showRequestView();
+    }
+
+    public void showRequestView() {
         if (ContextCompat.checkSelfPermission(getContext(),
                 Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -81,41 +94,12 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
                     ActivityCompat.requestPermissions(getActivity(),
                             new String[]{Manifest.permission.READ_CONTACTS},
                             MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-                    if (ContextCompat.checkSelfPermission(getContext(),
-                            Manifest.permission.READ_CONTACTS)
-                            != PackageManager.PERMISSION_GRANTED) {
-                    }
                 }
             });
-
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.READ_CONTACTS)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-            } else {
-
-                // No explanation needed, we can request the permission.
-
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.READ_CONTACTS},
-                        MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-
-                // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
         } else {
             denialAccessView.setVisibility(View.GONE);
-            mCursorAdapter = new ContactCursorAdapter(getContext(), null);
-            listView.setAdapter(mCursorAdapter);
             getLoaderManager().initLoader(LOADER_ID, null, this);
         }
-
-        return rootView;
     }
 
     public void openContact(Cursor mCursor, long id) {
@@ -134,6 +118,7 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         editIntent.setDataAndType(mSelectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
         startActivity(editIntent);
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -145,12 +130,24 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-
+                    denialAccessView.setVisibility(View.GONE);
+                    getLoaderManager().restartLoader(LOADER_ID, null, this);
 
                 } else {
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
+
+                    denialAccessView.setVisibility(View.VISIBLE);
+                    Button access_btn = (Button) rootView.findViewById(R.id.access_btn);
+                    access_btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            ActivityCompat.requestPermissions(getActivity(),
+                                    new String[]{Manifest.permission.READ_CONTACTS},
+                                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                        }
+                    });
                 }
                 return;
             }
