@@ -81,6 +81,10 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
                     ActivityCompat.requestPermissions(getActivity(),
                             new String[]{Manifest.permission.READ_CONTACTS},
                             MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+                    if (ContextCompat.checkSelfPermission(getContext(),
+                            Manifest.permission.READ_CONTACTS)
+                            != PackageManager.PERMISSION_GRANTED) {
+                    }
                 }
             });
 

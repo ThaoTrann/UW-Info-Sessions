@@ -290,32 +290,32 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
 
-            String[] mEmployerSplit = mEmployer.split(" ");
-
-            // retrieve related contacts from contact database
-            String orgWhere = ContactsContract.Data.MIMETYPE + " = ? AND ";
-            String[] orgWhereParams = new String[ mEmployerSplit.length + 1];
-
-            orgWhereParams[0] =  ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
-
-            if (mEmployerSplit.length > 1) {
-                orgWhere += "(";
-            }
-            for(int j = 1; j <= mEmployerSplit.length; j++) {
-                orgWhere += ContactsContract.CommonDataKinds.Organization.DATA + " LIKE ? ";
-                orgWhereParams[j] = mEmployerSplit[j-1];
-                if(j != mEmployerSplit.length) {
-                    orgWhere += " OR ";
-                } else if (mEmployerSplit.length > 1) {
-                    orgWhere += ")";
-                }
-            }
-
             if (ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.READ_CONTACTS)
                     != PackageManager.PERMISSION_GRANTED) {
                 values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, SessionEntry.NO_CONTACT);
             } else {
+                String[] mEmployerSplit = mEmployer.split(" ");
+
+                // retrieve related contacts from contact database
+                String orgWhere = ContactsContract.Data.MIMETYPE + " = ? AND ";
+                String[] orgWhereParams = new String[ mEmployerSplit.length + 1];
+
+                orgWhereParams[0] =  ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
+
+                if (mEmployerSplit.length > 1) {
+                    orgWhere += "(";
+                }
+                for(int j = 1; j <= mEmployerSplit.length; j++) {
+                    orgWhere += ContactsContract.CommonDataKinds.Organization.DATA + " LIKE ? ";
+                    orgWhereParams[j] = mEmployerSplit[j-1];
+                    if(j != mEmployerSplit.length) {
+                        orgWhere += " OR ";
+                    } else if (mEmployerSplit.length > 1) {
+                        orgWhere += ")";
+                    }
+                }
+
                 Cursor contact_cursor = mContext.getContentResolver().query(
                         ContactsContract.Data.CONTENT_URI,
                         null,             // Columns to include in the resulting Cursor

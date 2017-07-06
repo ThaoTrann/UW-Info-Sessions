@@ -1,5 +1,6 @@
 package com.android.infosessions;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
@@ -10,6 +11,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -85,7 +88,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         mCursorAdapter = new SessionCursorAdapter(this, null);
         getLoaderManager().initLoader(SESSION_LOADER, null, this);
-        getLoaderManager().initLoader(CONTACT_LOADER, null, this);
+
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            getLoaderManager().destroyLoader(CONTACT_LOADER);
+        } else {
+            getLoaderManager().initLoader(CONTACT_LOADER, null, this);
+        }
 
         alert = (ImageButton) findViewById(R.id.alert_button);
         Button rvsp = (Button) findViewById(R.id.rvsp_button);
