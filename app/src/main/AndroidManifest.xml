@@ -32,7 +32,8 @@
         <activity
             android:name=".DetailActivity"
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/DetailTheme"/>
 
         <activity
             android:name=".FilterActivity"

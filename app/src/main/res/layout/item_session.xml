@@ -26,13 +26,23 @@
         <RelativeLayout
             android:layout_width="0dp"
             android:layout_weight="5"
-            android:layout_height="wrap_content">
-
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/employer_mp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:textColor="@color/textColorEmployer"
+                android:textSize="18sp"
+                tools:text="Wattpad" />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-
                 <TextView
                     android:id="@+id/employer"
                     android:layout_width="match_parent"
@@ -44,19 +54,7 @@
                     android:textColor="@color/textColorEmployer"
                     android:textSize="18sp"
                     tools:text="Wattpad" />
-                <TextView
-                    android:id="@+id/employer_mp"
-                    android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:foregroundGravity="center"
-                    android:visibility="gone"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textAllCaps="true"
-                    android:textColor="@color/textColorEmployer"
-                    android:textSize="18sp"
-                    tools:text="Wattpad" />
+
                 <TextView
                     android:id="@+id/contacts"
                     android:layout_width="match_parent"
