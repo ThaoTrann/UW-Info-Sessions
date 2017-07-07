@@ -77,9 +77,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private int mId;
     private int mAlerted;
     private Long milliseconds;
-    private Button rsvp;
-    private Button web;
-    private Button nav;
+    private ImageButton rsvp;
+    private ImageButton web;
+    private ImageButton nav;
 
     private LinearLayout contactLL;
     private TextView contact_title;
@@ -116,9 +116,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         alert = (ImageButton) findViewById(R.id.alert_button);
-        rsvp = (Button) findViewById(R.id.rvsp_button);
-        web = (Button) findViewById(R.id.website_button);
-        nav = (Button) findViewById(R.id.nav_button);
+        rsvp = (ImageButton) findViewById(R.id.rvsp_button);
+        web = (ImageButton) findViewById(R.id.website_button);
+        nav = (ImageButton) findViewById(R.id.nav_button);
 
         alert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -354,8 +354,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         } else {
             nav.setVisibility(View.VISIBLE);
         }
-        TextView nameTextView = (TextView) findViewById(R.id.employer);
-        nameTextView.setText(mEmployer);
 
         TextView timeTextView = (TextView) findViewById(R.id.time);
         timeTextView.setText(mStartTime + " - " + mEndTime);
@@ -382,12 +380,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         TextView audienceTextView = (TextView) findViewById(R.id.audience);
         audienceTextView.setText(mAudience);
 
-        ImageView logoView = (ImageView) findViewById(R.id.employer_logo);
         byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
         Bitmap logo = getImage(image);
-
-        //logoView.setImageDrawable(drawable);
-        logoView.setImageBitmap(logo);
 
         ImageView headerImageView = (ImageView) findViewById(R.id.bgheader);
         headerImageView.setImageBitmap(logo);
