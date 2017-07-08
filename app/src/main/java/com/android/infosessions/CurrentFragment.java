@@ -66,7 +66,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public static final String LOG_TAG = MainActivity.class.getName();
 
     private ListView sessionsListView;
-    private TextView updateTimeTV;
     private RelativeLayout loadingRL;
 
     private static final String UWAPI_REQUEST_URL =
@@ -89,9 +88,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
-        updateTimeTV = (TextView) rootView.findViewById(R.id.update_time);
-        updateTimeTV.setVisibility(View.VISIBLE);
-
         loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
 
         mCursorAdapter = new SessionCursorAdapter(mContext, null);
@@ -138,6 +134,13 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         return rootView;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateSessionAfterPermissionRequest();
+    }
+
     String getMonthForInt(int num) {
         String month = "wrong";
         DateFormatSymbols dfs = new DateFormatSymbols();
@@ -174,14 +177,62 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             super.onPostExecute(sessions);
             //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             //toast.show();
-            Calendar rightNow = Calendar.getInstance();
-            int day = rightNow.get(rightNow.DAY_OF_MONTH);
-            int month = rightNow.get(rightNow.MONTH) + 1;
-            int year = rightNow.get(rightNow.YEAR);
-            updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
             loadingRL.setVisibility(View.GONE);
             sessionsListView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void updateSessionAfterPermissionRequest() {
+        Cursor cursor = getContext().getContentResolver().query(SessionEntry.CONTENT_URI,
+                new String[] {SessionEntry._ID, SessionEntry.COLUMN_SESSION_EMPLOYER}, null, null, null);
+        cursor.moveToFirst();
+        while (cursor.moveToNext()) {
+            String mEmployer = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_EMPLOYER));
+            int mId = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry._ID));
+
+            ContentValues values = new ContentValues();
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, SessionEntry.NO_CONTACT);
+            } else {
+                String[] mEmployerSplit = mEmployer.split(" ");
+
+                // retrieve related contacts from contact database
+                String orgWhere = ContactsContract.Data.MIMETYPE + " = ? AND ";
+                String[] orgWhereParams = new String[ mEmployerSplit.length + 1];
+
+                orgWhereParams[0] =  ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE;
+
+                if (mEmployerSplit.length > 1) {
+                    orgWhere += "(";
+                }
+                for(int j = 1; j <= mEmployerSplit.length; j++) {
+                    orgWhere += ContactsContract.CommonDataKinds.Organization.DATA + " LIKE ? ";
+                    orgWhereParams[j] = mEmployerSplit[j-1];
+                    if(j != mEmployerSplit.length) {
+                        orgWhere += " OR ";
+                    } else if (mEmployerSplit.length > 1) {
+                        orgWhere += ")";
+                    }
+                }
+
+                Cursor contact_cursor = mContext.getContentResolver().query(
+                        ContactsContract.Data.CONTENT_URI,
+                        null,             // Columns to include in the resulting Cursor
+                        orgWhere,                   // No selection clause
+                        orgWhereParams,                   // No selection arguments
+                        null);
+
+                //contact_cursor.moveToFirst();
+
+                values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, contact_cursor.getCount());
+                contact_cursor.close();
+            }
+            Uri contentUris = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, mId);
+            mContext.getContentResolver().update(contentUris, values, null, null);
+        }
+        cursor.close();
     }
 
     private void insertSession(ArrayList<Session> sessions) {

@@ -67,11 +67,6 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
         mCursorAdapter = new ContactCursorAdapter(getContext(), null);
         listView.setAdapter(mCursorAdapter);
 
-
-        View emptyView = rootView.findViewById(R.id.empty_view);
-
-        listView.setEmptyView(emptyView);
-
         showRequestView();
         return rootView;
     }

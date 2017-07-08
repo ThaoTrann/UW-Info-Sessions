@@ -34,19 +34,21 @@ public class ContactCursorAdapter extends CursorAdapter {
 
         TextView tvName_tag = (TextView) view.findViewById(R.id.name_tag);
         TextView tvCompany = (TextView) view.findViewById(R.id.company);
-        TextView tvTitle = (TextView) view.findViewById(R.id.title);
 
         // Extract properties from cursor
         String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
         String company = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DATA));
         String title = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
 
-        //        tvName_tag.setText(name.charAt(0));
+         //       tvName_tag.setText(name.charAt(0));
 
         // Populate fields with extracted properties
         tvName_tag.setText(name.charAt(0) + "");
         tvName.setText(name);
-        tvCompany.setText(company);
-        tvTitle.setText(title);
+        if ( title == null || title.isEmpty() ) {
+            tvCompany.setText(company);
+        } else {
+            tvCompany.setText(company + ", " + title);
+        }
     }
 }
