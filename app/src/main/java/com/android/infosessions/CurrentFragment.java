@@ -66,7 +66,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     public static final String LOG_TAG = MainActivity.class.getName();
 
     private ListView sessionsListView;
-    private TextView updateTimeTV;
     private RelativeLayout loadingRL;
 
     private static final String UWAPI_REQUEST_URL =
@@ -89,9 +88,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
-        updateTimeTV = (TextView) rootView.findViewById(R.id.update_time);
-        updateTimeTV.setVisibility(View.VISIBLE);
-
         loadingRL = (RelativeLayout) rootView.findViewById(R.id.loading_spinner);
 
         mCursorAdapter = new SessionCursorAdapter(mContext, null);
@@ -181,11 +177,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             super.onPostExecute(sessions);
             //Toast toast = Toast.makeText(getContext(), "Updated", Toast.LENGTH_SHORT);
             //toast.show();
-            Calendar rightNow = Calendar.getInstance();
-            int day = rightNow.get(rightNow.DAY_OF_MONTH);
-            int month = rightNow.get(rightNow.MONTH) + 1;
-            int year = rightNow.get(rightNow.YEAR);
-            updateTimeTV.setText("Updated by " + getMonthForInt(month) + " " + day + " " + year);
             loadingRL.setVisibility(View.GONE);
             sessionsListView.setVisibility(View.VISIBLE);
         }
