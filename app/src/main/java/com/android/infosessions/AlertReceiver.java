@@ -29,7 +29,7 @@ public class AlertReceiver extends BroadcastReceiver {
     int mId;
     @Override
     public void onReceive(Context context, Intent intent) {
-        value = intent.getStringExtra("VALUE").split(",");
+        value = intent.getStringExtra("VALUE").split(";");
         title = value[0];
         time = value[1];
         location = value[2];

@@ -136,7 +136,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Log.d("alert id", mId + "");*/
 
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
-                alertIntent.putExtra("VALUE", mEmployer + "," + mTime + " (" + formated_date + ")"  + "," + mLocation + "," + mUri + "," + mId);
+                alertIntent.putExtra("VALUE", mEmployer + ";" + mTime + " (" + formated_date + ")"  + ";" + mLocation + ";" + mUri + ";" + mId);
                 alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 pendingIntent = PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
