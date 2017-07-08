@@ -52,13 +52,15 @@
         android:background="@color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
         <ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:nestedScrollingEnabled="true"
-            android:background="@color/white">
+            android:background="@color/white"
+            android:divider="?android:dividerHorizontal"
+            android:showDividers="middle"
+            android:clickable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,57 +68,6 @@
                 android:orientation="vertical"
                 android:paddingBottom="32dp"
                 android:paddingTop="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center_horizontal"
-                    android:orientation="horizontal">
-                    <ImageButton
-                        android:text="Alert"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_notifications_off_black_24dp"
-                        android:background="@drawable/action_button_bg"
-                        android:id="@+id/alert_button" />
-
-                    <ImageButton
-                        android:text="RSVP"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:textAllCaps="true"
-                        android:src="@drawable/ic_mail_outline_black_24dp"
-                        android:background="@drawable/action_button_bg"
-                        android:textColor="@color/colorAccent"
-                        android:id="@+id/rvsp_button" />
-
-                    <ImageButton
-                        android:text="Website"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:textAllCaps="true"
-                        android:src="@drawable/ic_public_black_24dp"
-                        android:background="@drawable/action_button_bg"
-                        android:id="@+id/website_button" />
-
-                    <ImageButton
-                        android:text="Navigation"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:textAllCaps="true"
-                        android:src="@drawable/ic_navigation_black_24dp"
-                        android:background="@drawable/action_button_bg"
-                        android:id="@+id/nav_button" />
-
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -204,19 +155,7 @@
                     android:padding="16dp"
                     android:lineSpacingExtra="3dp"
                     android:elegantTextHeight="true"
-                    android:paddingBottom="16dp"
                     tools:text="Wattpad is a global platform, proudly based in Toronto, that gives people everywhere the freedom to discover and create content they can't find anywhere else. We want to tell you about the perks we offer, including competitive salary, meaningful work (there's a good change you'll push code into production on Day 1!), and a great staff culture. Learn more about us at wattpad.com" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ellipsize="end"
-                    android:textColor="@android:color/tertiary_text_dark"
-                    android:textSize="14sp"
-                    android:lineSpacingExtra="3dp"
-                    android:paddingLeft="16dp"
-                    android:elegantTextHeight="true"
-                    tools:text="Audience:"/>
 
                 <TextView
                     android:id="@+id/audience"
@@ -245,6 +184,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
                     android:paddingLeft="16dp"
                     android:divider="?android:dividerHorizontal"
                     android:showDividers="middle"
@@ -252,7 +192,56 @@
 
             </LinearLayout>
         </ScrollView>
-
     </android.support.v4.widget.NestedScrollView>
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_gravity="bottom"
+        android:background="@color/colorAccent">
+        <ImageButton
+            android:text="Alert"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_notifications_off_black_24dp"
+            android:background="@drawable/action_button_bg"
+            android:id="@+id/alert_button" />
+
+        <ImageButton
+            android:text="RSVP"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:textAllCaps="true"
+            android:src="@drawable/ic_mail_outline_black_24dp"
+            android:background="@drawable/action_button_bg"
+            android:textColor="@color/colorAccent"
+            android:id="@+id/rvsp_button" />
+
+        <ImageButton
+            android:text="Website"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:textAllCaps="true"
+            android:src="@drawable/ic_public_black_24dp"
+            android:background="@drawable/action_button_bg"
+            android:id="@+id/website_button" />
+
+        <ImageButton
+            android:text="Navigation"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:textAllCaps="true"
+            android:src="@drawable/ic_navigation_black_24dp"
+            android:background="@drawable/action_button_bg"
+            android:id="@+id/nav_button" />
+    </android.support.v7.widget.LinearLayoutCompat>
 
 </android.support.design.widget.CoordinatorLayout>
