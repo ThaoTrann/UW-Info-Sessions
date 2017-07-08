@@ -20,6 +20,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -70,13 +72,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String mAudience;
     private byte[] mLogo;
     private String mContacts;
-    private ImageButton alert;
     private AlarmManager alarmManager;
     private PendingIntent pendingIntent;
 
     private int mId;
     private int mAlerted;
     private Long milliseconds;
+    private ImageButton alert;
     private ImageButton rsvp;
     private ImageButton web;
     private ImageButton nav;
@@ -339,7 +341,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mTime = mStartTime + " - " + mEndTime;
         mLocation = mBuildingCode + " " + mBuildingRoom;
 
-        if(mLink.isEmpty() || mLink == null) {
+        /*if(mLink.isEmpty() || mLink == null) {
             rsvp.setVisibility(View.GONE);
         } else {
             rsvp.setVisibility(View.VISIBLE);
@@ -353,7 +355,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             nav.setVisibility(View.GONE);
         } else {
             nav.setVisibility(View.VISIBLE);
-        }
+        }*/
 
         TextView timeTextView = (TextView) findViewById(R.id.time);
         timeTextView.setText(mStartTime + " - " + mEndTime);
