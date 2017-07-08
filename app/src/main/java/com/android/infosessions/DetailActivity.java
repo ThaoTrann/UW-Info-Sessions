@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.support.annotation.NonNull;
@@ -82,6 +83,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private ImageButton rsvp;
     private ImageButton web;
     private ImageButton nav;
+    private String formated_date;
 
     private LinearLayout contactLL;
     private TextView contact_title;
@@ -134,7 +136,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Log.d("alert id", mId + "");*/
 
                 Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
-                alertIntent.putExtra("VALUE", mEmployer + "," + mDate + " " + mTime + "," + mLocation + "," + mUri + "," + mId);
+                alertIntent.putExtra("VALUE", mEmployer + "," + mTime + " (" + formated_date + ")"  + "," + mLocation + "," + mUri + "," + mId);
                 alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 pendingIntent = PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -202,7 +204,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         web.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mWebsite));
+                Uri webpage = Uri.parse(mWebsite);
+
+                if (!mWebsite.startsWith("http://") && !mWebsite.startsWith("https://")) {
+                    webpage = Uri.parse("http://" + mWebsite);
+                }
+                Log.d("mWeb", mWebsite);
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
                 startActivity(webIntent);
             }
         });
@@ -341,7 +349,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mTime = mStartTime + " - " + mEndTime;
         mLocation = mBuildingCode + " " + mBuildingRoom;
 
-        /*if(mLink.isEmpty() || mLink == null) {
+        if(mLink.isEmpty() || mLink == null) {
             rsvp.setVisibility(View.GONE);
         } else {
             rsvp.setVisibility(View.VISIBLE);
@@ -355,14 +363,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             nav.setVisibility(View.GONE);
         } else {
             nav.setVisibility(View.VISIBLE);
-        }*/
+        }
 
         TextView timeTextView = (TextView) findViewById(R.id.time);
         timeTextView.setText(mStartTime + " - " + mEndTime);
 
         String[] date_split = mDate.split("-");
         String month = getMonthForInt(Integer.parseInt(date_split[1])-1);
-        String formated_date = month + " " + date_split[2] + " " + date_split[0];
+         formated_date = month + " " + date_split[2] + ", " + date_split[0];
 
         TextView dateTextView = (TextView) findViewById(R.id.date);
         dateTextView.setText(formated_date);
@@ -398,7 +406,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             vll.setOrientation(LinearLayout.VERTICAL);
 
             // Extract properties from cursor
-            String name = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow(Contacts.DISPLAY_NAME));
             String company = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Organization.DATA));
             String title = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Organization.TITLE));
 
@@ -410,7 +418,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                 TextView name_tv = new TextView(this);
                 name_tv.setText(name);
-                name_tv.setTextSize(16);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    name_tv.setTextColor(getResources().getColor(R.color.colorAccent, null));
+                }
 
                 final int id = cursor.getPosition();
                 vll.addView(name_tv);
@@ -421,7 +431,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                 TextView title_tv = new TextView(this);
                 title_tv.setText(title);
-                title_tv.setPadding(16, 0, 0, 0);
                 vll.addView(title_tv);
                 vll.setBackgroundResource(R.drawable.contacts_border);
 

@@ -186,9 +186,10 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:paddingLeft="16dp"
+                    android:paddingBottom="48dp"
                     android:divider="?android:dividerHorizontal"
                     android:showDividers="middle"
-                    android:clickable="true"/>
+                    android:clickable="true" />
 
             </LinearLayout>
         </ScrollView>
