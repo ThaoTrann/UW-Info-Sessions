@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
@@ -53,6 +54,8 @@ public class AlertReceiver extends BroadcastReceiver {
         mBuilder.setContentIntent(notifIntent);
         mBuilder.setDefaults(NotificationCompat.DEFAULT_SOUND);
         mBuilder.setAutoCancel(true);
+        // Each element then alternates between delay, vibrate, sleep, vibrate, sleep
+        mBuilder.setVibrate(new long[] { 0, 200, 100, 200, 0 });
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Random rand = new Random();

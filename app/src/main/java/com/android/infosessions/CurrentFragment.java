@@ -33,10 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.infosessions.data.DbHelper;
 import com.android.infosessions.data.FilterContract.FilterEntry;
@@ -182,7 +179,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void updateSessionAfterPermissionRequest() {
-        Cursor cursor = getContext().getContentResolver().query(SessionEntry.CONTENT_URI,
+        Cursor cursor = mContext.getContentResolver().query(SessionEntry.CONTENT_URI,
                 new String[] {SessionEntry._ID, SessionEntry.COLUMN_SESSION_EMPLOYER}, null, null, null);
         cursor.moveToFirst();
         while (cursor.moveToNext()) {
@@ -190,7 +187,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             int mId = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry._ID));
 
             ContentValues values = new ContentValues();
-            if (ContextCompat.checkSelfPermission(getContext(),
+            if (ContextCompat.checkSelfPermission(mContext,
                     Manifest.permission.READ_CONTACTS)
                     != PackageManager.PERMISSION_GRANTED) {
                 values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, SessionEntry.NO_CONTACT);
@@ -340,7 +337,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
 
-            if (ContextCompat.checkSelfPermission(getContext(),
+            if (ContextCompat.checkSelfPermission(mContext,
                     Manifest.permission.READ_CONTACTS)
                     != PackageManager.PERMISSION_GRANTED) {
                 values.put(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS, SessionEntry.NO_CONTACT);
