@@ -169,13 +169,11 @@ public class ContactFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         mCursorAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        // Callback called when the data needs to be deleted
         mCursorAdapter.swapCursor(null);
     }
 

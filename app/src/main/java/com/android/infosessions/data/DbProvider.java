@@ -101,8 +101,6 @@ public class DbProvider extends ContentProvider {
                 selection = ContactEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                // This will perform a query on the pets table where the _id equals 3 to return a
-                // Cursor containing that row of the table.
                 cursor = database.query(ContactEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
@@ -113,8 +111,6 @@ public class DbProvider extends ContentProvider {
                 selection = FilterEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                // This will perform a query on the pets table where the _id equals 3 to return a
-                // Cursor containing that row of the table.
                 cursor = database.query(FilterEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
@@ -125,8 +121,6 @@ public class DbProvider extends ContentProvider {
                 selection = FilterEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                // This will perform a query on the pets table where the _id equals 3 to return a
-                // Cursor containing that row of the table.
                 cursor = database.query(LogoEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
@@ -137,8 +131,6 @@ public class DbProvider extends ContentProvider {
                 selection = SessionEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                // This will perform a query on the pets table where the _id equals 3 to return a
-                // Cursor containing that row of the table.
                 cursor = database.query(SessionEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
@@ -178,10 +170,6 @@ public class DbProvider extends ContentProvider {
         }
     }
 
-    /**
-     * Insert a pet into the database with the given content values. Return the new content URI
-     * for that specific row in the database.
-     */
     private Uri insertContact(Uri uri, ContentValues values) {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -262,9 +250,6 @@ public class DbProvider extends ContentProvider {
             case CONTACTS:
                 return updateContract(uri, contentValues, selection, selectionArgs);
             case CONTACT_ID:
-                // For the PET_ID code, extract out the ID from the URI,
-                // so we know which row to update. Selection will be "_id=?" and selection
-                // arguments will be a String array containing the actual ID.
                 selection = ContactEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateContract(uri, contentValues, selection, selectionArgs);

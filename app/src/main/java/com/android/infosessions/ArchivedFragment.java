@@ -53,12 +53,9 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), DetailActivity.class);
 
-                Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
+                Uri currentUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
 
-                // Set the URI on the data field of the intent
-                intent.setData(currentPetUri);
-
-                // Launch the {@link EditorActivity} to display the data for the current pet.
+                intent.setData(currentUri);
                 startActivity(intent);
             }
         });
@@ -109,7 +106,6 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         mCursorAdapter.swapCursor(data);
     }
 

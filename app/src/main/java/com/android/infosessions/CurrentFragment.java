@@ -125,7 +125,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 // Set the URI on the data field of the intent
                 intent.setData(currentUri);
 
-                // Launch the {@link EditorActivity} to display the data for the current pet.
                 startActivity(intent);
             }
         });
@@ -310,7 +309,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
             DbHelper mDbHelper = new DbHelper(mContext);
             SQLiteDatabase db = mDbHelper.getWritableDatabase();
-            // Perform a query on the pets table
+            // Perform a query on the table
             Cursor cursor = db.query(
                     LogoEntry.TABLE_NAME,   // The table to query
                     logo_projection,            // The columns to return
@@ -453,7 +452,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
         DbHelper mDbHelper = new DbHelper(mContext);
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        // Perform a query on the pets table
+        // Perform a query on the table
         Cursor cursor = db.query(
                 SessionEntry.TABLE_NAME,   // The table to query
                 projection,            // The columns to return
@@ -488,7 +487,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
         mCursorAdapter.swapCursor(data);
     }
 

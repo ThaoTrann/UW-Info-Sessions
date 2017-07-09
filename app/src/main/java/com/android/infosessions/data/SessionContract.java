@@ -19,7 +19,7 @@ public class SessionContract {
     private SessionContract() {}
     /* Inner class that defines the table contents */
     public static class SessionEntry implements BaseColumns {
-        /** The content URI to access the pet data in the provider */
+        /** The content URI to access the data in the provider */
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_SESSIONS);
 
         public static final String TABLE_NAME = "sessions";

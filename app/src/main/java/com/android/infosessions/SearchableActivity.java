@@ -81,12 +81,10 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(SearchableActivity.this, DetailActivity.class);
 
-                Uri currentPetUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
+                Uri currentUri = ContentUris.withAppendedId(SessionEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
-                intent.setData(currentPetUri);
-
-                // Launch the {@link EditorActivity} to display the data for the current pet.
+                intent.setData(currentUri);
                 startActivity(intent);
             }
         });
