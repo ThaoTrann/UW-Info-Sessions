@@ -66,8 +66,8 @@
 
             <ImageView
                 android:id="@+id/alert"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_notifications_active_black_24dp"
                 android:paddingLeft="8dp"
                 android:visibility="gone"

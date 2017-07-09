@@ -84,6 +84,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private ImageButton web;
     private ImageButton nav;
     private String formated_date;
+    private Long currentTime;
 
     private LinearLayout contactLL;
     private TextView contact_title;
@@ -124,74 +125,79 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         web = (ImageButton) findViewById(R.id.website_button);
         nav = (ImageButton) findViewById(R.id.nav_button);
 
-        alert.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Long current = Calendar.getInstance().getTimeInMillis() + 5*1000;
-                final Long alertTime = milliseconds;
+
+        currentTime = Calendar.getInstance().getTimeInMillis();
+
+            alert.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                 /*
                 Log.d("LOG_TAG current time ", current.toString());
                 Log.d("LOG_TAG milliseconds ", milliseconds.toString());
 
                 Log.d("alert id", mId + "");*/
+                    final Long alertTime = milliseconds;
 
-                Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
-                alertIntent.putExtra("VALUE", mEmployer + ";" + mTime + " (" + formated_date + ")"  + ";" + mLocation + ";" + mUri + ";" + mId);
-                alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                pendingIntent = PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    final Intent alertIntent = new Intent(getApplication(), AlertReceiver.class);
+                    alertIntent.putExtra("VALUE", mEmployer + ";" + mTime + " (" + formated_date + ")" + ";" + mLocation + ";" + mUri + ";" + mId);
+                    alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    pendingIntent = PendingIntent.getBroadcast(getApplication(), 1, alertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                if(mAlerted == SessionEntry.NOT_ALERTED) {
-                    final long[] extra_time = new long[1];
-                    final AlertDialog mBuilder = new AlertDialog.Builder(DetailActivity.this).create();
-                    LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE );
-                    final View mView = inflater.inflate(R.layout.alert_time_preference, null);
-                    //RadioButton on_time = (TextView) mView.findViewById(R.id.on_time);
-                    RadioGroup radioGroup = (RadioGroup) mView.findViewById(R.id.radio_group);
-                    radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-                        @Override
-                        public void onCheckedChanged(RadioGroup group, int checkedId) {
-                            if (checkedId == R.id.on_time) {
-                                extra_time[0] = 0;
-                            } else if (checkedId == R.id.fifteen_minutes) {
-                                extra_time[0] = 900000;
-                            } else if (checkedId == R.id.thirty_minutes) {
-                                extra_time[0] = 1800000;
-                            } else if (checkedId == R.id.aday) {
-                                extra_time[0] = 86400000;
+
+                    if (mAlerted == SessionEntry.NOT_ALERTED) {
+                        final long[] extra_time = new long[1];
+                        final AlertDialog mBuilder = new AlertDialog.Builder(DetailActivity.this).create();
+                        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                        final View mView = inflater.inflate(R.layout.alert_time_preference, null);
+                        //RadioButton on_time = (TextView) mView.findViewById(R.id.on_time);
+                        RadioGroup radioGroup = (RadioGroup) mView.findViewById(R.id.radio_group);
+                        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                if (checkedId == R.id.on_time) {
+                                    extra_time[0] = 0;
+                                } else if (checkedId == R.id.fifteen_minutes) {
+                                    extra_time[0] = 900000;
+                                } else if (checkedId == R.id.thirty_minutes) {
+                                    extra_time[0] = 1800000;
+                                } else if (checkedId == R.id.aday) {
+                                    extra_time[0] = 86400000;
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    Button mAdd = (Button) mView.findViewById(R.id.add_btn);
-                    Button mCnl = (Button) mView.findViewById(R.id.cancel_btn);
+                        Button mAdd = (Button) mView.findViewById(R.id.add_btn);
+                        Button mCnl = (Button) mView.findViewById(R.id.cancel_btn);
 
-                    mBuilder.setView(mView);
-                    mBuilder.setCancelable(true);
-                    mAdd.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime - extra_time[0], pendingIntent);
-                            mBuilder.dismiss();
-                            updateSession(mId);
-                            Log.d("current ", current + "");
-                            Log.d("alert extra ", alertTime + extra_time[0] + "");
-                        }
-                    });
+                        mBuilder.setView(mView);
+                        mBuilder.setCancelable(true);
+                        mAdd.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alarmManager.set(AlarmManager.RTC_WAKEUP, alertTime - extra_time[0], pendingIntent);
+                                updateSession(mId);
+                                mBuilder.dismiss();
+                                Log.d("current ", currentTime + "");
+                                Log.d("milliseconds", alertTime + "");
+                                Log.d("alert extra ", alertTime - extra_time[0] + "");
+                            }
+                        });
 
-                    mCnl.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mBuilder.dismiss();
-                        }
-                    });
-                    mBuilder.show();
-                } else {
-                    alarmManager.cancel(pendingIntent);
-                    updateSession(mId);
+                        mCnl.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mBuilder.dismiss();
+                            }
+                        });
+                        mBuilder.show();
+                    } else {
+                        alarmManager.cancel(pendingIntent);
+                        updateSession(mId);
+                    }
+
                 }
+            });
 
-            }
-        });
 
         rsvp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -309,7 +315,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                     return;
             }
         }
-        Log.d("alert id", mId + "");
     }
     String getMonthForInt(int num) {
         String month = "wrong";
@@ -365,14 +370,22 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
 
         TextView timeTextView = (TextView) findViewById(R.id.time);
-        timeTextView.setText(mStartTime + " - " + mEndTime);
+        timeTextView.setText(mStartTime + "-" + mEndTime);
 
         String[] date_split = mDate.split("-");
         String month = getMonthForInt(Integer.parseInt(date_split[1])-1);
          formated_date = month + " " + date_split[2] + ", " + date_split[0];
 
         TextView dateTextView = (TextView) findViewById(R.id.date);
-        dateTextView.setText(formated_date);
+        dateTextView.setText(mDay + ", " +formated_date);
+
+
+        Log.d("LOG_TAG milliseconds ", milliseconds.toString());
+        if (milliseconds < currentTime) {
+            alert.setVisibility(View.GONE);
+        } else {
+            alert.setVisibility(View.VISIBLE);
+        }
 
         if(mAlerted == SessionEntry.ALERTED) {
             alert.setImageResource(R.drawable.ic_notifications_active_black_24dp);

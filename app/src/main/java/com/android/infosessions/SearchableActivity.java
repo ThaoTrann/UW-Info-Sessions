@@ -55,6 +55,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.sessions_list);
         setTitle("Search");
         sessionsListView = (ListView) findViewById(R.id.list);
@@ -113,7 +114,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
 
         android.widget.SearchView searchView = (android.widget.SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setQueryHint("Search employer...");
-        searchView.setMaxWidth(Integer.MAX_VALUE);
+        //searchView.setMaxWidth(Integer.MAX_VALUE);
 
         ((LinearLayout) searchView.getChildAt(0)).addView(btnFilter, layoutParams);
         ((LinearLayout) searchView.getChildAt(0)).setGravity(Gravity.CENTER);
