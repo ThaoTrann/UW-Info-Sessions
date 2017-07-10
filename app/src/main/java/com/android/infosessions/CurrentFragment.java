@@ -292,7 +292,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             values.put(SessionEntry.COLUMN_SESSION_MAP_URL, mMapUrl);
 
 
-            // retrieve logo image from logo database
+            /*// retrieve logo image from logo database
             byte[] mLogo;
 
             String[] logo_projection = {
@@ -336,7 +336,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
             db.close();
 
             values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
-
+*/
             if (ContextCompat.checkSelfPermission(mContext,
                     Manifest.permission.READ_CONTACTS)
                     != PackageManager.PERMISSION_GRANTED) {
@@ -370,7 +370,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                         orgWhereParams,                   // No selection arguments
                         null);
 
-                mContacts = contact_cursor.getCount();
+                int mContacts = contact_cursor.getCount();
                 contact_cursor.close();
                 //contact_cursor.moveToFirst();
 
@@ -442,7 +442,6 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 SessionEntry.COLUMN_SESSION_BUILDING_NAME,
                 SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                 SessionEntry.COLUMN_SESSION_MAP_URL,
-                SessionEntry.COLUMN_SESSION_LOGO,
                 SessionEntry.COLUMN_SESSION_ALERTED,
                 SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};

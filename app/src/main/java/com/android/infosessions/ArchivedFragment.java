@@ -89,7 +89,6 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
                 SessionEntry.COLUMN_SESSION_BUILDING_NAME,
                 SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                 SessionEntry.COLUMN_SESSION_MAP_URL,
-                SessionEntry.COLUMN_SESSION_LOGO,
                 SessionEntry.COLUMN_SESSION_ALERTED,
                 SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                 SessionEntry.COLUMN_SESSION_AUDIENCE};

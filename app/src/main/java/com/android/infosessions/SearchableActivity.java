@@ -153,7 +153,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
                         SessionEntry.COLUMN_SESSION_BUILDING_NAME,
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                         SessionEntry.COLUMN_SESSION_MAP_URL,
-                        SessionEntry.COLUMN_SESSION_LOGO,
                         SessionEntry.COLUMN_SESSION_ALERTED,
                         SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                         SessionEntry.COLUMN_SESSION_AUDIENCE};

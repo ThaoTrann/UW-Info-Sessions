@@ -18,7 +18,9 @@ import android.widget.TextView;
 
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
+import java.lang.reflect.Array;
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 
 /**
  * Created by Thao on 5/16/17.
@@ -96,11 +98,16 @@ public class SessionCursorAdapter extends CursorAdapter {
         ImageView logoView = (ImageView) view.findViewById(R.id.employer_logo);
         //Drawable drawable = getImage(logoView.getContext(), logo);
 
+        Drawable drawable = FetchLogos.getImage(logoView.getContext(), FetchLogos.getEmployerLogo(employer));
+
+        logoView.setImageDrawable(drawable);
+
+        /*
         byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
         Bitmap logo = getImage(image);
 
         //logoView.setImageDrawable(drawable);
-        logoView.setImageBitmap(logo);
+        logoView.setImageBitmap(logo);*/
 
         ImageView alertImage = (ImageView) view.findViewById(R.id.alert);
         if (alerted == SessionEntry.ALERTED) {
@@ -110,8 +117,4 @@ public class SessionCursorAdapter extends CursorAdapter {
         }
     }
 
-    // convert from byte array to bitmap
-    public static Bitmap getImage(byte[] image) {
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
-    }
 }

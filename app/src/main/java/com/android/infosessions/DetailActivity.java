@@ -17,6 +17,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -268,7 +269,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         SessionEntry.COLUMN_SESSION_BUILDING_ROOM,
                         SessionEntry.COLUMN_SESSION_MAP_URL,
                         SessionEntry.COLUMN_SESSION_ALERTED,
-                        SessionEntry.COLUMN_SESSION_LOGO,
                         SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS,
                         SessionEntry.COLUMN_SESSION_AUDIENCE};
 
@@ -345,7 +345,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mLink = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LINK));
         mAlerted = cursor.getInt(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_ALERTED));
 
-        mLogo = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
         mWebsite = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_WEBSITE));
         milliseconds = cursor.getLong(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_MILLISECONDS));
         mContacts = cursor.getString(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_NUMBER_CONTACTS));
@@ -402,12 +401,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         TextView audienceTextView = (TextView) findViewById(R.id.audience);
         audienceTextView.setText(mAudience);
 
-        byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
-        Bitmap logo = getImage(image);
-
         ImageView headerImageView = (ImageView) findViewById(R.id.bgheader);
-        headerImageView.setImageBitmap(logo);
 
+        Drawable drawable = FetchLogos.getImage(this, FetchLogos.getEmployerLogo(mEmployer));
+        headerImageView.setImageDrawable(drawable);
     }
     public void updateContactLL(final Cursor cursor) {
         cursor.moveToFirst();
