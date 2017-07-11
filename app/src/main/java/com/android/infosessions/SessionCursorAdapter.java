@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.bumptech.glide.Glide;
+
 
 import com.android.infosessions.data.SessionContract.SessionEntry;
 
@@ -96,12 +99,21 @@ public class SessionCursorAdapter extends CursorAdapter {
         ImageView logoView = (ImageView) view.findViewById(R.id.employer_logo);
         //Drawable drawable = getImage(logoView.getContext(), logo);
 
-        byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
+        final String LOGO_URL = "https://logo.clearbit.com/";
+        final String DOMAIN = ".com";
+
+
+        Glide
+            .with(mContext).load(LOGO_URL + reformatEmployer(employer) + DOMAIN)
+            .error(R.drawable.nonlogo)
+            .into(logoView);
+
+        /*byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
         Bitmap logo = getImage(image);
 
         //logoView.setImageDrawable(drawable);
         logoView.setImageBitmap(logo);
-
+*/
         ImageView alertImage = (ImageView) view.findViewById(R.id.alert);
         if (alerted == SessionEntry.ALERTED) {
             alertImage.setVisibility(View.VISIBLE);
@@ -113,5 +125,46 @@ public class SessionCursorAdapter extends CursorAdapter {
     // convert from byte array to bitmap
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
+
+    public static String removeStars(String employer, String stars) {
+        if (employer.contains(stars)) {
+            int first = employer.indexOf(stars);
+            if (employer.substring(first+stars.length(), employer.length()).contains(stars)) {
+                int second = employer.indexOf(stars, employer.indexOf(stars) + 1);
+                employer = employer.substring(0, first) + employer.substring(second + stars.length(), employer.length());
+            }
+        }
+        return employer;
+    }
+    public static String reformatEmployer(String employer) {
+        String formatted = employer;
+        if (formatted.contains("***")) {
+            formatted = removeStars(formatted, "***");
+        }
+        if (formatted.contains("**")) {
+            formatted = removeStars(formatted, "**");
+        }
+        if (formatted.contains("*")) {
+            formatted = removeStars(formatted, "*");
+        }
+        Log.d("formated", formatted);
+
+        formatted.replace("***", "");
+        formatted.replace("**", "");
+        formatted.replace("*", "");
+        formatted = formatted.replace(" ", "");
+        formatted = formatted.replace("Inc", "");
+        formatted = formatted.replace("InnovationLab", "");
+        formatted = formatted.replace("Limited", "");
+        formatted = formatted.replace("Technology", "");
+        formatted = formatted.replace("Technologies", "");
+        formatted = formatted.replace("Trading", "");
+        formatted = formatted.replace("LP", "");
+        formatted = formatted.replace(".", "");
+        formatted = formatted.replace(",", "");
+        formatted = formatted.trim();
+        Log.d("formated", formatted);
+        return formatted;
     }
 }
