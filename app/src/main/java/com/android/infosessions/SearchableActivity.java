@@ -45,7 +45,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
     private SessionCursorAdapter mCursorAdapter;
     private String mQuery = "";
     private ListView sessionsListView;
-    private TextView textView;
     HorizontalScrollView hsv;
     private LinearLayout filterTabsLL;
 
@@ -60,7 +59,7 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         setTitle("Search");
         sessionsListView = (ListView) findViewById(R.id.list);
 
-        View emptyView = findViewById(R.id.empty_view);
+        View emptyView = findViewById(R.id.search_empty_view);
         emptyView.setVisibility(View.VISIBLE);
         sessionsListView.setEmptyView(emptyView);
 
@@ -69,9 +68,6 @@ public class SearchableActivity extends AppCompatActivity implements android.wid
         hsv = (HorizontalScrollView) findViewById(R.id.filter_hsv);
         hsv.setVisibility(View.VISIBLE);
         filterTabsLL = (LinearLayout) findViewById(R.id.filter_ll);
-
-        textView = (TextView) findViewById(R.id.text);
-        textView.setVisibility(View.VISIBLE);
 
         mCursorAdapter = new SessionCursorAdapter(this, null);
         sessionsListView.setAdapter(mCursorAdapter);
