@@ -317,25 +317,7 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                     null);
             int mContacts;
             mContacts = cursor.getCount();
-            if(cursor.getCount() == 0) {
-                loadingRL.setVisibility(View.VISIBLE);
-                // fetch logo image from clearbit
-                mLogo = getBytes(QueryUtils.fetchImage(mEmployer, mContext));
 
-                //save image to db
-                ContentValues logo_values = new ContentValues();
-                logo_values.put(LogoEntry.COLUMN_LOGO_EMPLOYER, mEmployer);
-                logo_values.put(LogoEntry.COLUMN_LOGO_IMAGE, mLogo);
-                db.insert(LogoEntry.TABLE_NAME, null, logo_values);
-
-            } else {
-                cursor.moveToFirst();
-                mLogo = cursor.getBlob(cursor.getColumnIndexOrThrow(LogoEntry.COLUMN_LOGO_IMAGE));
-            }
-
-            db.close();
-
-            values.put(SessionEntry.COLUMN_SESSION_LOGO, mLogo);
 
             if (ContextCompat.checkSelfPermission(mContext,
                     Manifest.permission.READ_CONTACTS)

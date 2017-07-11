@@ -44,6 +44,7 @@ import android.widget.Toast;
 
 import com.android.infosessions.data.FilterContract;
 import com.android.infosessions.data.SessionContract.SessionEntry;
+import com.bumptech.glide.Glide;
 
 import java.sql.Blob;
 import java.text.DateFormatSymbols;
@@ -402,12 +403,60 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         TextView audienceTextView = (TextView) findViewById(R.id.audience);
         audienceTextView.setText(mAudience);
 
+        ImageView headerImageView = (ImageView) findViewById(R.id.bgheader);
+/*
         byte[] image = cursor.getBlob(cursor.getColumnIndexOrThrow(SessionEntry.COLUMN_SESSION_LOGO));
         Bitmap logo = getImage(image);
 
-        ImageView headerImageView = (ImageView) findViewById(R.id.bgheader);
-        headerImageView.setImageBitmap(logo);
+        headerImageView.setImageBitmap(logo);*/
 
+        final String LOGO_URL = "https://logo.clearbit.com/";
+        final String DOMAIN = ".com";
+
+        Glide
+            .with(this).load(LOGO_URL + reformatEmployer(mEmployer) + DOMAIN)
+                .error(R.drawable.nonlogo)
+            .into(headerImageView);
+    }
+    public static String removeStars(String employer, String stars) {
+        if (employer.contains(stars)) {
+            int first = employer.indexOf(stars);
+            if (employer.substring(first+stars.length(), employer.length()).contains(stars)) {
+                int second = employer.indexOf(stars, employer.indexOf(stars) + 1);
+                employer = employer.substring(0, first) + employer.substring(second + stars.length(), employer.length());
+            }
+        }
+        return employer;
+    }
+    public static String reformatEmployer(String employer) {
+        String formatted = employer;
+        if (formatted.contains("***")) {
+            formatted = removeStars(formatted, "***");
+        }
+        if (formatted.contains("**")) {
+            formatted = removeStars(formatted, "**");
+        }
+        if (formatted.contains("*")) {
+            formatted = removeStars(formatted, "*");
+        }
+        Log.d("formated", formatted);
+
+        formatted.replace("***", "");
+        formatted.replace("**", "");
+        formatted.replace("*", "");
+        formatted = formatted.replace(" ", "");
+        formatted = formatted.replace("Inc", "");
+        formatted = formatted.replace("InnovationLab", "");
+        formatted = formatted.replace("Limited", "");
+        formatted = formatted.replace("Technology", "");
+        formatted = formatted.replace("Technologies", "");
+        formatted = formatted.replace("Trading", "");
+        formatted = formatted.replace("LP", "");
+        formatted = formatted.replace(".", "");
+        formatted = formatted.replace(",", "");
+        formatted = formatted.trim();
+        Log.d("formated", formatted);
+        return formatted;
     }
     public void updateContactLL(final Cursor cursor) {
         cursor.moveToFirst();

@@ -20,8 +20,7 @@
             android:layout_weight="2"
             android:paddingRight="5dp"
             android:layout_gravity="center"
-            android:id="@+id/employer_logo"
-            android:src="@drawable/ic_domain_black_24dp"/>
+            android:id="@+id/employer_logo"/>
 
         <RelativeLayout
             android:layout_width="0dp"
