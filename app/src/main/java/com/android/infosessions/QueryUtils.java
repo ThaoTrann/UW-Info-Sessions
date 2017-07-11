@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.infosessions.data.DbHelper;
 import com.android.infosessions.data.FilterContract.FilterEntry;
@@ -187,9 +188,8 @@ public final class QueryUtils extends AppCompatActivity {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
-            Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
+            Log.e("QueryUtils", "Problem parsing the JSON results", e);
         }
-        // Return the list of earthquakes
         return sessions;
     }
 }

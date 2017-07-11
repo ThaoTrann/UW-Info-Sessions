@@ -439,8 +439,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (formatted.contains("*")) {
             formatted = removeStars(formatted, "*");
         }
-        Log.d("formated", formatted);
-
         formatted.replace("***", "");
         formatted.replace("**", "");
         formatted.replace("*", "");
@@ -455,7 +453,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         formatted = formatted.replace(".", "");
         formatted = formatted.replace(",", "");
         formatted = formatted.trim();
-        Log.d("formated", formatted);
         return formatted;
     }
     public void updateContactLL(final Cursor cursor) {

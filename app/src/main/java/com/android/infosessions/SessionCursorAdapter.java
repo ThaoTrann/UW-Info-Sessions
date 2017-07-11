@@ -148,7 +148,6 @@ public class SessionCursorAdapter extends CursorAdapter {
         if (formatted.contains("*")) {
             formatted = removeStars(formatted, "*");
         }
-        Log.d("formated", formatted);
 
         formatted.replace("***", "");
         formatted.replace("**", "");
@@ -164,7 +163,6 @@ public class SessionCursorAdapter extends CursorAdapter {
         formatted = formatted.replace(".", "");
         formatted = formatted.replace(",", "");
         formatted = formatted.trim();
-        Log.d("formated", formatted);
         return formatted;
     }
 }

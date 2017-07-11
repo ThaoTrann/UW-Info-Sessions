@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.infosessions.data.DbHelper;
 import com.android.infosessions.data.FilterContract.FilterEntry;
@@ -43,6 +44,7 @@ import com.android.infosessions.data.SessionContract.SessionEntry;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormatSymbols;
@@ -97,6 +99,9 @@ public class CurrentFragment extends Fragment implements LoaderManager.LoaderCal
                 Log.e(LOG_TAG, "finish updated");
             }
         });
+
+        TextView emptyView = (TextView) rootView.findViewById(R.id.empty_view);
+        sessionsListView.setEmptyView(emptyView);
 
         mCursorAdapter.notifyDataSetChanged();
 

@@ -45,6 +45,7 @@ public class ArchivedFragment extends Fragment implements LoaderManager.LoaderCa
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.sessions_list, container, false);
         sessionsListView = (ListView) rootView.findViewById(R.id.list);
+        
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         mCursorAdapter = new SessionCursorAdapter(getContext(), null);
         sessionsListView.setAdapter(mCursorAdapter);

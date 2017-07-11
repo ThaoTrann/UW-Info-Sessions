@@ -5,9 +5,12 @@
     android:background="@android:color/white">
 
     <TextView
-        android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="@color/colorAccent"
+        android:text="None info session available this time"
         android:visibility="gone"/>
 
     <LinearLayout
@@ -101,27 +104,6 @@
         android:layout_margin="20dp"
         android:visibility="gone"
         android:src="@drawable/ic_autorenew_black_24dp"/>
-
-    <!-- Empty view for the list -->
-    <RelativeLayout
-        android:id="@+id/empty_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/empty_title_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-medium"
-            android:paddingTop="16dp"
-            android:text="No result found"
-            android:textColor="@color/textColorEmployer"
-            android:textAppearance="?android:textAppearanceMedium"/>
-
-    </RelativeLayout>
 
 
 </RelativeLayout>
