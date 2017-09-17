@@ -1,4 +1,4 @@
-# UW-Info-Sessions
+# WatEIS-Waterloo-Employer-Info-Sessions
 Android App uses University of Waterloo's API to update info sessions, uses Sqlite database to store
 data locally for offlince usage. 
 This app features: 
